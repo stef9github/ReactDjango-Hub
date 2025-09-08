@@ -17,7 +17,7 @@ A modern, secure, and scalable SaaS platform for medical practices with HIPAA/RG
 
 ## 🛠 Tech Stack
 
-- **Backend**: Django 5.0 + GraphQL + PostgreSQL
+- **Backend**: Django 5.2.6 LTS + Python 3.13.7 + GraphQL + PostgreSQL
 - **Frontend**: React 18 + Vite + Tailwind CSS
 - **Infrastructure**: Docker + Kubernetes
 - **Security**: End-to-end encryption, RBAC, 2FA
