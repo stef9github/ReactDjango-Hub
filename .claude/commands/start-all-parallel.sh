@@ -3,9 +3,8 @@
 
 echo "🚀 Starting All Parallel Claude Code Development Instances..."
 echo "This will open multiple terminal tabs for parallel development:"
-echo "  🔧 Backend Development (Django + RGPD)"
+echo "  🔧 Backend + API Development (Django + REST + RGPD)"
 echo "  🎨 Frontend Development (React + French UI)"
-echo "  🔌 API Development (REST + Docs)"
 
 # Function to open new terminal tab and run command
 open_terminal_tab() {
@@ -24,18 +23,13 @@ EOF
 }
 
 # Open terminal tabs for each development instance
-echo "Opening Backend Development tab..."
-open_terminal_tab "Backend Dev" "cd /Users/stephanerichard/Documents/CODING/ReactDjango-Hub && bash .claude/commands/start-backend-dev.sh"
+echo "Opening Backend + API Development tab..."
+open_terminal_tab "Backend + API Dev" "cd /Users/stephanerichard/Documents/CODING/ReactDjango-Hub && bash .claude/commands/start-backend-dev.sh"
 
 sleep 1
 
 echo "Opening Frontend Development tab..."
 open_terminal_tab "Frontend Dev" "cd /Users/stephanerichard/Documents/CODING/ReactDjango-Hub && bash .claude/commands/start-frontend-dev.sh"
-
-sleep 1
-
-echo "Opening API Development tab..."
-open_terminal_tab "API Dev" "cd /Users/stephanerichard/Documents/CODING/ReactDjango-Hub && bash .claude/commands/start-api-dev.sh"
 
 echo "✅ All parallel Claude Code instances started!"
 echo "Switch between terminal tabs to work with different agents simultaneously."

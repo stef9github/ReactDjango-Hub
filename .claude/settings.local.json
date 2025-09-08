@@ -7,7 +7,9 @@
       "Read(/Users/stephanerichard/Documents/CODING/claude-agentrooms/backend/**)",
       "Bash(open http://localhost:8080)",
       "Bash(claude --version)",
-      "Bash(open http://localhost:1234)"
+      "Bash(open http://localhost:1234)",
+      "Bash(git worktree:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
