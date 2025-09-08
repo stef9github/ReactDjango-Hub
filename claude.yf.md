@@ -3,7 +3,6 @@
 ## Key Commands
 ```bash
 # Run Django development server
-cd mental_health_crm
 python manage.py runserver
 
 # Run tests
