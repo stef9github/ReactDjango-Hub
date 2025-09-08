@@ -16,7 +16,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Multi-tenant architecture with secure isolation between medical practices
 - Patient management with encrypted PII and audit trails
 - Clinical workflows (appointments, consultations, prescriptions)
-- Billing system with insurance claims and payment processing
 - HIPAA/RGPD compliance with full audit logging
 - Real-time analytics dashboards and reporting
 
