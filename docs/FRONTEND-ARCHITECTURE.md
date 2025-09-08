@@ -6,21 +6,21 @@ ReactDjango Hub Medical is a modern medical SaaS platform built with React 18, T
 ## Tech Stack
 
 ### Core Technologies
-- **React 18.2.0** - Component library with hooks
-- **TypeScript 5.3.3** - Type safety and developer experience
-- **Vite 5.0.11** - Build tool and dev server
+- **React 19.1.0** - Component library with hooks
+- **TypeScript 5.9.2** - Type safety and developer experience
+- **Vite 7.1.4** - Build tool and dev server
 - **Tailwind CSS 4.0.0** - Utility-first CSS framework
 
 ### State Management & Data Fetching
-- **Zustand 4.4.7** - Lightweight state management
-- **React Query (TanStack) 5.17.9** - Server state management and caching
-- **Apollo Client 3.8.8** - GraphQL client for advanced queries
-- **Axios 1.6.5** - HTTP client for REST API calls
+- **Zustand 5.0.8** - Lightweight state management
+- **React Query (TanStack) 5.87.1** - Server state management and caching
+- **Apollo Client 4.0.4** - GraphQL client for advanced queries
+- **Axios 1.11.0** - HTTP client for REST API calls
 
 ### Routing & Forms
-- **React Router DOM 6.21.1** - Client-side routing
-- **React Hook Form 7.48.2** - Form management
-- **Zod 3.22.4** - Schema validation
+- **React Router DOM 7.8.2** - Client-side routing
+- **React Hook Form 7.62.0** - Form management
+- **Zod 4.1.5** - Schema validation
 
 ### Development & Testing
 - **Vitest 3.2.4** - Unit testing framework
