@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **ReactDjango Hub Medical** - A modern, secure, and scalable SaaS platform for medical practices with HIPAA/RGPD compliance.
 
 ### **Tech Stack**
-- **Backend**: Django 5.0 + GraphQL + PostgreSQL
+- **Backend**: Python 3.13.7 + Django 5.2.6 LTS + GraphQL + PostgreSQL
 - **Frontend**: React 18 + Vite + Tailwind CSS
 - **Infrastructure**: Docker + Kubernetes
 - **Security**: End-to-end encryption, RBAC, 2FA
