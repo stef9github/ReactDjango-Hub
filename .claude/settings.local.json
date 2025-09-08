@@ -9,7 +9,8 @@
       "Bash(claude --version)",
       "Bash(open http://localhost:1234)",
       "Bash(git worktree:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
