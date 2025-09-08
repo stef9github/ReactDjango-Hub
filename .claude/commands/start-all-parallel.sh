@@ -11,15 +11,37 @@ open_terminal_tab() {
     local title=$1
     local command=$2
     
-    # Use osascript to open new terminal tab
-    osascript <<EOF
+    # Check if iTerm2 is available (better color support)
+    if osascript -e 'tell application "System Events" to (name of processes) contains "iTerm2"' 2>/dev/null || [ -d "/Applications/iTerm.app" ]; then
+        # Use iTerm2
+        osascript <<EOF
+tell application "iTerm2"
+    activate
+    tell current window
+        create tab with default profile
+        tell current session of current tab
+            write text "export TERM=xterm-256color CLICOLOR=1; $command"
+            set name to "$title"
+        end tell
+    end tell
+end tell
+EOF
+    else
+        # Fallback to Terminal.app with better color handling
+        osascript <<EOF
 tell application "Terminal"
     activate
     tell application "System Events" to keystroke "t" using command down
-    do script "$command" in front window
+    delay 0.5
+    do script "export TERM=xterm-256color CLICOLOR=1; $command" in front window
     set custom title of front tab of front window to "$title"
+    try
+        set background color of front tab of front window to {0, 0, 0}
+        set normal text color of front tab of front window to {65535, 65535, 65535}
+    end try
 end tell
 EOF
+    fi
 }
 
 # Open terminal tabs for each development instance
