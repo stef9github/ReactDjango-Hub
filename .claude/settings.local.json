@@ -11,7 +11,9 @@
       "Bash(git worktree:*)",
       "Bash(git add:*)",
       "Bash(git rm:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(bash:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []

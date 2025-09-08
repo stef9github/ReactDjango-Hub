@@ -69,20 +69,27 @@ npm test -- --watch
 ### **Build and Deployment**
 
 ```bash
-# Build frontend for production
-cd frontend
-npm run build
+# Development environment
+make dev                    # Start all services with hot reloading
+make stop                   # Stop all services  
+make migrate               # Run database migrations
 
-# Django production setup
-cd backend
-python manage.py collectstatic
-python manage.py migrate
+# Production environment
+make prod-up               # Start production with Nginx + SSL
+make prod-down             # Stop production
+make migrate-prod          # Run production migrations
 
-# Docker deployment
-docker-compose up -d --build
+# Docker operations
+make docker-build          # Build development images
+make docker-build-prod     # Build optimized production images
+make docker-logs           # View service logs
+make docker-health         # Check service health
+make clean                 # Clean unused Docker resources
 
-# Kubernetes deployment
-kubectl apply -f infrastructure/kubernetes/
+# Direct Docker manager usage
+bash docker/docker-manager.sh up development
+bash docker/docker-manager.sh build production
+bash docker/docker-manager.sh logs development backend
 ```
 
 ## 📁 **PROJECT STRUCTURE**
@@ -136,6 +143,50 @@ ReactDjango-Hub/
 - Integration tests for API endpoints
 - End-to-end tests for critical user flows
 - Maintain >80% test coverage
+
+### **Agent-Specific Git Workflow**
+Each Claude agent has scoped commit permissions to maintain code integrity:
+
+**Backend Agent** (in backend-dev worktree):
+```bash
+# Use scoped commit command (only commits backend files)
+git bcommit "feat: add patient model with RGPD compliance"
+```
+
+**Frontend Agent** (in frontend-dev worktree):
+```bash
+# Use scoped commit command (only commits frontend files)  
+git fcommit "feat: add patient dashboard with French UI"
+```
+
+**Setup agent git configuration:**
+```bash
+make claude-git-setup   # Configure git aliases for all agents
+make claude-docs-setup  # Create agent-specific documentation structure
+```
+
+### **Agent-Specific Documentation**
+
+Each agent maintains its own documentation in addition to global project docs:
+
+```
+docs/                     # Global project documentation
+├── architecture/         # System architecture 
+├── compliance/           # RGPD/HIPAA compliance
+└── deployment/           # Infrastructure deployment
+
+backend/docs/             # Backend Agent documentation
+├── api/                  # REST API endpoints
+├── models/               # Django models & relationships  
+├── authentication/       # Auth system & permissions
+└── testing/              # Backend testing strategy
+
+frontend/docs/            # Frontend Agent documentation  
+├── components/           # React component library
+├── styling/              # Design system & themes
+├── state-management/     # React state patterns
+└── testing/              # Frontend testing strategy
+```
 
 ## 🚀 **DEPLOYMENT PROCESS**
 

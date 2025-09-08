@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: medicalhub
+  labels:
+    name: medicalhub
+    environment: production
+    compliance: hipaa-rgpd
+  annotations:
+    description: "ReactDjango Hub Medical SaaS Platform"

@@ -9,6 +9,21 @@ help:
 	@echo "  make shell        - Open Django shell"
 	@echo "  make clean        - Clean up containers"
 	@echo ""
+	@echo "Docker commands:"
+	@echo "  make dev          - Start development environment"  
+	@echo "  make stop         - Stop development environment"
+	@echo "  make prod-up      - Start production environment"
+	@echo "  make prod-down    - Stop production environment"
+	@echo "  make docker-build - Build development images"
+	@echo "  make docker-logs  - View development logs"
+	@echo "  make docker-health - Check service health"
+	@echo ""
+	@echo "Kubernetes commands:"
+	@echo "  make k8s-deploy   - Deploy to Kubernetes cluster"
+	@echo "  make k8s-status   - Check Kubernetes deployment status"
+	@echo "  make k8s-logs     - View Kubernetes pod logs"
+	@echo "  make k8s-undeploy - Remove from Kubernetes cluster"
+	@echo ""
 	@echo "Claude Code optimized commands:"
 	@echo "  make claude-setup     - Set up Claude Code environment"
 	@echo "  make claude-test      - Run Claude Code test suite"
@@ -16,27 +31,65 @@ help:
 	@echo "  make claude-security  - Run security checks"
 	@echo "  make rgpd-check       - Check RGPD compliance"
 	@echo "  make claude-agents    - Start all Claude Code agents"
+	@echo "  make claude-git-setup - Configure agent git aliases"
+	@echo "  make claude-docs-setup - Setup agent documentation structure"
+	@echo "  make claude-api-docs  - Show API documentation locations"
 	@echo "  make claude-quality   - Run complete quality check"
 
 dev:
-	docker-compose up -d
-	@echo "✅ Development started at http://localhost:5173"
+	@bash docker/docker-manager.sh up development
+	@echo "✅ Development environment started"
 
 stop:
-	docker-compose down
+	@bash docker/docker-manager.sh down development
+
+prod-up:
+	@bash docker/docker-manager.sh up production
+	@echo "✅ Production environment started"
+
+prod-down:
+	@bash docker/docker-manager.sh down production
 
 test:
-	docker-compose run --rm backend pytest
-	docker-compose run --rm frontend npm test
+	docker-compose -f docker/development/docker-compose.yml run --rm backend pytest
+	docker-compose -f docker/development/docker-compose.yml run --rm frontend npm test
 
 migrate:
-	docker-compose run --rm backend python manage.py migrate
+	@bash docker/docker-manager.sh migrate development
+
+migrate-prod:
+	@bash docker/docker-manager.sh migrate production
 
 shell:
-	docker-compose run --rm backend python manage.py shell
+	docker-compose -f docker/development/docker-compose.yml run --rm backend python manage.py shell
 
 clean:
-	docker-compose down -v
+	@bash docker/docker-manager.sh clean
+
+docker-build:
+	@bash docker/docker-manager.sh build development
+
+docker-build-prod:
+	@bash docker/docker-manager.sh build production
+
+docker-logs:
+	@bash docker/docker-manager.sh logs development
+
+docker-health:
+	@bash docker/docker-manager.sh health development
+
+# Kubernetes commands
+k8s-deploy:
+	@bash infrastructure/kubernetes/k8s-manager.sh deploy
+
+k8s-status:
+	@bash infrastructure/kubernetes/k8s-manager.sh status
+
+k8s-logs:
+	@bash infrastructure/kubernetes/k8s-manager.sh logs backend
+
+k8s-undeploy:
+	@bash infrastructure/kubernetes/k8s-manager.sh undeploy
 
 # Claude Code optimized commands
 claude-setup:
@@ -75,6 +128,18 @@ rgpd-check:
 claude-agents:
 	@echo "🤖 Starting all Claude Code agents..."
 	bash .claude/commands/start-all-parallel.sh
+
+claude-git-setup:
+	@echo "🔧 Setting up agent-specific git configuration..."
+	bash .claude/commands/setup-agent-git-aliases.sh
+
+claude-docs-setup:
+	@echo "📚 Setting up agent-specific documentation structure..."
+	bash .claude/commands/setup-agent-docs-structure.sh
+
+claude-api-docs:
+	@echo "📖 Showing API documentation locations..."
+	bash .claude/commands/show-api-docs.sh
 
 claude-quality:
 	@echo "🔍 Running complete code quality check..."

@@ -1,0 +1,62 @@
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.sqlite3
+*.db
+
+# Media and static files (will be handled by volumes)
+media/
+staticfiles/
+collected_static/
+
+# Local settings
+local_settings.py
+.env
+.env.local
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+docs/
+
+# Tests
+*test*
+coverage/
+
+# Development tools
+.flake8
+.black
+.isort.cfg
+
+# Node modules (if any)
+node_modules/

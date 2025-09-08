@@ -1,0 +1,64 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: medicalhub
+  namespace: medicalhub
+
+resources:
+  # Namespaces
+  - namespaces/medicalhub.yaml
+  
+  # ConfigMaps
+  - configmaps/backend-config.yaml
+  - configmaps/frontend-config.yaml
+  
+  # Secrets (encrypted)
+  - secrets/backend-secrets.yaml
+  - secrets/database-secrets.yaml
+  
+  # Storage
+  - storage/persistent-volumes.yaml
+  
+  # Services
+  - services/backend-service.yaml
+  - services/frontend-service.yaml
+  - services/database-service.yaml
+  - services/redis-service.yaml
+  
+  # Deployments
+  - deployments/backend.yaml
+  - deployments/frontend.yaml
+  - deployments/database.yaml
+  - deployments/redis.yaml
+  
+  # Ingress
+  - ingress/ingress.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app: medicalhub
+  environment: production
+  compliance: hipaa-rgpd
+
+# Images to be updated (for CI/CD)
+images:
+  - name: medicalhub.stephanerichard.com/backend
+    newTag: latest
+  - name: medicalhub.stephanerichard.com/frontend  
+    newTag: latest
+
+# Namespace for all resources
+namespace: medicalhub
+
+# Configuration transformations
+patchesStrategicMerge:
+  - patches/production-resources.yaml
+
+# Secret generators (use with caution - encrypt secrets)
+secretGenerator:
+  - name: backend-secrets-generated
+    literals:
+      - database-password=CHANGE_ME_IN_PRODUCTION
+      - redis-password=CHANGE_ME_IN_PRODUCTION
+      - secret-key=CHANGE_ME_IN_PRODUCTION_MIN_50_CHARS
