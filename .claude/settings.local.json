@@ -3,7 +3,9 @@
     "allow": [
       "Bash(source:*)",
       "Bash(pip install:*)",
-      "Bash(python manage.py:*)"
+      "Bash(python manage.py:*)",
+      "Read(/Users/stephanerichard/Documents/CODING/claude-agentrooms/backend/**)",
+      "Bash(open http://localhost:8080)"
     ],
     "deny": [],
     "ask": []
