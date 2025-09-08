@@ -123,6 +123,7 @@ ReactDjango-Hub/
 - Follow Django naming conventions for models, views, and serializers
 - Use database migrations for all schema changes
 - Implement proper authentication and authorization
+- Ensure RGPD compliance for all patient data handling
 
 ### **React Frontend Patterns**
 - Use functional components with hooks
@@ -145,10 +146,10 @@ ReactDjango-Hub/
 DATABASE_URL=postgresql://user:pass@localhost/dbname
 SECRET_KEY=your-secret-key
 DEBUG=False
-ALLOWED_HOSTS=your-domain.com
+ALLOWED_HOSTS=medicalhub.stephanerichard.com
 
 # Frontend environment
-VITE_API_URL=https://your-domain.com/api
+VITE_API_URL=https://medicalhub.stephanerichard.com/api
 VITE_ENVIRONMENT=production
 ```
 
@@ -159,6 +160,33 @@ VITE_ENVIRONMENT=production
 - Manual approval for production deployment
 - Post-deployment health checks
 
----
-
 *This is a Django + React full-stack application. Follow Django and React best practices for development.*
+
+## ⚠️ **CRITICAL REMINDERS**
+
+1. **HIPAA Compliance**: All patient data must be handled according to HIPAA requirements
+2. **Security First**: Never commit sensitive information to version control
+3. **Test Coverage**: Maintain >80% test coverage for both backend and frontend
+4. **Documentation**: Update documentation with any architectural changes
+5. **Audit Trails**: Ensure all data modifications are logged and traceable
+6. **Multi-tenancy**: Maintain strict data isolation between medical practices
+
+## 📚 **DEVELOPMENT RESOURCES**
+
+### **Django Resources**
+- Django 5.0 documentation
+- Django REST Framework guides
+- HIPAA compliance guidelines for Django
+- GraphQL integration patterns
+
+### **React Resources**
+- React 18 documentation
+- Vite configuration guides
+- Tailwind CSS documentation
+- TypeScript best practices
+
+### **Security Resources**
+- HIPAA compliance checklist
+- RGPD compliance guidelines
+- Security audit procedures
+- Penetration testing protocols

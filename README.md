@@ -33,3 +33,13 @@ make migrate
 
 # Create superuser
 make createsuperuser
+
+🛠 Tech Stack
+
+Backend: Django 5.0 + GraphQL + PostgreSQL
+Frontend: React 18 + Vite + Tailwind CSS
+Infrastructure: Docker + Kubernetes
+Security: End-to-end encryption, RBAC, 2FA
+
+📚 Documentation
+See docs/ folder for detailed documentation.
