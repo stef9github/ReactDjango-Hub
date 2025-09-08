@@ -99,7 +99,7 @@ depends_on:
 volumes:
 postgres_data:
 ENDFILE
-# Create Makefile
+Makefile
 cat > Makefile << 'ENDFILE'
 .PHONY: help dev stop test migrate shell clean
 help:

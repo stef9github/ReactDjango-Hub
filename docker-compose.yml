@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+db:
+image: postgres:15-alpine
+environment:
+POSTGRES_DB: reactdjango_hub
+POSTGRES_USER: postgres
+POSTGRES_PASSWORD: postgres
+volumes:
+- postgres_data:/var/lib/postgresql/data
+ports:
+- "5432:5432"
+redis:
+image: redis:7-alpine
+ports:
+- "6379:6379"
+backend:
+build:
+context: ./backend
+dockerfile: Dockerfile.dev
+command: python manage.py runserver 0.0.0.0:8000
+volumes:
+- ./backend:/app
+ports:
+- "8000:8000"
+environment:
+- DATABASE_URL=postgresql://postgres:postgres@db:5432/reactdjango_hub
+- REDIS_URL=redis://redis:6379/0
+- DEBUG=True
+- SECRET_KEY=dev-secret-key
+depends_on:
+- db
+- redis
+frontend:
+build:
+context: ./frontend
+dockerfile: Dockerfile.dev
+command: npm run dev
+volumes:
+- ./frontend:/app
+- /app/node_modules
+ports:
+- "5173:5173"
+environment:
+- VITE_API_URL=http://localhost:8000
+depends_on:
+- backend
+volumes:
+postgres_data:
