@@ -1,12 +1,10 @@
 from pathlib import Path
-import environ
+from decouple import config
 import os
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR.parent, '.env'))
-SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
-DEBUG = env.bool('DEBUG', default=False)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost'])
+SECRET_KEY = config('SECRET_KEY', default='change-me-in-production')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost', cast=lambda v: [s.strip() for s in v.split(',')])
 INSTALLED_APPS = [
 'django.contrib.admin',
 'django.contrib.auth',
@@ -64,14 +62,21 @@ TEMPLATES = [
 ]
 WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
-'default': env.db('DATABASE_URL', default='postgresql://postgres:postgres@localhost:5432/main_database')
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='main_database'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD', default='postgres'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432', cast=int),
+    }
 }
 
 # Cache Configuration
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': env('REDIS_URL', default='redis://127.0.0.1:6379/1'),
+        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -109,7 +114,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=['http://localhost:5173'])
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:5173', cast=lambda v: [s.strip() for s in v.split(',')])
 
 # Django Ninja Configuration
 # API configuration is handled in config/ninja_api.py
