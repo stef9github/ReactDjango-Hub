@@ -1,0 +1,145 @@
+# Deutsche Übersetzungen für die medizinische SaaS-Plattform
+# German translations for medical SaaS platform
+msgid ""
+msgstr ""
+"Project-Id-Version: Medical SaaS Platform\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Medizinische Benutzeroberfläche
+# Medical user interface
+msgid "Tableau de Bord Médical"
+msgstr "Medizinisches Dashboard"
+
+msgid "Patients"
+msgstr "Patienten"
+
+msgid "Interventions Chirurgicales"
+msgstr "Chirurgische Eingriffe"
+
+msgid "Analyses"
+msgstr "Analysen"
+
+msgid "Rapports"
+msgstr "Berichte"
+
+msgid "Paramètres"
+msgstr "Einstellungen"
+
+# Chirurgische Verfahren
+# Surgical procedures
+msgid "Appendicectomie"
+msgstr "Blinddarmoperation"
+
+msgid "Cholécystectomie"
+msgstr "Gallenblasenentfernung"
+
+msgid "Arthroplastie"
+msgstr "Gelenkersatz"
+
+msgid "Craniotomie"
+msgstr "Kraniotomie"
+
+msgid "Laparoscopie"
+msgstr "Laparoskopie"
+
+msgid "Endoscopie"
+msgstr "Endoskopie"
+
+# Patientendaten
+# Patient data
+msgid "Dossier Patient"
+msgstr "Patientenakte"
+
+msgid "Antécédents Médicaux"
+msgstr "Krankengeschichte"
+
+msgid "Allergies"
+msgstr "Allergien"
+
+msgid "Médicaments"
+msgstr "Medikamente"
+
+msgid "Diagnostic"
+msgstr "Diagnose"
+
+msgid "Traitement"
+msgstr "Behandlung"
+
+msgid "Suivi"
+msgstr "Nachsorge"
+
+# DSGVO-Compliance
+# GDPR compliance
+msgid "Politique de Confidentialité"
+msgstr "Datenschutzrichtlinie"
+
+msgid "Protection des Données"
+msgstr "Datenschutz"
+
+msgid "Gestion du Consentement"
+msgstr "Einverständnisverwaltung"
+
+msgid "Droits de la Personne Concernée"
+msgstr "Rechte der betroffenen Person"
+
+msgid "Droit à l'Oubli"
+msgstr "Recht auf Vergessenwerden"
+
+msgid "Portabilité des Données"
+msgstr "Datenübertragbarkeit"
+
+# Systemmeldungen
+# System messages
+msgid "Enregistrer"
+msgstr "Speichern"
+
+msgid "Annuler"
+msgstr "Abbrechen"
+
+msgid "Supprimer"
+msgstr "Löschen"
+
+msgid "Modifier"
+msgstr "Bearbeiten"
+
+msgid "Ajouter Nouveau"
+msgstr "Neu Hinzufügen"
+
+msgid "Rechercher"
+msgstr "Suchen"
+
+msgid "Filtrer"
+msgstr "Filtern"
+
+msgid "Exporter"
+msgstr "Exportieren"
+
+# Medizinische Zustände und Status
+# Medical states and statuses
+msgid "Critique"
+msgstr "Kritisch"
+
+msgid "Urgent"
+msgstr "Dringend"
+
+msgid "Routine"
+msgstr "Routine"
+
+msgid "Urgence"
+msgstr "Notfall"
+
+msgid "Programmé"
+msgstr "Geplant"
+
+msgid "En Cours"
+msgstr "In Bearbeitung"
+
+msgid "Terminé"
+msgstr "Abgeschlossen"
+
+msgid "Annulé"
+msgstr "Abgebrochen"

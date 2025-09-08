@@ -1,0 +1,145 @@
+# Traductions françaises pour la plateforme médicale SaaS
+# French translations for medical SaaS platform
+msgid ""
+msgstr ""
+"Project-Id-Version: Medical SaaS Platform\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# Interface utilisateur médicale
+# Medical user interface
+msgid "Medical Dashboard"
+msgstr "Tableau de Bord Médical"
+
+msgid "Patients"
+msgstr "Patients"
+
+msgid "Surgical Procedures"
+msgstr "Interventions Chirurgicales"
+
+msgid "Analytics"
+msgstr "Analyses"
+
+msgid "Reports"
+msgstr "Rapports"
+
+msgid "Settings"
+msgstr "Paramètres"
+
+# Procédures chirurgicales
+# Surgical procedures
+msgid "Appendectomy"
+msgstr "Appendicectomie"
+
+msgid "Cholecystectomy"
+msgstr "Cholécystectomie"
+
+msgid "Arthroplasty"
+msgstr "Arthroplastie"
+
+msgid "Craniotomy"
+msgstr "Craniotomie"
+
+msgid "Laparoscopy"
+msgstr "Laparoscopie"
+
+msgid "Endoscopy"
+msgstr "Endoscopie"
+
+# Données patient
+# Patient data
+msgid "Patient Record"
+msgstr "Dossier Patient"
+
+msgid "Medical History"
+msgstr "Antécédents Médicaux"
+
+msgid "Allergies"
+msgstr "Allergies"
+
+msgid "Medications"
+msgstr "Médicaments"
+
+msgid "Diagnosis"
+msgstr "Diagnostic"
+
+msgid "Treatment"
+msgstr "Traitement"
+
+msgid "Follow-up"
+msgstr "Suivi"
+
+# Conformité RGPD
+# GDPR compliance
+msgid "Privacy Policy"
+msgstr "Politique de Confidentialité"
+
+msgid "Data Protection"
+msgstr "Protection des Données"
+
+msgid "Consent Management"
+msgstr "Gestion du Consentement"
+
+msgid "Data Subject Rights"
+msgstr "Droits de la Personne Concernée"
+
+msgid "Right to be Forgotten"
+msgstr "Droit à l'Oubli"
+
+msgid "Data Portability"
+msgstr "Portabilité des Données"
+
+# Messages système
+# System messages
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Add New"
+msgstr "Ajouter Nouveau"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "Export"
+msgstr "Exporter"
+
+# États et statuts médicaux
+# Medical states and statuses
+msgid "Critical"
+msgstr "Critique"
+
+msgid "Urgent"
+msgstr "Urgent"
+
+msgid "Routine"
+msgstr "Routine"
+
+msgid "Emergency"
+msgstr "Urgence"
+
+msgid "Scheduled"
+msgstr "Programmé"
+
+msgid "In Progress"
+msgstr "En Cours"
+
+msgid "Completed"
+msgstr "Terminé"
+
+msgid "Cancelled"
+msgstr "Annulé"
