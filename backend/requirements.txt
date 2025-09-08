@@ -1,11 +1,8 @@
 # Core Django
 Django==5.1.4                    # Latest stable
-djangorestframework==3.15.2      # Simple, Claude knows it well
-django-ninja==1.3.0              # FastAPI-style endpoints
+django-ninja==1.4.3              # FastAPI-style endpoints - PRIMARY API
 django-types==0.19.1             # Type stubs for Claude
-djangorestframework-stubs==3.15.0
 django-filter==24.3              # Easy filtering
-drf-spectacular==0.27.2          # OpenAPI docs
 django-cors-headers==4.3.1
 
 # Database & Environment

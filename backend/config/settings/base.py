@@ -16,10 +16,8 @@ INSTALLED_APPS = [
 'django.contrib.staticfiles',
 # Third party
 'corsheaders',
-'rest_framework',
 'ninja',
 'django_filters',
-'drf_spectacular',
 'health_check',
 'health_check.db',
 'health_check.cache',
@@ -113,25 +111,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=['http://localhost:5173'])
 
-# REST Framework Configuration
-REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-}
-
-# Spectacular Configuration
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'ReactDjango Hub Medical SaaS API',
-    'DESCRIPTION': 'API documentation for the medical SaaS platform',
-    'VERSION': '1.0.0',
-}
+# Django Ninja Configuration
+# API configuration is handled in config/ninja_api.py
 
 # Debug Toolbar Configuration (only show in DEBUG mode)
 if DEBUG:
