@@ -2,7 +2,7 @@
 
 ## 🏗️ **Architecture Overview**
 
-ReactDjango Hub Medical is a Django 5.1.4 backend built for the French medical SaaS market, featuring multi-tenant architecture, RGPD compliance, and comprehensive audit logging. The system is designed for scalability, security, and regulatory compliance in healthcare environments.
+ReactDjango Hub SaaS is a Django 5.1.4 backend built for multi-tenant SaaS applications, featuring scalable architecture, RGPD compliance, and comprehensive audit logging. The system is designed for scalability, security, and regulatory compliance in enterprise environments.
 
 ### **Core Technologies**
 - **Framework**: Django 5.1.4 LTS + Django Ninja 1.4.3
@@ -11,7 +11,7 @@ ReactDjango Hub Medical is a Django 5.1.4 backend built for the French medical S
 - **Cache**: Redis with django-cachalot for ORM caching
 - **Monitoring**: django-health-check, django-silk profiling
 - **Security**: django-guardian (object-level permissions), django-auditlog
-- **Medical Standards**: HL7 v0.4.5, DICOM v3.0.1 support
+- **Optional Integrations**: Extensible for domain-specific standards (HL7, DICOM, etc.)
 - **Documentation**: Automatic OpenAPI/Swagger generation
 
 ## 📁 **Project Structure**
@@ -28,8 +28,7 @@ backend/
 │   ├── core/                  # Core utilities and base models
 │   ├── analytics/             # Analytics and reporting
 │   ├── billing/               # Billing and payment processing
-│   ├── clinical/              # Clinical records and workflows
-│   └── compliance/            # RGPD/HIPAA compliance features
+│   └── compliance/            # Data protection and compliance features
 ├── locale/                    # Internationalization (FR/DE/EN)
 ├── media/                     # User uploaded files
 ├── static/                    # Static assets
@@ -37,7 +36,7 @@ backend/
 └── manage.py                  # Django management script
 ```
 
-## 🏥 **Django Applications Architecture**
+## 📊 **Django Applications Architecture**
 
 ### **apps.core** - Foundation Layer
 **Purpose**: Provides base functionality and shared utilities across all applications.
@@ -66,19 +65,6 @@ backend/
 - Comprehensive audit trails for regulatory compliance
 - Export capabilities for data analysis
 
-### **apps.clinical** - Medical Records Layer
-**Purpose**: Manages clinical data, patient records, and medical workflows.
-
-**Key Models**:
-- `ClinicalRecord`: Core clinical data storage
-- Medical workflow management
-- HL7 and DICOM integration capabilities
-
-**Features**:
-- Encrypted medical data storage
-- Clinical workflow automation
-- Medical standards compliance (HL7/DICOM)
-- Audit logging for patient data access
 
 ### **apps.billing** - Financial Management Layer
 **Purpose**: Handles billing, invoicing, and payment processing.
@@ -95,7 +81,7 @@ backend/
 - Financial audit trails
 
 ### **apps.compliance** - Regulatory Framework Layer
-**Purpose**: Ensures RGPD, HIPAA, and medical regulation compliance.
+**Purpose**: Ensures RGPD and data protection regulation compliance.
 
 **Key Models**:
 - `ComplianceRecord`: Regulatory compliance tracking
@@ -143,14 +129,14 @@ backend/
 ### **Data Protection**
 - **Encryption**: django-encrypted-model-fields for sensitive data
 - **Audit Logging**: django-auditlog for all model changes
-- **Data Isolation**: Multi-tenant architecture with strict separation
+- **Data Isolation**: Multi-tenant architecture with strict tenant separation
 - **Access Control**: Object-level permissions for fine-grained access
 
 ### **Compliance Features**
 - **RGPD Compliance**: Built-in data protection utilities
 - **Audit Trails**: Comprehensive logging for regulatory requirements
 - **Data Retention**: Automated data lifecycle management
-- **Medical Standards**: HL7/DICOM support for healthcare interoperability
+- **Extensible Standards**: Support for domain-specific integrations
 
 ## 🌐 **Internationalization Architecture**
 
@@ -161,10 +147,10 @@ backend/
 - **Translation Files**: `/backend/locale/` directory
 
 ### **Market-Specific Features**
-- French medical regulations compliance
 - European data protection (RGPD) compliance
 - Multi-currency support for EU markets
 - Localized date/time formats
+- Extensible for regulatory compliance
 
 ## 📊 **Performance & Monitoring**
 
@@ -192,7 +178,7 @@ backend/
 - **Primary Keys**: UUID for all models (security + scalability)
 - **Timestamps**: created_at/updated_at on all models
 - **Soft Deletes**: Preservation for audit requirements
-- **Multi-tenancy**: Strict data isolation between medical practices
+- **Multi-tenancy**: Strict data isolation between tenant organizations
 
 ### **Model Inheritance**
 - **BaseModel**: Abstract base with UUID, timestamps
@@ -209,7 +195,7 @@ backend/
 - **Database**: PostgreSQL with connection pooling
 
 ### **Third-Party Integrations**
-- **Medical Standards**: HL7 message parsing, DICOM image handling
+- **Domain Extensions**: Support for industry-specific standards
 - **Monitoring**: Health checks, performance profiling
 - **Security**: Object permissions, audit logging
 - **Performance**: Caching, query optimization
@@ -219,10 +205,10 @@ backend/
 ### **Production Readiness**
 - **WSGI Server**: Configured for production deployment
 - **Static Files**: Separate static file serving
-- **Media Handling**: Secure medical file storage
+- **Media Handling**: Secure file storage with encryption
 - **Environment Separation**: Clear dev/staging/production split
 
-### **Medical Compliance**
+### **Enterprise Compliance**
 - **Data Security**: End-to-end encryption support
 - **Audit Requirements**: Comprehensive change logging
 - **Backup Strategy**: Data retention and recovery
@@ -230,4 +216,4 @@ backend/
 
 ---
 
-*This architecture supports a scalable, secure, and compliant medical SaaS platform for the French market with European expansion capabilities.*
+*This architecture supports a scalable, secure, and compliant multi-tenant SaaS platform with European market capabilities.*
