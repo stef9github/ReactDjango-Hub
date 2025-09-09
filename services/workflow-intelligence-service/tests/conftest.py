@@ -1,23 +1,33 @@
 """
 Pytest configuration and shared fixtures for Workflow Intelligence Service tests
 """
-import os
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+import asyncio
+import os
+import tempfile
+import uuid
+from typing import AsyncGenerator, Dict, Any
+from unittest.mock import AsyncMock, patch, MagicMock
+from pathlib import Path
+
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.pool import StaticPool
 from fastapi.security import HTTPAuthorizationCredentials
 
-# Set test environment variables
+# Test configuration
+os.environ["TESTING"] = "true"
+os.environ["LOG_LEVEL"] = "ERROR"
 os.environ["DATABASE_URL"] = "sqlite:///./test_workflow_intelligence.db"
 os.environ["REDIS_URL"] = "redis://localhost:6379/15"  # Use test database
 os.environ["SERVICE_NAME"] = "workflow-intelligence-service-test"
 
 # Import after setting environment variables
-from database import engine, SessionLocal
-from models import Base
 from main import app
+from database import get_database_session
+from models import Base, WorkflowDefinition, WorkflowInstance, WorkflowHistory
+from workflow_engine import WorkflowEngine
 
 @pytest.fixture(scope="session")
 def test_engine():
@@ -278,3 +288,107 @@ def mock_identity_service_response():
         "first_name": "Test",
         "last_name": "User"
     }
+
+# Enhanced Authentication Fixtures
+@pytest.fixture
+def mock_user_data():
+    """Mock authenticated user data"""
+    return {
+        "user_id": "test-user-123",
+        "email": "test@example.com",
+        "organization_id": "org-123",
+        "roles": ["user", "workflow_user"],
+        "permissions": ["read", "write"],
+        "is_active": True,
+        "expires_at": "2025-12-31T23:59:59Z"
+    }
+
+@pytest.fixture
+def admin_user_data():
+    """Mock admin user data"""
+    return {
+        "user_id": "admin-user-123", 
+        "email": "admin@example.com",
+        "organization_id": "org-123",
+        "roles": ["admin", "user", "workflow_admin"],
+        "permissions": ["read", "write", "delete", "admin"],
+        "is_active": True,
+        "expires_at": "2025-12-31T23:59:59Z"
+    }
+
+@pytest.fixture
+def workflow_user_data():
+    """Mock workflow-specific user data"""
+    return {
+        "user_id": "workflow-user-123",
+        "email": "workflow@example.com", 
+        "organization_id": "org-123",
+        "roles": ["user", "workflow_user", "approver"],
+        "permissions": ["read", "write", "approve"],
+        "is_active": True,
+        "expires_at": "2025-12-31T23:59:59Z"
+    }
+
+@pytest.fixture
+def mock_identity_service_success(mock_user_data):
+    """Mock successful Identity Service authentication"""
+    with patch('httpx.AsyncClient.post') as mock_post:
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = mock_user_data
+        mock_post.return_value = mock_response
+        yield mock_post
+
+@pytest.fixture
+def mock_identity_service_failure():
+    """Mock failed Identity Service authentication"""
+    with patch('httpx.AsyncClient.post') as mock_post:
+        mock_response = AsyncMock()
+        mock_response.status_code = 401
+        mock_response.json.return_value = {"detail": "Invalid token"}
+        mock_post.return_value = mock_response
+        yield mock_post
+
+@pytest.fixture
+def mock_identity_service_timeout():
+    """Mock Identity Service timeout"""
+    with patch('httpx.AsyncClient.post') as mock_post:
+        import httpx
+        mock_post.side_effect = httpx.TimeoutException("Request timeout")
+        yield mock_post
+
+# AI Service Mocking Fixtures
+@pytest.fixture
+def mock_openai_success():
+    """Mock successful OpenAI API response"""
+    with patch('openai.ChatCompletion.create') as mock_create:
+        mock_create.return_value = {
+            "choices": [{
+                "message": {
+                    "content": "This is a test AI response with workflow analysis and suggestions."
+                }
+            }],
+            "usage": {
+                "total_tokens": 150,
+                "prompt_tokens": 100,
+                "completion_tokens": 50
+            }
+        }
+        yield mock_create
+
+@pytest.fixture
+def mock_anthropic_success():
+    """Mock successful Anthropic API response"""
+    with patch('anthropic.Anthropic') as mock_anthropic:
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.content = [MagicMock()]
+        mock_response.content[0].text = "This is a test Anthropic response with detailed workflow analysis."
+        mock_client.messages.create.return_value = mock_response
+        mock_anthropic.return_value = mock_client
+        yield mock_anthropic
+
+@pytest.fixture
+def workflow_engine(test_session):
+    """Create workflow engine instance for testing"""
+    return WorkflowEngine(db_session=test_session)

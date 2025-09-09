@@ -12,11 +12,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
+from sqlalchemy.orm import Session
 import uvicorn
 import logging
 
 # Add logging for debugging
 logger = logging.getLogger(__name__)
+
+# Import database session
+from database import get_database_session
 
 # Service configuration
 SERVICE_NAME = os.getenv("SERVICE_NAME", "workflow-intelligence-service")
@@ -251,85 +255,249 @@ async def health_check():
 @app.post("/api/v1/workflows")
 async def create_workflow(
     workflow: WorkflowCreateRequest,
-    current_user: dict = Depends(validate_jwt_token)
+    current_user: dict = Depends(validate_jwt_token),
+    db_session: Session = Depends(get_database_session)
 ):
     """Create a new workflow instance"""
+    from workflow_engine import WorkflowEngine
+    from models import WorkflowDefinition
+    
     user_id = current_user["user_id"]
     organization_id = current_user.get("organization_id")
     user_roles = current_user.get("roles", [])
     
-    # TODO: Implement workflow instance creation
-    return {
-        "message": "Workflow creation endpoint - TODO: implement",
-        "definition_id": workflow.definition_id,
-        "entity_id": workflow.entity_id,
-        "workflow_id": "generated-uuid",  # TODO: generate actual UUID
-        "created_by": user_id,
-        "organization": organization_id
-    }
+    try:
+        # Create workflow engine instance
+        engine = WorkflowEngine(db_session=db_session)
+        
+        # Create workflow instance
+        instance = engine.create_workflow_instance(
+            definition_id=workflow.definition_id,
+            entity_id=workflow.entity_id,
+            context=workflow.context or {},
+            organization_id=organization_id,
+            created_by=user_id,
+            title=f"Workflow for {workflow.entity_id}"
+        )
+        
+        logger.info(f"Created workflow instance {instance.id} for user {user_id}")
+        
+        return {
+            "workflow_id": str(instance.id),
+            "definition_id": workflow.definition_id,
+            "entity_id": workflow.entity_id,
+            "current_state": instance.current_state,
+            "status": instance.status,
+            "progress_percentage": instance.progress_percentage,
+            "available_actions": instance.get_available_actions(),
+            "created_at": instance.created_at.isoformat(),
+            "created_by": user_id,
+            "organization": organization_id
+        }
+        
+    except ValueError as e:
+        logger.error(f"Workflow creation failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Unexpected error creating workflow: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to create workflow instance")
 
 @app.get("/api/v1/workflows/{workflow_id}/status")
 async def get_workflow_status(
     workflow_id: str,
-    current_user: dict = Depends(validate_jwt_token)
+    current_user: dict = Depends(validate_jwt_token),
+    db_session: Session = Depends(get_database_session)
 ):
     """Get current workflow status and state"""
+    from workflow_engine import WorkflowEngine
+    from models import WorkflowInstance
+    
     user_id = current_user["user_id"]
     organization_id = current_user.get("organization_id")
+    user_roles = current_user.get("roles", [])
     
-    # TODO: Implement workflow status retrieval
-    return {
-        "message": f"Workflow {workflow_id} status - TODO: implement",
-        "current_state": "pending",
-        "next_actions": [],
-        "requested_by": user_id,
-        "organization": organization_id
-    }
+    try:
+        # Check if workflow exists and user has access
+        instance = db_session.query(WorkflowInstance).filter(
+            WorkflowInstance.id == workflow_id
+        ).first()
+        
+        if not instance:
+            raise HTTPException(status_code=404, detail="Workflow instance not found")
+        
+        # Authorization check: user must be assigned to workflow, or be admin, or same organization
+        if not ("admin" in user_roles or 
+                instance.assigned_to == user_id or 
+                instance.created_by == user_id or
+                (instance.organization_id == organization_id and organization_id)):
+            raise HTTPException(status_code=403, detail="Access denied to workflow instance")
+        
+        # Get comprehensive workflow status
+        engine = WorkflowEngine(db_session=db_session)
+        status_data = engine.get_workflow_status(workflow_id)
+        
+        # Add request metadata
+        status_data.update({
+            "requested_by": user_id,
+            "organization": organization_id
+        })
+        
+        return status_data
+        
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.error(f"Error getting workflow status: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Unexpected error getting workflow status: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve workflow status")
 
 @app.patch("/api/v1/workflows/{workflow_id}/next")
 async def advance_workflow(
     workflow_id: str, 
     transition: WorkflowTransitionRequest,
-    current_user: dict = Depends(validate_jwt_token)
+    current_user: dict = Depends(validate_jwt_token),
+    db_session: Session = Depends(get_database_session)
 ):
     """Advance workflow to next state"""
+    from workflow_engine import WorkflowEngine
+    from models import WorkflowInstance
+    
     user_id = current_user["user_id"]
     organization_id = current_user.get("organization_id")
     user_roles = current_user.get("roles", [])
     
-    # TODO: Implement state machine transition logic
-    return {
-        "message": f"Advance workflow {workflow_id} - TODO: implement",
-        "action": transition.action,
-        "previous_state": "current",
-        "new_state": "next",
-        "updated_by": user_id,
-        "organization": organization_id
-    }
+    try:
+        # Check if workflow exists and user has permission to advance it
+        instance = db_session.query(WorkflowInstance).filter(
+            WorkflowInstance.id == workflow_id
+        ).first()
+        
+        if not instance:
+            raise HTTPException(status_code=404, detail="Workflow instance not found")
+        
+        # Authorization check: user must be assigned to workflow, creator, or admin
+        if not ("admin" in user_roles or 
+                instance.assigned_to == user_id or 
+                instance.created_by == user_id):
+            raise HTTPException(status_code=403, detail="Access denied: insufficient permissions to advance workflow")
+        
+        # Check if workflow is active
+        if instance.status != "active":
+            raise HTTPException(status_code=400, detail=f"Cannot advance workflow: status is '{instance.status}', not 'active'")
+        
+        # Store previous state for response
+        previous_state = instance.current_state
+        
+        # Advance workflow using engine
+        engine = WorkflowEngine(db_session=db_session)
+        updated_instance = engine.advance_workflow(
+            instance_id=workflow_id,
+            action=transition.action,
+            user_id=user_id,
+            comment=transition.data.get('comment') if transition.data else None,
+            data=transition.data or {},
+            context_updates=transition.data.get('context_updates') if transition.data else None
+        )
+        
+        logger.info(f"Workflow {workflow_id} advanced from {previous_state} to {updated_instance.current_state} by user {user_id}")
+        
+        return {
+            "workflow_id": str(updated_instance.id),
+            "action": transition.action,
+            "previous_state": previous_state,
+            "current_state": updated_instance.current_state,
+            "status": updated_instance.status,
+            "progress_percentage": updated_instance.progress_percentage,
+            "available_actions": updated_instance.get_available_actions(),
+            "updated_at": updated_instance.updated_at.isoformat(),
+            "updated_by": user_id,
+            "organization": organization_id
+        }
+        
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.error(f"Error advancing workflow {workflow_id}: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Unexpected error advancing workflow {workflow_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to advance workflow")
 
 @app.get("/api/v1/workflows/user/{requested_user_id}")
 async def get_user_workflows(
     requested_user_id: str,
-    current_user: dict = Depends(validate_jwt_token)
+    current_user: dict = Depends(validate_jwt_token),
+    db_session: Session = Depends(get_database_session),
+    status: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0
 ):
     """Get all workflows for a user"""
+    from workflow_engine import WorkflowEngine
+    
     user_id = current_user["user_id"]
     organization_id = current_user.get("organization_id")
     user_roles = current_user.get("roles", [])
     
-    # TODO: Implement user workflow listing with authorization checks
-    # Users can only see their own workflows unless they have admin role
-    if requested_user_id != user_id and "admin" not in user_roles:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied: Cannot view other users' workflows"
+    try:
+        # Authorization check: Users can only see their own workflows unless they have admin role
+        if requested_user_id != user_id and "admin" not in user_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied: Cannot view other users' workflows"
+            )
+        
+        # Validate limit
+        if limit > 100:
+            limit = 100  # Cap at 100 workflows per request
+        
+        # Get user workflows using the engine
+        engine = WorkflowEngine(db_session=db_session)
+        workflows = engine.get_user_workflows(
+            user_id=requested_user_id,
+            organization_id=organization_id,
+            status=status,
+            limit=limit,
+            offset=offset
         )
-    
-    return {
-        "message": f"Workflows for user {requested_user_id} - TODO: implement",
-        "requested_by": user_id,
-        "organization": organization_id
-    }
+        
+        # Count total workflows for pagination info
+        from models import WorkflowInstance
+        total_query = db_session.query(WorkflowInstance).filter(
+            WorkflowInstance.assigned_to == requested_user_id
+        )
+        
+        if organization_id:
+            total_query = total_query.filter(WorkflowInstance.organization_id == organization_id)
+        
+        if status:
+            total_query = total_query.filter(WorkflowInstance.status == status)
+        
+        total_count = total_query.count()
+        
+        return {
+            "workflows": workflows,
+            "pagination": {
+                "total": total_count,
+                "limit": limit,
+                "offset": offset,
+                "has_more": (offset + limit) < total_count
+            },
+            "filters": {
+                "user_id": requested_user_id,
+                "status": status,
+                "organization_id": organization_id
+            },
+            "requested_by": user_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting workflows for user {requested_user_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve user workflows")
 
 # AI assistance endpoints
 @app.post("/api/v1/ai/summarize")

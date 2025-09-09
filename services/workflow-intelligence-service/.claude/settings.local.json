@@ -18,7 +18,11 @@
       "Bash(docker-compose:*)",
       "Bash(cat:*)",
       "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/**)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/docs/**)",
+      "Bash(pip uninstall:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

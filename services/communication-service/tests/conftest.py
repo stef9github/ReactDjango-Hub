@@ -1,13 +1,20 @@
 """
 Pytest configuration and fixtures for Communication Service tests
+Comprehensive testing setup following standardized microservices approach
 """
 import os
 import pytest
 import uuid
-from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock
+import asyncio
+import tempfile
+from datetime import datetime, timedelta
+from unittest.mock import AsyncMock, MagicMock, patch
+from typing import Dict, Any, AsyncGenerator
+from pathlib import Path
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from fastapi.testclient import TestClient
 
 # Set test environment variables before importing modules
@@ -16,7 +23,12 @@ os.environ.update({
     "REDIS_URL": "redis://localhost:6379/15",  # Use different DB for tests
     "IDENTITY_SERVICE_URL": "http://test-identity:8001",
     "JWT_SECRET_KEY": "test-secret-key-for-testing-only",
-    "DEBUG": "true"
+    "DEBUG": "true",
+    "TESTING": "true",
+    "LOG_LEVEL": "ERROR",
+    "EMAIL_BACKEND": "console",  # Use console backend for testing
+    "CELERY_ALWAYS_EAGER": "true",  # Execute tasks synchronously in tests
+    "CELERY_TASK_ALWAYS_EAGER": "true"
 })
 
 from models import Base, NotificationCategory, NotificationTemplate, Notification
@@ -24,6 +36,14 @@ from database import DatabaseConfig, get_db_session
 from redis_client import RedisConfig, CacheManager
 from identity_client import IdentityServiceClient
 from main import app
+
+@pytest.fixture(scope="session")
+def event_loop():
+    """Create event loop for async tests"""
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    yield loop
+    loop.close()
 
 @pytest.fixture(scope="session")
 def test_engine():
@@ -38,6 +58,27 @@ def test_engine():
     # Cleanup
     try:
         os.remove("test_communication.db")
+    except FileNotFoundError:
+        pass
+
+@pytest.fixture(scope="session")
+async def async_test_engine():
+    """Create async test database engine"""
+    test_database_url = "sqlite+aiosqlite:///test_communication_async.db"
+    engine = create_async_engine(test_database_url, echo=False)
+    
+    # Create tables
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    
+    yield engine
+    
+    # Cleanup
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await engine.dispose()
+    try:
+        os.remove("test_communication_async.db")
     except FileNotFoundError:
         pass
 
@@ -65,9 +106,30 @@ def client():
         yield test_client
 
 @pytest.fixture
+async def async_db_session(async_test_engine):
+    """Create async test database session"""
+    async_session = sessionmaker(
+        async_test_engine, class_=AsyncSession, expire_on_commit=False
+    )
+    
+    async with async_session() as session:
+        yield session
+        await session.rollback()
+
+@pytest.fixture
+def override_get_db(db_session):
+    """Override database dependency for testing"""
+    async def _get_test_db():
+        yield db_session
+    
+    app.dependency_overrides[get_db_session] = _get_test_db
+    yield
+    app.dependency_overrides.clear()
+
+@pytest.fixture
 def mock_redis():
-    """Mock Redis client"""
-    mock = MagicMock()
+    """Mock Redis client with comprehensive methods"""
+    mock = AsyncMock()
     mock.ping.return_value = True
     mock.get.return_value = None
     mock.set.return_value = True
@@ -79,6 +141,10 @@ def mock_redis():
     mock.llen.return_value = 0
     mock.lpush.return_value = 1
     mock.brpop.return_value = None
+    mock.hget.return_value = None
+    mock.hset.return_value = True
+    mock.hdel.return_value = 1
+    mock.expire.return_value = True
     return mock
 
 @pytest.fixture
@@ -162,12 +228,63 @@ def sample_notification(db_session, sample_notification_category, sample_notific
     db_session.commit()
     return notification
 
+# Enhanced Authentication Fixtures
 @pytest.fixture
-def auth_headers():
-    """Create authentication headers for API tests"""
+def valid_jwt_token():
+    """Valid JWT token for testing"""
+    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.valid.token"
+
+@pytest.fixture
+def invalid_jwt_token():
+    """Invalid JWT token for testing"""
+    return "invalid.jwt.token"
+
+@pytest.fixture
+def expired_jwt_token():
+    """Expired JWT token for testing"""
+    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.expired.token"
+
+@pytest.fixture
+def mock_user_data():
+    """Mock authenticated user data"""
     return {
-        "Authorization": "Bearer test-jwt-token",
+        "user_id": "test-user-123",
+        "email": "test@example.com",
+        "organization_id": "org-123",
+        "roles": ["user"],
+        "permissions": ["notification:read", "notification:write"],
+        "is_active": True,
+        "expires_at": (datetime.utcnow() + timedelta(hours=1)).isoformat()
+    }
+
+@pytest.fixture
+def admin_user_data():
+    """Mock admin user data"""
+    return {
+        "user_id": "admin-user-123", 
+        "email": "admin@example.com",
+        "organization_id": "org-123",
+        "roles": ["admin", "user"],
+        "permissions": ["notification:read", "notification:write", "notification:delete", "admin"],
+        "is_active": True,
+        "expires_at": (datetime.utcnow() + timedelta(hours=1)).isoformat()
+    }
+
+@pytest.fixture
+def auth_headers(valid_jwt_token):
+    """Create valid authentication headers for API tests"""
+    return {
+        "Authorization": f"Bearer {valid_jwt_token}",
         "Content-Type": "application/json"
+    }
+
+@pytest.fixture
+def admin_auth_headers(valid_jwt_token):
+    """Create admin authentication headers for API tests"""
+    return {
+        "Authorization": f"Bearer {valid_jwt_token}",
+        "Content-Type": "application/json",
+        "X-Admin-Access": "true"
     }
 
 @pytest.fixture
@@ -359,3 +476,134 @@ class AuthTestUtils:
         if not found_user_field:
             # Some endpoints might not include user context in response but should still work
             assert response.status_code == 200
+
+# Additional Enhanced Fixtures for Comprehensive Testing
+
+# Notification Provider Mock Fixtures
+@pytest.fixture
+def mock_email_provider():
+    """Mock email notification provider"""
+    with patch('providers.email.EmailProvider') as mock_provider:
+        mock_instance = AsyncMock()
+        mock_instance.send.return_value = {"status": "sent", "message_id": "email-123"}
+        mock_provider.return_value = mock_instance
+        yield mock_instance
+
+@pytest.fixture
+def mock_sms_provider():
+    """Mock SMS notification provider"""
+    with patch('providers.sms.SMSProvider') as mock_provider:
+        mock_instance = AsyncMock()
+        mock_instance.send.return_value = {"status": "sent", "message_id": "sms-123"}
+        mock_provider.return_value = mock_instance
+        yield mock_instance
+
+@pytest.fixture
+def mock_push_provider():
+    """Mock push notification provider"""
+    with patch('providers.push.PushProvider') as mock_provider:
+        mock_instance = AsyncMock()
+        mock_instance.send.return_value = {"status": "sent", "message_id": "push-123"}
+        mock_provider.return_value = mock_instance
+        yield mock_instance
+
+@pytest.fixture
+def mock_in_app_provider():
+    """Mock in-app notification provider"""
+    with patch('providers.in_app.InAppProvider') as mock_provider:
+        mock_instance = AsyncMock()
+        mock_instance.send.return_value = {"status": "sent", "message_id": "inapp-123"}
+        mock_instance.get_unread_notifications.return_value = []
+        mock_instance.get_unread_count.return_value = 0
+        mock_provider.return_value = mock_instance
+        yield mock_instance
+
+# Celery Mock Fixtures
+@pytest.fixture
+def mock_celery_task():
+    """Mock Celery task execution"""
+    with patch('tasks.notification_tasks.send_notification') as mock_task:
+        mock_result = MagicMock()
+        mock_result.id = "task-123"
+        mock_result.status = "SUCCESS"
+        mock_result.result = {"status": "sent", "message_id": "msg-123"}
+        mock_task.apply_async.return_value = mock_result
+        yield mock_task
+
+# Template Engine Mock Fixtures
+@pytest.fixture
+def mock_template_engine():
+    """Mock template rendering engine"""
+    with patch('services.template_engine.TemplateEngine') as mock_engine:
+        mock_instance = MagicMock()
+        mock_instance.render.return_value = "Rendered template content"
+        mock_instance.validate_template.return_value = True
+        mock_engine.return_value = mock_instance
+        yield mock_instance
+
+# Test Data Factories
+class NotificationDataFactory:
+    """Factory for generating test notification data"""
+    
+    @staticmethod
+    def create_email_notification(user_id: str = None, **kwargs):
+        """Create email notification test data"""
+        default_data = {
+            "user_id": user_id or str(uuid.uuid4()),
+            "channel": "email",
+            "subject": "Test Email Notification",
+            "content": "This is a test email notification content.",
+            "recipient": "test@example.com",
+            "category": "system",
+            "priority": "normal",
+            "data": {"name": "Test User", "action": "test_action"}
+        }
+        default_data.update(kwargs)
+        return default_data
+    
+    @staticmethod
+    def create_sms_notification(user_id: str = None, **kwargs):
+        """Create SMS notification test data"""
+        default_data = {
+            "user_id": user_id or str(uuid.uuid4()),
+            "channel": "sms",
+            "content": "Test SMS notification message.",
+            "recipient": "+1234567890",
+            "category": "alert",
+            "priority": "high",
+            "data": {"code": "123456"}
+        }
+        default_data.update(kwargs)
+        return default_data
+    
+    @staticmethod
+    def create_push_notification(user_id: str = None, **kwargs):
+        """Create push notification test data"""
+        default_data = {
+            "user_id": user_id or str(uuid.uuid4()),
+            "channel": "push",
+            "title": "Test Push Notification",
+            "content": "This is a test push notification.",
+            "recipient": "push-token-123",
+            "category": "update",
+            "priority": "normal",
+            "data": {"deep_link": "/notifications"}
+        }
+        default_data.update(kwargs)
+        return default_data
+
+# Test fixtures for specific notification types
+@pytest.fixture
+def email_notification_data(mock_user_data):
+    """Email notification test data"""
+    return NotificationDataFactory.create_email_notification(user_id=mock_user_data["user_id"])
+
+@pytest.fixture
+def sms_notification_data(mock_user_data):
+    """SMS notification test data"""
+    return NotificationDataFactory.create_sms_notification(user_id=mock_user_data["user_id"])
+
+@pytest.fixture
+def push_notification_data(mock_user_data):
+    """Push notification test data"""
+    return NotificationDataFactory.create_push_notification(user_id=mock_user_data["user_id"])

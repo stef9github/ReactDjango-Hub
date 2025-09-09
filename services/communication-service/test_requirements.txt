@@ -1,0 +1,63 @@
+# Testing Framework
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-cov==5.0.0
+pytest-mock==3.14.0
+pytest-timeout==2.3.1
+pytest-xdist==3.6.1  # Parallel test execution
+
+# FastAPI Testing
+httpx==0.27.2
+asgi-lifespan==2.1.0  # Async context manager for testing
+
+# Database Testing
+pytest-postgresql==6.0.0
+sqlalchemy-utils==0.41.2
+aiosqlite==0.20.0  # For SQLite async testing
+
+# Mock and Factory
+factory-boy==3.3.1
+faker==26.0.0
+responses==0.25.3
+freezegun==1.5.1  # Time mocking
+
+# Performance Testing
+pytest-benchmark==4.0.0
+locust==2.20.0
+memory-profiler==0.61.0
+
+# Test Utilities
+python-multipart==0.0.9  # For file upload tests
+aiofiles==24.1.0  # For async file operations in tests
+python-magic==0.4.27  # For file type validation tests
+
+# Celery Testing
+celery[pytest]==5.3.4
+pytest-celery==0.0.0a1
+
+# Email Testing
+aiosmtpd==1.4.4.1  # Mock SMTP server for testing
+
+# Redis Testing
+fakeredis==2.20.1  # In-memory Redis for testing
+pytest-redis==3.0.2  # Redis test fixtures
+
+# Migration Testing
+pytest-alembic==0.10.7  # Database migration testing
+alembic==1.12.1  # Database migration testing
+
+# Enhanced Mocking
+aioresponses==0.7.4  # Mock aiohttp responses
+pytest-httpx==0.24.0  # HTTP request mocking for httpx
+
+# Test Reporting
+pytest-html==4.1.1  # HTML test reports
+pytest-json-report==1.5.0  # JSON test reports
+coverage[toml]==7.3.2  # Coverage with TOML support
+
+# Container Testing for Integration
+testcontainers==3.7.1  # Container-based integration testing
+docker==6.1.3  # Docker container management for tests
+
+# Load Testing Enhancement
+websockets==12.0  # WebSocket testing support
