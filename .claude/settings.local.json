@@ -5,7 +5,17 @@
       "Bash(pip install:*)",
       "Bash(python manage.py:*)",
       "Read(/Users/stephanerichard/Documents/CODING/claude-agentrooms/backend/**)",
-      "Bash(open http://localhost:8080)"
+      "Bash(open http://localhost:8080)",
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "WebSearch",
+      "WebSearch",
+      "WebSearch",
+      "WebSearch",
+      "WebSearch",
+      "Bash(git mv:*)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/frontend/docs/api/**)"
     ],
     "deny": [],
     "ask": []
