@@ -19,9 +19,12 @@
       "Bash(python:*)",
       "Bash(DJANGO_SETTINGS_MODULE=config.settings.development python -c \"import ninja; print(''✅ Django Ninja installed successfully'')\")",
       "Bash(pip uninstall:*)",
+      "Bash(git mv:*)",
+      "WebSearch",
       "Read(/Users/stephanerichard/Documents/**)",
       "Read(/Users/stephanerichard/Documents/CODING/**)",
-      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub-worktrees/**)"
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub-worktrees/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/frontend/docs/api/**)"
     ],
     "deny": [],
     "ask": []
