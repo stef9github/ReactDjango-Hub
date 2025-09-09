@@ -17,11 +17,17 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 import sys
+import os
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from simple_models import Base
+from app.models.enhanced_models import Base
 target_metadata = Base.metadata
+
+# Get database URL from environment or config
+def get_database_url():
+    """Get database URL from environment variable or config"""
+    return os.environ.get('DATABASE_URL', config.get_main_option("sqlalchemy.url"))
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -41,7 +47,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = get_database_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -60,8 +66,12 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    # Override URL in config section if DATABASE_URL is set
+    configuration = config.get_section(config.config_ini_section, {})
+    configuration["sqlalchemy.url"] = get_database_url()
+    
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

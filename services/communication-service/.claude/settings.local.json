@@ -18,7 +18,8 @@
       "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/**)",
       "Bash(python:*)",
       "Bash(git add:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
