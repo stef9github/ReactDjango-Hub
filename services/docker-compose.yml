@@ -1,0 +1,223 @@
+version: '3.8'
+
+services:
+  # ====================
+  # DATABASES
+  # ====================
+  
+  # Identity Service Database
+  identity-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: identity_service
+      POSTGRES_USER: identity_user
+      POSTGRES_PASSWORD: identity_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - identity_db_data:/var/lib/postgresql/data
+
+  # Future Services Databases (Not Implemented Yet)
+  # Uncomment when implementing these services:
+  
+  # content-db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: content_service
+  #     POSTGRES_USER: content_user
+  #     POSTGRES_PASSWORD: content_pass
+  #   ports:
+  #     - "5434:5432"
+  #   volumes:
+  #     - content_db_data:/var/lib/postgresql/data
+
+  # communication-db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: communication_service
+  #     POSTGRES_USER: communication_user
+  #     POSTGRES_PASSWORD: communication_pass
+  #   ports:
+  #     - "5435:5432"
+  #   volumes:
+  #     - communication_db_data:/var/lib/postgresql/data
+
+  # workflow-db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: workflow_intelligence_service
+  #     POSTGRES_USER: workflow_user
+  #     POSTGRES_PASSWORD: workflow_pass
+  #   ports:
+  #     - "5436:5432"
+  #   volumes:
+  #     - workflow_db_data:/var/lib/postgresql/data
+
+  # ====================
+  # REDIS INSTANCES
+  # ====================
+  
+  # Identity Service Redis
+  identity-redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - identity_redis_data:/data
+
+  # Future Services Redis (Not Implemented Yet)
+  # Uncomment when implementing these services:
+  
+  # content-redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6381:6379"
+  #   volumes:
+  #     - content_redis_data:/data
+
+  # communication-redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6382:6379"
+  #   volumes:
+  #     - communication_redis_data:/data
+
+  # workflow-redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6383:6379"
+  #   volumes:
+  #     - workflow_redis_data:/data
+
+  # ====================
+  # MICROSERVICES
+  # ====================
+
+  # Identity Service (Auth + Users + Roles)
+  identity-service:
+    build:
+      context: ./identity-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    depends_on:
+      - identity-db
+      - identity-redis
+    environment:
+      DATABASE_URL: postgresql+asyncpg://identity_user:identity_pass@identity-db:5432/identity_service
+      REDIS_URL: redis://identity-redis:6379/0
+      SERVICE_PORT: 8001
+    volumes:
+      - ./identity-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+
+  # Future Services (Not Implemented Yet)
+  # Uncomment and modify when implementing these services:
+  
+  # content-service:
+  #   build:
+  #     context: ./content-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8002:8002"
+  #   depends_on:
+  #     - content-db
+  #     - content-redis
+  #     - identity-service
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://content_user:content_pass@content-db:5432/content_service
+  #     REDIS_URL: redis://content-redis:6379/0
+  #     IDENTITY_SERVICE_URL: http://identity-service:8001
+  #     SERVICE_PORT: 8002
+  #   volumes:
+  #     - ./content-service:/app
+  #   command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+
+  # communication-service:
+  #   build:
+  #     context: ./communication-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8003:8003"
+  #   depends_on:
+  #     - communication-db
+  #     - communication-redis
+  #     - identity-service
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://communication_user:communication_pass@communication-db:5432/communication_service
+  #     REDIS_URL: redis://communication-redis:6379/0
+  #     CELERY_BROKER_URL: redis://communication-redis:6379/1
+  #     IDENTITY_SERVICE_URL: http://identity-service:8001
+  #     SERVICE_PORT: 8003
+  #   volumes:
+  #     - ./communication-service:/app
+  #   command: uvicorn main:app --host 0.0.0.0 --port 8003 --reload
+
+  # communication-worker:
+  #   build:
+  #     context: ./communication-service
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - communication-db
+  #     - communication-redis
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://communication_user:communication_pass@communication-db:5432/communication_service
+  #     REDIS_URL: redis://communication-redis:6379/0
+  #     CELERY_BROKER_URL: redis://communication-redis:6379/1
+  #   volumes:
+  #     - ./communication-service:/app
+  #   command: celery -A communication_service.celery worker --loglevel=info
+
+  # workflow-service:
+  #   build:
+  #     context: ./workflow-intelligence-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8004:8004"
+  #   depends_on:
+  #     - workflow-db
+  #     - workflow-redis
+  #     - identity-service
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://workflow_user:workflow_pass@workflow-db:5432/workflow_intelligence_service
+  #     REDIS_URL: redis://workflow-redis:6379/0
+  #     CELERY_BROKER_URL: redis://workflow-redis:6379/1
+  #     IDENTITY_SERVICE_URL: http://identity-service:8001
+  #     CONTENT_SERVICE_URL: http://content-service:8002
+  #     COMMUNICATION_SERVICE_URL: http://communication-service:8003
+  #     SERVICE_PORT: 8004
+  #   volumes:
+  #     - ./workflow-intelligence-service:/app
+  #   command: uvicorn main:app --host 0.0.0.0 --port 8004 --reload
+
+  # workflow-worker:
+  #   build:
+  #     context: ./workflow-intelligence-service
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - workflow-db
+  #     - workflow-redis
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://workflow_user:workflow_pass@workflow-db:5432/workflow_intelligence_service
+  #     REDIS_URL: redis://workflow-redis:6379/0
+  #     CELERY_BROKER_URL: redis://workflow-redis:6379/1
+  #   volumes:
+  #     - ./workflow-intelligence-service:/app
+  #   command: celery -A workflow_intelligence_service.celery worker --loglevel=info
+
+volumes:
+  # Currently only identity service volumes are needed
+  identity_db_data:
+  identity_redis_data:
+  
+  # Future service volumes (uncomment when implementing services):
+  # content_db_data:
+  # communication_db_data:
+  # workflow_db_data:
+  # content_redis_data:
+  # communication_redis_data:
+  # workflow_redis_data:
+
+networks:
+  default:
+    name: reactdjango-hub-network
