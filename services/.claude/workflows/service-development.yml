@@ -1,0 +1,210 @@
+# Claude Code Service Development Workflows
+# Automated workflows for microservice development
+
+name: Microservice Development Workflows
+
+workflows:
+  # Start development for specific service
+  service_dev:
+    name: "Service Development Mode"
+    description: "Start focused development on a specific microservice"
+    steps:
+      - name: "Select Service"
+        type: "select"
+        options: 
+          - "auth-service"
+          - "analytics-service" 
+          - "billing-service"
+          - "core-service"
+        variable: "SERVICE_NAME"
+      
+      - name: "Start Dependencies"
+        type: "command"
+        command: "docker-compose -f services/${SERVICE_NAME}/docker-compose.yml up -d"
+        
+      - name: "Wait for Dependencies"
+        type: "wait"
+        duration: 10
+        
+      - name: "Check Service Health"
+        type: "command"
+        command: "curl -f http://localhost:$(cat services/${SERVICE_NAME}/.port)/health"
+        retry: 5
+        
+      - name: "Open Claude Agent"
+        type: "command"
+        command: "./.claude/commands/claude-dev.sh agent ${SERVICE_NAME}"
+
+  # Cross-service integration testing
+  integration_test:
+    name: "Cross-Service Integration Test"
+    description: "Test integration between microservices"
+    steps:
+      - name: "Start All Services"
+        type: "command"
+        command: "./.claude/commands/claude-dev.sh start"
+        
+      - name: "Wait for Startup"
+        type: "wait"
+        duration: 30
+        
+      - name: "Run Health Checks"
+        type: "command"
+        command: "./.claude/commands/claude-dev.sh health"
+        
+      - name: "Auth Service Integration"
+        type: "command"
+        command: |
+          # Test auth token generation
+          TOKEN=$(curl -s -X POST http://localhost:8001/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"test@example.com","password":"password"}' | \
+            jq -r '.access_token')
+          
+          # Test token validation
+          curl -X POST http://localhost:8001/auth/validate \
+            -H "Content-Type: application/json" \
+            -d "{\"token\":\"$TOKEN\"}"
+            
+      - name: "Service Communication Test"
+        type: "command"
+        command: |
+          # Test core service calling auth service
+          curl -X POST http://localhost:8004/api/verify-permission \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"resource":"user","action":"read"}'
+
+  # Service deployment preparation
+  deploy_prep:
+    name: "Prepare Service for Deployment"
+    description: "Prepare microservice for production deployment"
+    steps:
+      - name: "Select Service"
+        type: "select"
+        options:
+          - "auth-service"
+          - "analytics-service"
+          - "billing-service" 
+          - "core-service"
+        variable: "SERVICE_NAME"
+        
+      - name: "Run Service Tests"
+        type: "command"
+        command: "cd services/${SERVICE_NAME} && pytest tests/ -v --cov"
+        
+      - name: "Build Docker Image"
+        type: "command"
+        command: "docker build -t ${SERVICE_NAME}:latest services/${SERVICE_NAME}/"
+        
+      - name: "Security Scan"
+        type: "command"
+        command: "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${SERVICE_NAME}:latest"
+        
+      - name: "Generate Kubernetes Manifests"
+        type: "command"
+        command: "helm template ${SERVICE_NAME} charts/${SERVICE_NAME}/ --values values.production.yaml"
+
+  # Service monitoring setup
+  monitoring_setup:
+    name: "Setup Service Monitoring"
+    description: "Configure monitoring for microservice"
+    steps:
+      - name: "Deploy Prometheus"
+        type: "command"
+        command: "helm install prometheus prometheus-community/prometheus -f monitoring/prometheus.yml"
+        
+      - name: "Deploy Grafana"
+        type: "command"
+        command: "helm install grafana grafana/grafana -f monitoring/grafana.yml"
+        
+      - name: "Configure Service Monitors"
+        type: "command"
+        command: "kubectl apply -f monitoring/service-monitors/"
+        
+      - name: "Setup Alerts"
+        type: "command"
+        command: "kubectl apply -f monitoring/alerts/"
+
+triggers:
+  # Auto-run workflows based on file changes
+  file_change_triggers:
+    - pattern: "services/*/main.py"
+      workflow: "service_dev"
+      
+    - pattern: "services/*/requirements.txt"
+      workflow: "service_dev"
+      
+    - pattern: "services/*/Dockerfile"
+      workflow: "deploy_prep"
+      
+    - pattern: "services/*/kubernetes/*.yaml"
+      workflow: "deploy_prep"
+
+claude_optimizations:
+  # Optimize Claude Code experience for microservices
+  agent_config:
+    max_context_per_service: 50000  # tokens
+    service_boundary_enforcement: true
+    cross_service_awareness: limited
+    
+  development_mode:
+    auto_reload: true
+    test_on_save: true
+    health_check_interval: 30  # seconds
+    
+  context_management:
+    # Load only relevant service context
+    context_filters:
+      - "services/${CURRENT_SERVICE}/**"
+      - "services/MICROSERVICES_ARCHITECTURE.md"
+      - "services/.claude/agents/${CURRENT_SERVICE}-agent.md"
+      - "docker-compose.yml"
+    
+    # Exclude irrelevant context
+    context_excludes:
+      - "services/*/node_modules/"
+      - "services/*/.venv/"
+      - "services/*/target/"
+      - "services/*/__pycache__/"
+      
+  code_generation:
+    # Service-specific templates
+    templates_dir: ".claude/templates/"
+    default_service_type: "fastapi"
+    
+    # Auto-generate common files
+    auto_generate:
+      - "health_check"
+      - "dockerfile" 
+      - "kubernetes_manifests"
+      - "service_tests"
+
+integration:
+  # IDE integration
+  vscode:
+    tasks:
+      - label: "Start Service Development"
+        command: "./.claude/commands/claude-dev.sh"
+        args: ["dev", "${input:serviceName}"]
+        
+      - label: "Start Claude Agent"
+        command: "./.claude/commands/claude-dev.sh"
+        args: ["agent", "${input:serviceName}"]
+        
+    inputs:
+      - id: "serviceName"
+        type: "pickString"
+        description: "Select service"
+        options: ["auth-service", "analytics-service", "billing-service", "core-service"]
+
+  # Git hooks
+  pre_commit:
+    - "Run service-specific tests"
+    - "Check service health"
+    - "Validate service boundaries"
+    
+  pre_push:
+    - "Run integration tests"
+    - "Build Docker images"
+    - "Security scan"

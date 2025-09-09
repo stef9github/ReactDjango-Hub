@@ -1,0 +1,262 @@
+# Claude Code Microservices Configuration
+# Optimizes Claude development experience for service-oriented architecture
+
+[microservices]
+enabled = true
+architecture_type = "microservices"
+service_mesh = "istio"  # or "linkerd", "consul-connect"
+api_gateway = "kong"    # or "traefik", "nginx"
+
+[development]
+# Development mode optimizations
+auto_service_discovery = true
+hot_reload = true
+health_check_interval = 30
+integration_test_mode = true
+
+[services]
+# Service definitions for Claude Code agents
+
+[services.auth_service]
+name = "auth-service"
+directory = "services/auth-service"
+technology = "fastapi"
+port = 8001
+database = "postgresql"
+dependencies = ["redis", "consul"]
+responsibilities = [
+    "User authentication",
+    "JWT token management", 
+    "Role-based access control",
+    "Session management",
+    "Multi-factor authentication"
+]
+external_apis = [
+    "POST /auth/login",
+    "POST /auth/validate", 
+    "POST /auth/authorize",
+    "GET /auth/permissions/{user_id}"
+]
+
+[services.analytics_service] 
+name = "analytics-service"
+directory = "services/analytics-service"
+technology = "go"
+port = 8002
+database = "clickhouse"
+dependencies = ["kafka", "redis"]
+responsibilities = [
+    "Event tracking",
+    "Metrics aggregation",
+    "Real-time analytics", 
+    "Report generation",
+    "Data visualization APIs"
+]
+external_apis = [
+    "POST /analytics/events",
+    "GET /analytics/metrics",
+    "GET /analytics/reports/{id}"
+]
+
+[services.billing_service]
+name = "billing-service"
+directory = "services/billing-service"
+technology = "java-spring"
+port = 8003
+database = "postgresql"
+dependencies = ["redis", "kafka"]
+responsibilities = [
+    "Subscription management",
+    "Payment processing",
+    "Invoice generation", 
+    "Usage tracking",
+    "Financial reporting"
+]
+external_apis = [
+    "POST /billing/subscriptions",
+    "POST /billing/payments",
+    "GET /billing/invoices/{id}"
+]
+
+[services.core_service]
+name = "core-service"
+directory = "services/core-service"
+technology = "django"
+port = 8004
+database = "postgresql"
+dependencies = ["redis", "auth-service"]
+responsibilities = [
+    "Business entities",
+    "Workflow management",
+    "Data validation",
+    "Business rules",
+    "Legacy API compatibility"
+]
+external_apis = [
+    "GET /core/entities",
+    "POST /core/workflows",
+    "GET /core/health"
+]
+
+[claude_agents]
+# Claude Code agent configurations
+
+[claude_agents.context_management]
+max_context_per_service = 50000  # tokens
+service_boundary_enforcement = true
+cross_service_awareness = "limited"  # "full", "limited", "none"
+auto_context_refresh = true
+
+[claude_agents.development_workflow]
+auto_reload_on_change = true
+test_on_save = true
+health_check_on_start = true
+integration_test_mode = "service_focused"
+
+[claude_agents.code_generation]
+templates_directory = ".claude/templates"
+auto_generate_health_checks = true
+auto_generate_dockerfiles = true
+auto_generate_k8s_manifests = true
+
+[integration]
+# Service integration configurations
+
+[integration.service_mesh]
+enabled = true
+type = "istio"  
+auto_tls = true
+traffic_management = true
+observability = true
+
+[integration.api_gateway]
+enabled = true
+type = "kong"
+auto_discovery = true
+rate_limiting = true
+authentication = "jwt"
+
+[integration.message_bus]
+enabled = true
+type = "kafka"
+topics = [
+    "user.events",
+    "analytics.events", 
+    "billing.events",
+    "core.events"
+]
+
+[integration.service_discovery]
+enabled = true
+type = "consul"
+health_checking = true
+auto_registration = true
+
+[monitoring]
+# Observability configurations
+
+[monitoring.metrics]
+enabled = true
+type = "prometheus"
+scrape_interval = "15s"
+service_level_metrics = true
+
+[monitoring.tracing]
+enabled = true
+type = "jaeger"
+sampling_rate = 0.1
+
+[monitoring.logging]
+enabled = true
+type = "elk"  # elasticsearch, logstash, kibana
+log_level = "info"
+structured_logging = true
+
+[testing]
+# Testing configurations for microservices
+
+[testing.unit_tests]
+framework = "pytest"  # per service
+coverage_threshold = 80
+auto_run_on_change = true
+
+[testing.integration_tests]
+framework = "newman"  # API testing
+test_data_management = "containers"
+service_virtualization = true
+
+[testing.contract_tests]
+framework = "pact"
+provider_verification = true
+consumer_driven = true
+
+[deployment]
+# Deployment configurations
+
+[deployment.containerization]
+registry = "docker.io"
+image_optimization = true
+multi_stage_builds = true
+security_scanning = true
+
+[deployment.orchestration]
+platform = "kubernetes"
+namespace = "microservices"
+auto_scaling = true
+rolling_updates = true
+
+[deployment.environments]
+[deployment.environments.development]
+replicas = 1
+resources = { cpu = "100m", memory = "256Mi" }
+persistence = false
+
+[deployment.environments.staging]
+replicas = 2  
+resources = { cpu = "500m", memory = "512Mi" }
+persistence = true
+
+[deployment.environments.production]
+replicas = 3
+resources = { cpu = "1000m", memory = "1Gi" }
+persistence = true
+high_availability = true
+
+[security]
+# Security configurations
+
+[security.inter_service]
+mtls = true
+certificate_management = "cert-manager"
+rbac = true
+
+[security.api_security]
+authentication = "jwt"
+authorization = "rbac"
+rate_limiting = true
+input_validation = true
+
+[security.secrets]
+management = "kubernetes-secrets"  # or "vault", "aws-secrets"
+encryption_at_rest = true
+rotation = true
+
+[performance]
+# Performance optimizations
+
+[performance.caching]
+enabled = true
+type = "redis"
+ttl_default = "300s"
+cache_strategies = ["write-through", "read-through"]
+
+[performance.connection_pooling]
+enabled = true
+max_connections = 100
+connection_timeout = "5s"
+
+[performance.circuit_breaker]
+enabled = true
+failure_threshold = 5
+timeout = "10s"
+retry_delay = "1s"
