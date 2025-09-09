@@ -1,14 +1,14 @@
-# Configuration Environnement de Développement
+# Development Environment Setup
 
-> **Setup complet pour développement SaaS médical français avec Claude Code**
+> **Complete setup for full-stack SaaS development with Claude Code**
 
-## 🚀 Installation Rapide
+## 🚀 Quick Installation
 
-### Prérequis
+### Prerequisites
 ```bash
-# Outils requis
-- Python 3.11+
-- Node.js 18+
+# Required tools
+- Python 3.13+
+- Node.js 20+
 - PostgreSQL 15+
 - Redis 7+
 - Docker & Docker Compose
@@ -16,72 +16,72 @@
 - Claude Code CLI
 ```
 
-### Clone & Setup Initial
+### Clone & Initial Setup
 ```bash
 # Clone repository
 git clone <repository-url> ReactDjango-Hub
 cd ReactDjango-Hub
 
-# Setup environnement complet
-make claude-setup
+# Complete environment setup (enhanced)
+make claude-dev-setup
 ```
 
-## 🐍 Backend Django Setup
+## 🐍 Django Backend Setup
 
 ### Environment Variables
 ```bash
-# Copier et configurer .env
+# Copy and configure .env
 cp backend/.env.example backend/.env
 
-# Variables principales
-DATABASE_URL=postgresql://user:password@localhost:5432/medical_saas
+# Main variables
+DATABASE_URL=postgresql://user:password@localhost:5432/reactdjango_hub
 REDIS_URL=redis://localhost:6379/0
 SECRET_KEY=your-secret-key
 FIELD_ENCRYPTION_KEY=your-encryption-key-32-bytes
 ```
 
-### Installation Dependencies
+### Install Dependencies
 ```bash
 cd backend
 
 # Virtual environment
 python -m venv venv
 source venv/bin/activate  # macOS/Linux
-# ou: venv\Scripts\activate  # Windows
+# or: venv\Scripts\activate  # Windows
 
-# Dependencies production
+# Production dependencies
 pip install -r requirements.txt
 
-# Dependencies développement et test
+# Development and test dependencies
 pip install -r requirements-test.txt
 ```
 
 ### Database Setup
 ```bash
-# Migrations initiales
+# Initial migrations
 python manage.py migrate
 
-# Données de test françaises
-python manage.py loaddata fixtures/french_medical_terms.json
-python manage.py loaddata fixtures/surgical_procedures_fr.json
+# Test data (internationalization samples)
+python manage.py loaddata fixtures/sample_data.json
+python manage.py loaddata fixtures/i18n_test_data.json
 
-# Superuser
+# Create superuser
 python manage.py createsuperuser
 ```
 
-## ⚛️ Frontend React Setup
+## ⚛️ React Frontend Setup
 
-### Installation Node.js
+### Node.js Installation
 ```bash
 cd frontend
 
-# Dependencies
+# Install dependencies
 npm install
 
-# Vérification types TypeScript
+# TypeScript type checking
 npm run typecheck
 
-# Tests
+# Run tests
 npm run test
 ```
 
