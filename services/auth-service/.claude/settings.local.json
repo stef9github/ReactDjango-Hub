@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker:*)",
+      "Bash(pip --version)",
+      "Bash(pip install:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(mv:*)",
+      "WebSearch",
+      "Bash(pip search fastapi)",
+      "Bash(pip index versions:*)",
+      "Bash(pip show:*)",
+      "Bash(tree:*)",
+      "Bash(chmod:*)",
+      "Bash(python test:*)",
+      "Bash(curl:*)",
+      "Bash(open:*)",
+      "Bash(brew services:*)",
+      "Bash(createdb:*)",
+      "Bash(pg_isready:*)",
+      "Bash(psql:*)",
+      "Bash(export:*)",
+      "Bash(alembic revision:*)",
+      "Bash(alembic upgrade:*)",
+      "Bash(dropdb:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
