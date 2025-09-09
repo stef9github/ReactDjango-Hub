@@ -21,6 +21,7 @@ Access Django Ninja API docs at: `http://localhost:8000/api/docs`
 |-----|---------|-------------|
 | **`core/`** | Foundation layer | BaseModel, RGPD compliance, translations |
 | **`analytics/`** | Data intelligence | Metrics, reporting, object permissions |
+| **`clinical/`** | Medical records | Patient data, HL7/DICOM support |
 | **`billing/`** | Financial management | Multi-tenant billing, payment processing |
 | **`compliance/`** | Regulatory framework | RGPD automation, audit trails |
 
@@ -62,11 +63,12 @@ For detailed architecture, security, and deployment information:
 - **[Project Overview](../CLAUDE.md)** - Development workflow and setup
 - **API Docs**: `/api/docs` when server is running
 
-## 🔐 Data Protection & Compliance
+## 🏥 Data Protection & Medical Compliance
 
-- **RGPD**: Data protection framework (see `apps.core.rgpd_compliance`)
+- **RGPD**: Patient data protection framework (see `apps.core.rgpd_compliance`)
 - **Audit Logging**: All model changes tracked via django-auditlog
-- **Multi-tenant**: Strict data isolation between tenants
+- **Medical Standards**: HL7 and DICOM support in clinical app
+- **Multi-tenant**: Strict data isolation between medical practices
 - **Object Permissions**: Fine-grained access control via django-guardian
 
 ---

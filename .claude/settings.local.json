@@ -14,7 +14,14 @@
       "Bash(git commit:*)",
       "Bash(bash:*)",
       "Bash(chmod:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(python:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=config.settings.development python -c \"import ninja; print(''✅ Django Ninja installed successfully'')\")",
+      "Bash(pip uninstall:*)",
+      "Read(/Users/stephanerichard/Documents/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub-worktrees/**)"
     ],
     "deny": [],
     "ask": []
