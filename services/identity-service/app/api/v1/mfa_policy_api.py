@@ -7,9 +7,9 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from .mfa_policy_service import MFAPolicyService, MFAPolicy, MFARequirement, MFAEnforcementScope
-from .services import get_current_user
-from .models import User
+from app.services.mfa_policy_service import MFAPolicyService, MFAPolicy, MFARequirement, MFAEnforcementScope
+from app.api.deps import get_current_user
+from app.models.enhanced_models import User
 
 router = APIRouter(prefix="/mfa/policy", tags=["MFA Policy"])
 

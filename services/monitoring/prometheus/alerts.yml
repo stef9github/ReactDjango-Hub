@@ -1,0 +1,136 @@
+# Prometheus Alert Rules for Microservices
+groups:
+  - name: service_health
+    interval: 30s
+    rules:
+      # Service Down Alert
+      - alert: ServiceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.service }} is down"
+          description: "{{ $labels.service }} on {{ $labels.instance }} has been down for more than 2 minutes."
+
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.container_name }}"
+          description: "Container {{ $labels.container_name }} is using {{ $value }}% of its memory limit."
+
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.container_name }}"
+          description: "Container {{ $labels.container_name }} CPU usage is {{ $value }}%."
+
+  - name: api_performance
+    interval: 30s
+    rules:
+      # High Request Latency
+      - alert: HighRequestLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency on {{ $labels.service }}"
+          description: "95th percentile latency is {{ $value }} seconds for {{ $labels.service }}."
+
+      # High Error Rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate on {{ $labels.service }}"
+          description: "Error rate is {{ $value }} for {{ $labels.service }}."
+
+      # Rate Limiting Triggered
+      - alert: RateLimitingActive
+        expr: rate(kong_http_status{status="429"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limiting is being triggered frequently"
+          description: "More than 10 requests per second are being rate limited."
+
+  - name: database_health
+    interval: 30s
+    rules:
+      # Database Connection Pool Exhausted
+      - alert: DatabaseConnectionPoolExhausted
+        expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database connection pool near exhaustion"
+          description: "{{ $value }}% of max connections are in use for database {{ $labels.datname }}."
+
+      # Slow Queries
+      - alert: SlowQueries
+        expr: rate(pg_stat_statements_mean_exec_time_seconds[5m]) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow database queries detected"
+          description: "Average query execution time is {{ $value }} seconds."
+
+      # Redis Memory Usage
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis memory usage is high"
+          description: "Redis is using {{ $value }}% of max memory."
+
+  - name: authentication_alerts
+    interval: 30s
+    rules:
+      # Failed Login Spike
+      - alert: FailedLoginSpike
+        expr: rate(auth_login_failures_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate of failed login attempts"
+          description: "{{ $value }} failed login attempts per second detected."
+
+      # JWT Validation Failures
+      - alert: JWTValidationFailures
+        expr: rate(jwt_validation_failures_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate of JWT validation failures"
+          description: "{{ $value }} JWT validation failures per second."
+
+  - name: disk_space
+    interval: 30s
+    rules:
+      # Low Disk Space
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Only {{ $value }}% disk space remaining on {{ $labels.instance }}."

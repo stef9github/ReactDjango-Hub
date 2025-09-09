@@ -1,10 +1,10 @@
-# Kong API Gateway Configuration for Microservices
+# Kong API Gateway Configuration for ReactDjango Hub Microservices
 _format_version: "3.0"
 
 services:
-  # Auth Service
-  - name: auth-service
-    url: http://auth-service:8001
+  # Identity Service (formerly auth-service)
+  - name: identity-service
+    url: http://identity-service:8001
     protocol: http
     port: 8001
     retries: 3
@@ -15,12 +15,13 @@ services:
       - name: auth-routes
         paths:
           - /api/v1/auth
-        strip_path: true
+        strip_path: false  # Keep /api/v1/auth prefix for service
         methods:
           - GET
           - POST
           - PUT
           - DELETE
+          - PATCH
         plugins:
           - name: rate-limiting
             config:
@@ -29,12 +30,14 @@ services:
           - name: cors
             config:
               origins:
-                - "*"
+                - "http://localhost:3000"
+                - "http://localhost:5173"
               methods:
                 - GET
                 - POST
                 - PUT
                 - DELETE
+                - PATCH
               headers:
                 - Authorization
                 - Content-Type
@@ -42,72 +45,189 @@ services:
                 - X-Auth-Token
               credentials: true
               max_age: 3600
+      - name: users-routes
+        paths:
+          - /api/v1/users
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+      - name: organizations-routes
+        paths:
+          - /api/v1/organizations
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+      - name: mfa-routes
+        paths:
+          - /api/v1/mfa
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
 
-  # Analytics Service
-  - name: analytics-service
-    url: http://analytics-service:8002
+  # Communication Service
+  - name: communication-service
+    url: http://communication-service:8002
     protocol: http
     port: 8002
     retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
     routes:
-      - name: analytics-routes
+      - name: notifications-routes
         paths:
-          - /api/v1/analytics
-        strip_path: true
+          - /api/v1/notifications
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
         plugins:
           - name: jwt
             config:
               secret_is_base64: false
-              run_on_preflight: true
               claims_to_verify:
                 - exp
-          - name: request-transformer
+          - name: rate-limiting
             config:
-              add:
-                headers:
-                  - X-Service-Name:analytics
-                  - X-Request-ID:{{uuid}}
+              minute: 60
+              policy: local
+      - name: messages-routes
+        paths:
+          - /api/v1/messages
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
 
-  # Billing Service
-  - name: billing-service
-    url: http://billing-service:8003
+  # Content Service
+  - name: content-service
+    url: http://content-service:8003
     protocol: http
     port: 8003
     retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
     routes:
-      - name: billing-routes
+      - name: documents-routes
         paths:
-          - /api/v1/billing
-        strip_path: true
+          - /api/v1/documents
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
         plugins:
           - name: jwt
             config:
               secret_is_base64: false
-          - name: acl
-            config:
-              allow:
-                - admin
-                - billing_manager
+              claims_to_verify:
+                - exp
           - name: request-size-limiting
             config:
               allowed_payload_size: 10
               size_unit: megabytes
-
-  # Core Service
-  - name: core-service
-    url: http://core-service:8004
-    protocol: http
-    port: 8004
-    retries: 3
-    routes:
-      - name: core-routes
+      - name: search-routes
         paths:
-          - /api/v1/core
-        strip_path: true
+          - /api/v1/search
+        strip_path: false
+        methods:
+          - GET
+          - POST
         plugins:
           - name: jwt
             config:
               secret_is_base64: false
+              claims_to_verify:
+                - exp
+
+  # Workflow Intelligence Service
+  - name: workflow-intelligence-service
+    url: http://workflow-intelligence-service:8005
+    protocol: http
+    port: 8005
+    retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
+    routes:
+      - name: workflows-routes
+        paths:
+          - /api/v1/workflows
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+          - name: rate-limiting
+            config:
+              minute: 30
+              policy: local
+      - name: ai-routes
+        paths:
+          - /api/v1/ai
+        strip_path: false
+        methods:
+          - GET
+          - POST
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
 
 plugins:
   # Global plugins
@@ -131,8 +251,8 @@ plugins:
       server_errors_severity: err
 
 upstreams:
-  # Load balancing for auth service
-  - name: auth-service-upstream
+  # Load balancing for identity service
+  - name: identity-service-upstream
     algorithm: round-robin
     healthchecks:
       active:
@@ -145,9 +265,57 @@ upstreams:
           interval: 5
           http_failures: 3
     targets:
-      - target: auth-service-1:8001
+      - target: identity-service-1:8001
         weight: 100
-      - target: auth-service-2:8001
+      # Add more instances for production scaling
+      
+  # Load balancing for communication service
+  - name: communication-service-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: communication-service-1:8002
         weight: 100
-      - target: auth-service-3:8001
+        
+  # Load balancing for content service  
+  - name: content-service-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: content-service-1:8003
+        weight: 100
+        
+  # Load balancing for workflow-intelligence service
+  - name: workflow-intelligence-service-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: workflow-intelligence-service-1:8005
         weight: 100

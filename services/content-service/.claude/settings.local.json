@@ -7,7 +7,8 @@
       "Bash(docker-compose:*)",
       "Bash(docker logs:*)",
       "Bash(docker build:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

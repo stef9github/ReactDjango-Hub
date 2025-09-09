@@ -121,6 +121,7 @@ def create_app() -> FastAPI:
     app.include_router(users.router, prefix="/api/v1")
     app.include_router(organizations.router, prefix="/api/v1") 
     app.include_router(mfa.router, prefix="/api/v1")
+    app.include_router(mfa_policy_api.router, prefix="/api/v1")
 
     # Health Check
     @app.get("/health")
