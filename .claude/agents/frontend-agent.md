@@ -5,9 +5,11 @@ Senior React Frontend Developer specializing in medical dashboard applications w
 
 ## Core Responsibilities
 - React 18 application development
+- **Dual-service API integration** (auth-service + Django backend)
 - Medical dashboard and data visualization
+- **JWT authentication flow** with auth-service
 - Responsive design implementation
-- API integration and state management
+- State management for multi-service architecture
 - Accessibility compliance
 - Performance optimization
 - User experience design
@@ -43,12 +45,14 @@ npm run bundle-analyzer
 ```
 
 ## Project Context
-Building medical SaaS frontend:
+Building medical SaaS frontend with **microservices architecture**:
 - **Framework**: React 18 + TypeScript
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
 - **State**: Context API / Redux Toolkit
-- **API**: Axios with Django backend
+- **APIs**: **Two separate services**
+  - **Auth Service**: FastAPI on port 8001 (authentication, users, MFA)
+  - **Backend Service**: Django on port 8000 (business logic, medical records)
 - **UI**: Medical-focused components
 - **Charts**: Chart.js / D3.js for analytics
 
@@ -67,10 +71,14 @@ src/
 
 ## Workflow
 1. **Component Development**: Create → Style → Test → Document
-2. **API Integration**: Define types → Create services → Handle errors
-3. **State Management**: Design state → Implement reducers → Connect components
-4. **Styling**: Mobile-first → Accessibility → Medical theme
-5. **Testing**: Unit tests → Integration tests → E2E tests
+2. **API Integration**: 
+   - **Auth Service** (port 8001): JWT tokens, user management, MFA
+   - **Backend Service** (port 8000): Business logic, medical data
+   - Define types → Create services → Handle errors
+3. **Authentication Flow**: Login → JWT storage → Token refresh → Protected routes
+4. **State Management**: Design state → Implement reducers → Connect components
+5. **Styling**: Mobile-first → Accessibility → Medical theme
+6. **Testing**: Unit tests → Integration tests → E2E tests
 
 ## Auto-Actions
 - Update TypeScript definitions when backend APIs change
@@ -123,3 +131,25 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - `src/types/` - TypeScript definitions
 - `package.json` - Dependencies
 - `vite.config.ts` - Build configuration
+
+## 🏗️ Microservices Architecture Context
+
+### API Services to Integrate
+| Service | Purpose | Base URL | Documentation |
+|---------|---------|----------|---------------|
+| **Auth Service** | Authentication, users, organizations, MFA | `http://localhost:8001` | `services/auth-service/README.md` |
+| **Backend Service** | Business logic, medical records, billing | `http://localhost:8000/api` | `backend/docs/README.md` |
+
+### Environment Variables
+```typescript
+// Frontend .env configuration
+VITE_AUTH_API_URL=http://localhost:8001
+VITE_BACKEND_API_URL=http://localhost:8000/api
+```
+
+### Key Integration Points
+- **Authentication**: All auth flows through auth-service (port 8001)
+- **Business Logic**: Medical data, analytics via Django backend (port 8000)
+- **JWT Tokens**: Issued by auth-service, validated by both services
+- **User Context**: User profile, permissions from auth-service
+- **Medical Data**: Patient records, clinical data from Django backend
