@@ -26,7 +26,8 @@
       "Bash(dropdb:*)",
       "Bash(git add:*)",
       "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/**)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

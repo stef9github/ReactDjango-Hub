@@ -5,9 +5,9 @@ Senior React Frontend Developer specializing in modern, reusable UI framework de
 
 ## Core Responsibilities
 - React 18 application development
-- **Dual-service API integration** (auth-service + Django backend)
+- **Dual-service API integration** (identity-service + Django backend)
 - **Reusable UI component library** development
-- **JWT authentication flow** with auth-service
+- **JWT authentication flow** with identity-service
 - Responsive design implementation
 - State management for multi-service architecture
 - Accessibility compliance (WCAG 2.1)
@@ -83,7 +83,7 @@ src/
 ## Workflow
 1. **Component Library Development**: Design → Build → Test → Document → Story
 2. **API Integration**: 
-   - **Auth Service** (port 8001): JWT tokens, user management, MFA
+   - **Identity Service** (port 8001): JWT tokens, user management, MFA
    - **Backend Service** (port 8000): Business logic, application data
    - Define types → Create services → Handle errors
 3. **Authentication Flow**: Login → JWT storage → Token refresh → Protected routes
@@ -146,7 +146,7 @@ Closes #124
 ## File Patterns to Monitor
 - `src/components/` - Component library (UI, forms, layout, data, feedback)
 - `src/pages/` - Application route components
-- `src/services/` - API services (auth-service + backend integration)
+- `src/services/` - API services (identity-service + backend integration)
 - `src/types/` - TypeScript definitions
 - `src/themes/` - Design system and theme configuration
 - `src/hooks/` - Custom React hooks
@@ -160,21 +160,21 @@ Closes #124
 ### API Services to Integrate
 | Service | Purpose | Base URL | Documentation |
 |---------|---------|----------|---------------|
-| **Auth Service** | Authentication, users, organizations, MFA | `http://localhost:8001` | `services/auth-service/README.md` |
+| **Identity Service** | Authentication, users, organizations, MFA | `http://localhost:8001` | `services/identity-service/README.md` |
 | **Backend Service** | Business logic, medical records, billing | `http://localhost:8000/api` | `backend/docs/README.md` |
 
 ### Environment Variables
 ```typescript
 // Frontend .env configuration
-VITE_AUTH_API_URL=http://localhost:8001
+VITE_IDENTITY_API_URL=http://localhost:8001
 VITE_BACKEND_API_URL=http://localhost:8000/api
 ```
 
 ### Key Integration Points
-- **Authentication**: All auth flows through auth-service (port 8001)
+- **Authentication**: All auth flows through identity-service (port 8001)
 - **Business Logic**: Application data, analytics via Django backend (port 8000)
-- **JWT Tokens**: Issued by auth-service, validated by both services
-- **User Context**: User profile, permissions from auth-service
+- **JWT Tokens**: Issued by identity-service, validated by both services
+- **User Context**: User profile, permissions from identity-service
 - **Application Data**: Generic data models and business logic from Django backend
 - **Component Library**: Reusable UI components that work across different applications
 - **Theme System**: Configurable themes for different application contexts
