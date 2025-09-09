@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/docs/**)",
+      "Bash(pip install:*)",
+      "Bash(alembic init:*)",
+      "Bash(export DATABASE_URL=\"sqlite:///./test_workflow.db\")",
+      "Bash(alembic revision:*)",
+      "Bash(pytest:*)",
+      "Bash(python:*)",
+      "Bash(pkill:*)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/docs/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/docs/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/docs/**)",
+      "Bash(docker network:*)",
+      "Bash(docker-compose:*)",
+      "Bash(cat:*)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

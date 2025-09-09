@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  workflow-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: workflow-intelligence-service
+    ports:
+      - "8004:8004"
+    environment:
+      - SERVICE_NAME=workflow-intelligence-service
+      - SERVICE_VERSION=1.0.0
+      - SERVICE_PORT=8004
+      - DATABASE_URL=sqlite:///./workflow.db  # Use SQLite as currently implemented
+      - REDIS_URL=redis://workflow-redis:6379/0
+      - IDENTITY_SERVICE_URL=http://identity-service:8001
+      - CONTENT_SERVICE_URL=http://content-service:8002
+      - COMMUNICATION_SERVICE_URL=http://communication-service:8003
+      - LOG_LEVEL=INFO
+    env_file:
+      - ../.env.shared    # Load shared configuration first
+      - .env              # Then service-specific configuration
+    depends_on:
+      - workflow-redis
+      # Note: No database dependency since using SQLite
+    volumes:
+      - workflow_data:/app/data
+      - workflow_logs:/app/logs
+      - ./workflow.db:/app/workflow.db  # Mount SQLite database file
+    restart: unless-stopped
+    networks:
+      - workflow-network
+      - services-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  workflow-redis:
+    image: redis:7-alpine
+    container_name: workflow-redis
+    command: redis-server --appendonly yes --requirepass workflow_redis_password
+    ports:
+      - "6383:6379"  # External port for development access
+    volumes:
+      - workflow_redis_data:/data
+      - ./redis/redis.conf:/etc/redis/redis.conf
+    restart: unless-stopped
+    networks:
+      - workflow-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "workflow_redis_password", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Optional: PostgreSQL for production (when migrating from SQLite)
+  workflow-db:
+    image: postgres:17-alpine
+    container_name: workflow-db
+    environment:
+      - POSTGRES_DB=workflow_service
+      - POSTGRES_USER=workflow_user
+      - POSTGRES_PASSWORD=workflow_pass
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    ports:
+      - "5436:5432"  # External port for development access
+    volumes:
+      - workflow_db_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - workflow-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflow_user -d workflow_service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles:
+      - postgres  # Only start when explicitly requested
+
+volumes:
+  workflow_data:
+    driver: local
+  workflow_redis_data:
+    driver: local
+  workflow_db_data:
+    driver: local
+  workflow_logs:
+    driver: local
+
+networks:
+  workflow-network:
+    driver: bridge
+  services-network:
+    external: true  # Shared network for inter-service communication

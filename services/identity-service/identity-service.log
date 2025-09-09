@@ -1,0 +1,10 @@
+INFO:     Will watch for changes in these directories: ['/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/services/identity-service']
+ERROR:    [Errno 48] Address already in use
+🚀 Starting Enhanced Auth Service - Full Implementation
+============================================================
+📍 URL: http://localhost:8001
+📖 Docs: http://localhost:8001/docs
+🧪 Test Info: http://localhost:8001/test-info
+🗄️  Database: PostgreSQL 17
+🔄 Cache: Redis
+============================================================

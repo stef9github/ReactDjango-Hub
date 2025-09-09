@@ -19,7 +19,7 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from app.core.config import settings
 from app.core.database import init_db
 from app.utils.messaging import EventPublisher
-from app.api.v1 import auth, users, organizations, mfa
+from app.api.v1 import auth, users, organizations, mfa, mfa_policy_api
 
 # Metrics
 auth_requests = Counter('auth_requests_total', 'Total authentication requests')

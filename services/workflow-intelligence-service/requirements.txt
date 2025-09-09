@@ -28,3 +28,6 @@ python-dateutil==2.8.2
 
 # JSON schema validation
 jsonschema==4.20.0
+
+# System monitoring for health checks
+psutil==5.9.6

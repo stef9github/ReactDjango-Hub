@@ -1,14 +1,18 @@
-# FastAPI and server
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+# ====================================
+# SHARED REQUIREMENTS
+# ====================================
+-r ../requirements.shared.txt
 
-# Database
-sqlalchemy==2.0.23
-alembic==1.12.1
-psycopg2-binary==2.9.9
+# ====================================
+# SERVICE-SPECIFIC DATABASE DRIVER
+# ====================================
+psycopg2-binary==2.9.9  # sync PostgreSQL driver
 
-# Redis and Celery
-redis==5.0.1
+# ====================================
+# COMMUNICATION-SERVICE SPECIFIC DEPENDENCIES
+# ====================================
+
+# Task queues
 celery==5.3.4
 celery[redis]==5.3.4
 
@@ -24,22 +28,8 @@ ovh==0.5.0
 firebase-admin==6.2.0
 py-vapid==1.9.0
 
-# Authentication integration
-httpx==0.25.2
-python-jose[cryptography]==3.3.0
-
 # Template engine
 jinja2==3.1.2
 
-# Environment and configuration
-python-dotenv==1.0.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
-
-# Development and testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
-pytest-cov==4.1.0
-black==23.11.0
-isort==5.12.0
-flake8==6.1.0
+# System monitoring (for health checks)
+psutil==6.1.0

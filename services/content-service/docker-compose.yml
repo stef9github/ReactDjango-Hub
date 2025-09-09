@@ -1,0 +1,95 @@
+
+services:
+  content-service:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: content-service
+    ports:
+      - "8002:8002"
+    environment:
+      - SERVICE_NAME=content-service
+      - SERVICE_VERSION=1.0.0
+      - SERVICE_PORT=8002
+      - DATABASE_URL=postgresql+asyncpg://content_user:content_pass@content-db:5432/content_service
+      - REDIS_URL=redis://content-redis:6379/0
+      - IDENTITY_SERVICE_URL=http://identity-service:8001
+      - LOG_LEVEL=INFO
+    env_file:
+      - ../.env.shared    # Load shared configuration first
+      - .env              # Then service-specific configuration
+    depends_on:
+      - content-db
+      - content-redis
+    volumes:
+      - content_uploads:/app/uploads
+      - content_storage:/app/storage
+      - content_logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - content-network
+      - services-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  content-db:
+    image: postgres:17-alpine
+    container_name: content-db
+    environment:
+      - POSTGRES_DB=content_service
+      - POSTGRES_USER=content_user
+      - POSTGRES_PASSWORD=content_pass
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    ports:
+      - "5434:5432"  # External port for development access
+    volumes:
+      - content_db_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d  # Initialization scripts
+    restart: unless-stopped
+    networks:
+      - content-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U content_user -d content_service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  content-redis:
+    image: redis:7-alpine
+    container_name: content-redis
+    command: redis-server --appendonly yes --requirepass content_redis_password
+    ports:
+      - "6381:6379"  # External port for development access
+    volumes:
+      - content_redis_data:/data
+      - ./redis/redis.conf:/etc/redis/redis.conf
+    restart: unless-stopped
+    networks:
+      - content-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "content_redis_password", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  content_db_data:
+    driver: local
+  content_redis_data:
+    driver: local
+  content_uploads:
+    driver: local
+  content_storage:
+    driver: local
+  content_logs:
+    driver: local
+
+networks:
+  content-network:
+    driver: bridge
+  services-network:
+    external: true  # Shared network for inter-service communication

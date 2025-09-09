@@ -31,16 +31,18 @@ services:
   #   volumes:
   #     - content_db_data:/var/lib/postgresql/data
 
-  # communication-db:
-  #   image: postgres:15-alpine
-  #   environment:
-  #     POSTGRES_DB: communication_service
-  #     POSTGRES_USER: communication_user
-  #     POSTGRES_PASSWORD: communication_pass
-  #   ports:
-  #     - "5435:5432"
-  #   volumes:
-  #     - communication_db_data:/var/lib/postgresql/data
+  communication-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: communication_service
+      POSTGRES_USER: communication_user
+      POSTGRES_PASSWORD: communication_pass
+    ports:
+      - "5435:5432"
+    volumes:
+      - communication_db_data:/var/lib/postgresql/data
+    networks:
+      - default
 
   # workflow-db:
   #   image: postgres:15-alpine
@@ -75,12 +77,14 @@ services:
   #   volumes:
   #     - content_redis_data:/data
 
-  # communication-redis:
-  #   image: redis:7-alpine
-  #   ports:
-  #     - "6382:6379"
-  #   volumes:
-  #     - communication_redis_data:/data
+  communication-redis:
+    image: redis:7-alpine
+    ports:
+      - "6382:6379"
+    volumes:
+      - communication_redis_data:/data
+    networks:
+      - default
 
   # workflow-redis:
   #   image: redis:7-alpine
@@ -133,25 +137,35 @@ services:
   #     - ./content-service:/app
   #   command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
 
-  # communication-service:
-  #   build:
-  #     context: ./communication-service
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8003:8003"
-  #   depends_on:
-  #     - communication-db
-  #     - communication-redis
-  #     - identity-service
-  #   environment:
-  #     DATABASE_URL: postgresql+asyncpg://communication_user:communication_pass@communication-db:5432/communication_service
-  #     REDIS_URL: redis://communication-redis:6379/0
-  #     CELERY_BROKER_URL: redis://communication-redis:6379/1
-  #     IDENTITY_SERVICE_URL: http://identity-service:8001
-  #     SERVICE_PORT: 8003
-  #   volumes:
-  #     - ./communication-service:/app
-  #   command: uvicorn main:app --host 0.0.0.0 --port 8003 --reload
+  communication-service:
+    build:
+      context: ./communication-service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    depends_on:
+      - communication-db
+      - communication-redis
+      - identity-service
+    environment:
+      DATABASE_URL: postgresql+asyncpg://communication_user:communication_pass@communication-db:5432/communication_service
+      REDIS_URL: redis://communication-redis:6379/0
+      CELERY_BROKER_URL: redis://communication-redis:6379/1
+      IDENTITY_SERVICE_URL: http://identity-service:8001
+      SERVICE_PORT: 8003
+    env_file:
+      - .env.shared
+      - communication-service/.env
+    volumes:
+      - ./communication-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8003 --reload
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # communication-worker:
   #   build:
@@ -206,16 +220,16 @@ services:
   #   command: celery -A workflow_intelligence_service.celery worker --loglevel=info
 
 volumes:
-  # Currently only identity service volumes are needed
+  # Service volumes
   identity_db_data:
   identity_redis_data:
+  communication_db_data:
+  communication_redis_data:
   
   # Future service volumes (uncomment when implementing services):
   # content_db_data:
-  # communication_db_data:
   # workflow_db_data:
   # content_redis_data:
-  # communication_redis_data:
   # workflow_redis_data:
 
 networks:
