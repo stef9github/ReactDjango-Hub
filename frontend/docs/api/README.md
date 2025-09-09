@@ -1,43 +1,84 @@
 # API Integration Guide
 
-Guide for integrating backend APIs in the React frontend.
+Guide for integrating microservices APIs in the React frontend.
 
-## 🔗 **Backend API References**
+## 🏗️ **Microservices Architecture**
 
-The frontend agent should consult the backend API documentation located at:
+The frontend connects to **two separate services**:
 
-```
-../../backend/docs/api/     # Complete endpoint documentation
-../../docs/api/             # Global API schemas and contracts
-```
+| Service | Purpose | Base URL | Documentation |
+|---------|---------|----------|---------------|
+| **Auth Service** | Authentication, users, organizations | `http://localhost:8001` | `../../services/auth-service/README.md` |
+| **Backend Service** | Business logic, medical records | `http://localhost:8000/api` | `../../backend/docs/README.md` |
 
-## 📡 **Main Endpoints**
+## 📡 **API Endpoints**
 
-### Base URL
+### 🔐 **Auth Service Endpoints** (Port 8001)
+
+#### Base URL
 ```typescript
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL || 'http://localhost:8001'
 ```
 
-### Endpoints by Domain
+#### Authentication & Users
+```typescript
+// Core Authentication (7 endpoints)
+POST   /auth/login              // JWT login with MFA support
+POST   /auth/register           // User registration  
+POST   /auth/refresh            // Token refresh
+POST   /auth/logout             // Logout with session cleanup
+POST   /auth/validate           // Token validation
+POST   /auth/authorize          // Permission checking
+GET    /auth/permissions/{id}   // User permissions
 
-**Authentication** - `/api/auth/`
-- `POST /api/auth/login/` - User login
-- `POST /api/auth/logout/` - Logout
-- `POST /api/auth/refresh/` - JWT token refresh
-- `GET /api/auth/user/` - Current user profile
+// User Management (4 endpoints)  
+POST   /users/profile           // Create user with profile
+GET    /users/{id}/dashboard    // User dashboard data
+PATCH  /users/{id}/preferences  // Update preferences
+GET    /users/{id}/activity     // User activity logs
 
-**Users** - `/api/users/`
-- `GET /api/users/` - List users
-- `POST /api/users/` - Create user
-- `GET /api/users/{id}/` - User details
-- `PUT /api/users/{id}/` - Update user
+// Organizations (4 endpoints)
+POST   /organizations           // Create organization
+GET    /organizations/{id}/dashboard  // Org dashboard
+POST   /organizations/{id}/users     // Add user to org
+GET    /organizations/{id}/users     // List org members
 
-**Resources** - `/api/resources/`
-- `GET /api/resources/` - List resources
-- `POST /api/resources/` - Create resource
-- `PUT /api/resources/{id}/` - Update resource
+// Multi-Factor Authentication (6 endpoints)
+POST   /mfa/setup               // Setup MFA (email/SMS/TOTP)
+GET    /mfa/methods             // List MFA methods
+POST   /mfa/challenge           // Initiate MFA challenge
+POST   /mfa/verify              // Verify MFA code
+DELETE /mfa/methods/{id}        // Remove MFA method
+POST   /mfa/backup-codes/regenerate  // New backup codes
+```
 
-> 📚 **Detailed documentation:** See `backend/docs/api/` for complete schemas, validations and response examples.
+### 🏥 **Backend Service Endpoints** (Port 8000)
+
+#### Base URL
+```typescript  
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000/api'
+```
+
+#### Business Logic (Requires Auth Service JWT)
+```typescript
+// Medical Records
+GET    /api/patients/           // List patients (with auth)
+POST   /api/patients/           // Create patient
+GET    /api/patients/{id}/      // Patient details
+PUT    /api/patients/{id}/      // Update patient
+
+// Analytics  
+GET    /api/analytics/dashboard // Analytics dashboard
+GET    /api/analytics/reports   // Generate reports
+
+// Billing
+GET    /api/billing/invoices    // List invoices
+POST   /api/billing/invoices    // Create invoice
+```
+
+> 📚 **Complete API Documentation:**
+> - **Auth Service**: See `services/auth-service/README.md` - 30 production endpoints
+> - **Backend Service**: See `backend/docs/README.md` - Business logic integration
 
 ## 🛠 **TypeScript API Client**
 

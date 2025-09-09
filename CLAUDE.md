@@ -4,50 +4,88 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 🏥 **PROJECT OVERVIEW**
 
-**ReactDjango Hub Medical** - A modern, secure, and scalable SaaS platform for medical practices with HIPAA/RGPD compliance.
+**ReactDjango Hub Medical** - A modern, secure, and scalable SaaS platform for medical practices with HIPAA/RGPD compliance, built on microservices architecture.
+
+### **🏗️ Microservices Architecture**
+| Service | Purpose | Port | Technology | Status |
+|---------|---------|------|------------|---------|
+| **`auth-service`** | Authentication, users, organizations, MFA | 8001 | FastAPI + PostgreSQL | ✅ Production Ready |
+| **`backend` (Django)** | Business logic, medical records, billing | 8000 | Django + PostgreSQL | 🚧 Integrates with auth-service |
+| **`frontend`** | User interface | 3000/5173 | React + Vite + Tailwind | 🔄 Connects to both services |
 
 ### **Tech Stack**
-- **Backend**: Python 3.13.7 + Django 5.1.4 LTS + Django Ninja 1.4.3 + PostgreSQL 17
+- **Authentication Service**: Python 3.13.7 + FastAPI + SQLAlchemy + PostgreSQL 17
+- **Business Logic Service**: Python 3.13.7 + Django 5.1.4 LTS + Django Ninja 1.4.3 + PostgreSQL 17  
 - **Frontend**: React 18 + Vite + Tailwind CSS
 - **Infrastructure**: Docker + Kubernetes
-- **Security**: End-to-end encryption, RBAC, 2FA
+- **Security**: JWT tokens, MFA (email/SMS/TOTP), RBAC, audit trails
 
 ### **Key Features**
-- Multi-tenant architecture with secure isolation between medical practices
-- Patient management with encrypted PII and audit trails
-- Clinical workflows (appointments, consultations, prescriptions)
-- HIPAA/RGPD compliance with full audit logging
-- Real-time analytics dashboards and reporting
+- **Microservices Architecture**: Separate authentication and business logic services
+- **Comprehensive Authentication**: 30+ endpoints with MFA, user management, organizations
+- **Multi-tenant Architecture**: Organization isolation managed by auth-service
+- **Medical Records Management**: Patient data, HL7/DICOM support in Django service
+- **HIPAA/RGPD Compliance**: Full audit logging across all services
+- **Real-time Analytics**: Dashboard and reporting via Django service
 
 ## 🚀 **DEVELOPMENT WORKFLOW**
 
 ### **Local Development Commands**
 
+#### **🔐 Auth Service (Start First)**
 ```bash
-# Backend (Django)
+# Auth service - handles authentication, users, organizations
+cd services/auth-service
+pip install -r requirements.txt
+python main.py                    # Runs on http://localhost:8001
+# OR: docker-compose up -d         # Full containerized stack
+```
+
+#### **🏥 Backend Service (Django)**
+```bash
+# Business logic service - requires auth service to be running
 cd backend
 python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
+source venv/bin/activate          # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
 python manage.py migrate
-python manage.py runserver
+python manage.py runserver        # Runs on http://localhost:8000
 
 # Django commands
 python manage.py makemigrations
 python manage.py migrate
-python manage.py createsuperuser
-python manage.py collectstatic
 python manage.py shell
 python manage.py dbshell
+```
 
-# Frontend (React + Vite)
+#### **⚛️ Frontend (React + Vite)**
+```bash
+# UI - connects to both auth-service (8001) and backend (8000)
 cd frontend
 npm install
-npm run dev
+npm run dev                       # Runs on http://localhost:3000 or 5173
 npm run build
 npm run preview
 npm run lint
 npm run type-check
+```
+
+#### **🚀 Quick Full Stack Startup**
+```bash
+# Terminal 1: Auth Service
+cd services/auth-service && python main.py
+
+# Terminal 2: Django Backend  
+cd backend && python manage.py runserver
+
+# Terminal 3: Frontend
+cd frontend && npm run dev
+
+# ✅ Full stack running:
+# - Auth API: http://localhost:8001/docs
+# - Backend API: http://localhost:8000/api/docs  
+# - Frontend UI: http://localhost:3000
+```
 ```
 
 ### **Testing Process**

@@ -2,7 +2,7 @@
 
 ## 🏗️ **Architecture Overview**
 
-ReactDjango Hub SaaS is a Django 5.1.4 backend built for multi-tenant SaaS applications, featuring scalable architecture, RGPD compliance, and comprehensive audit logging. The system is designed for scalability, security, and regulatory compliance in enterprise environments.
+ReactDjango Hub SaaS is a Django 5.1.4 business logic backend that works alongside the standalone auth-service microservice. Features scalable architecture, RGPD compliance, and comprehensive audit logging. Authentication is handled by the separate auth-service (FastAPI + PostgreSQL).
 
 ### **Core Technologies**
 - **Framework**: Django 5.1.4 LTS + Django Ninja 1.4.3
@@ -49,7 +49,7 @@ backend/
 **Responsibilities**:
 - Common model patterns and mixins
 - Shared utilities and helper functions
-- Base authentication and permission logic
+- Auth-service integration utilities
 - RGPD compliance framework
 
 ### **apps.analytics** - Data Intelligence Layer
@@ -103,7 +103,7 @@ backend/
 - **Framework**: Django Ninja 1.4.3 (FastAPI-style)
 - **Type Safety**: Full Pydantic schema validation
 - **Performance**: High-performance async-ready endpoints
-- **Authentication**: Django session + custom authentication
+- **Authentication**: JWT token validation via auth-service
 - **Documentation**: Automatic OpenAPI/Swagger generation
 
 #### **Key Features**
@@ -111,7 +111,7 @@ backend/
 - **Type Hints**: Full Python type checking support
 - **Pydantic Integration**: Request/response validation
 - **Async Support**: Ready for async operations
-- **Django Integration**: Native Django ORM and auth
+- **Django Integration**: Native Django ORM with auth-service JWT validation
 
 ### **API Documentation Endpoints**
 - `/api/docs` - Interactive Swagger UI documentation
@@ -121,10 +121,11 @@ backend/
 ## 🔐 **Security Architecture**
 
 ### **Authentication & Authorization**
-- **Primary Backend**: Django ModelBackend
+- **Primary Authentication**: Delegated to auth-service (FastAPI)
+- **Token Validation**: JWT tokens validated against auth-service
 - **Object Permissions**: django-guardian ObjectPermissionBackend
-- **Session Management**: Django sessions with Redis storage
-- **Permission Model**: Role-based + Object-level permissions
+- **Session Management**: Stateless JWT-based authentication
+- **Permission Model**: Role-based permissions from auth-service + Object-level permissions
 
 ### **Data Protection**
 - **Encryption**: django-encrypted-model-fields for sensitive data

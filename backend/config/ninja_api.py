@@ -4,9 +4,12 @@ from apps.analytics.models import AnalyticsRecord
 from apps.analytics.ninja_schemas import AnalyticsRecordSchema, AnalyticsRecordCreateSchema
 from django.shortcuts import get_object_or_404
 
+# TODO: Add auth-service integration
+# from apps.core.auth_integration import require_auth, get_current_user
+
 api = NinjaAPI(
-    title="ReactDjango Hub Medical SaaS API",
-    description="FastAPI-style endpoints for the medical SaaS platform",
+    title="ReactDjango Hub Business Logic API", 
+    description="Business logic endpoints - Authentication handled by auth-service on port 8001",
     version="1.0.0"
 )
 

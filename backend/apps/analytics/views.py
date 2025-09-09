@@ -1,3 +1,5 @@
+# TODO: Update for auth-service integration
+# Current DRF permissions need to be replaced with auth-service JWT validation
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from django_filters.rest_framework import DjangoFilterBackend
@@ -7,6 +9,11 @@ from .serializers import AnalyticsRecordSerializer
 
 
 class AnalyticsRecordViewSet(viewsets.ModelViewSet):
+    """
+    TODO: Replace with auth-service integration
+    - JWT token validation via auth-service
+    - User permissions from auth-service
+    """
     serializer_class = AnalyticsRecordSerializer
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
     filter_backends = [DjangoFilterBackend]
