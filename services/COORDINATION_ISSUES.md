@@ -61,6 +61,48 @@ This file tracks cross-service coordination issues that require Services Coordin
 **Verification**: Service running at http://localhost:8001 with all 30+ endpoints functional
 **Status**: ✅ **RESOLVED** - Identity service production-ready with latest dependencies
 
+### 🔴 **OPEN** - Issue #004: Communication Service Framework Compliance
+**Date**: 2025-09-09  
+**Reporter**: Services Coordinator (coordination validation)  
+**Severity**: High  
+**Description**: Communication service is not using the common framework and coordination standards  
+**Service(s) Affected**: communication-service  
+**Issues Identified**:
+- ❌ Not using shared requirements pattern (`-r ../requirements.shared.txt`)
+- ❌ Using outdated dependency versions (FastAPI 0.104.1 vs 0.116.1)
+- ❌ Missing `.env.example` for environment documentation
+- ❌ No health endpoint implementation (`/health`)
+- ❌ Missing service agent configuration
+- ❌ Not following service integration patterns
+**Impact**: Service cannot integrate properly with microservices architecture
+**Required Actions**:
+1. Update requirements.txt to use shared requirements pattern
+2. Add missing configuration files (.env.example)
+3. Implement standard health endpoint
+4. Create communication-service-agent.md
+5. Follow service integration patterns from docs/SERVICE_INTEGRATION_PATTERNS.md
+**Resolution**: All services updated to use shared requirements framework
+**Status**: ✅ **RESOLVED**
+
+### ✅ **RESOLVED** - Issue #005: All Services Framework Compliance
+**Date**: 2025-09-09  
+**Reporter**: Services Coordinator (mass update)  
+**Severity**: High  
+**Description**: All services updated to use shared requirements framework and coordination standards  
+**Service(s) Affected**: communication-service, content-service, workflow-intelligence-service  
+**Actions Completed**:
+- ✅ Updated all services to use `-r ../requirements.shared.txt` pattern
+- ✅ Added service-specific database drivers (psycopg2-binary==2.9.9)
+- ✅ Removed duplicated shared dependencies
+- ✅ Organized service-specific dependencies with clear sections
+- ✅ All services now use latest dependency versions via shared requirements
+**Service-Specific Updates**:
+- **Communication Service**: Added Celery, email providers, SMS providers, push notifications
+- **Content Service**: Added file processing libraries (PDF, images, OCR)
+- **Workflow Intelligence Service**: Added AI/ML integrations (OpenAI, Anthropic), workflow engine
+**Impact**: All services now follow consistent dependency management and can benefit from centralized updates
+**Status**: ✅ **RESOLVED** - All services framework compliant
+
 ---
 
 ## 🚨 **Issue Reporting Format**
@@ -176,7 +218,7 @@ DATABASE_URL = "postgresql://content_user:content_pass@content-db:5432/content_s
 
 | Month | Critical | High | Medium | Low | Total | Avg Resolution Time |
 |-------|----------|------|--------|-----|-------|-------------------|
-| Sep 2025 | 1 | 2 | 0 | 0 | 3 | 3 hours |
+| Sep 2025 | 1 | 4 | 0 | 0 | 5 | 2 hours |
 
 ---
 
