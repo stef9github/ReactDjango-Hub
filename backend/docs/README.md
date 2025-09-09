@@ -1,44 +1,74 @@
 # Backend Documentation
 
-Documentation spécifique au backend Django de la plateforme médicale SaaS.
+Quick reference for Django Ninja backend development.
 
-## 📁 Structure
-
-- **`api/`** - Documentation des endpoints API REST
-- **`models/`** - Schémas des modèles Django et relations
-- **`database/`** - Migrations, schémas et optimisations base de données
-- **`authentication/`** - Système d'authentification et autorisations RBAC
-- **`testing/`** - Tests backend, fixtures et mocking
-- **`deployment/`** - Configuration et déploiement backend
-
-## 🔧 Backend Agent Workflow
-
-Cette documentation est maintenue par l'**Agent Backend** Claude qui fonctionne dans le worktree `backend-dev`.
-
-### Commandes spécifiques Backend Agent
+## 🚀 Quick Start
 
 ```bash
-# Dans backend-dev worktree
-git bcommit "docs: update API documentation"
-
-# Tests backend uniquement  
-python manage.py test
-pytest apps/ --cov
-
-# Linting backend
-black apps/ --line-length=88
-flake8 apps/
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 ```
 
-## 🏥 Conformité Médicale
+Access Django Ninja API docs at: `http://localhost:8000/api/docs`
 
-- **RGPD** - Protection des données patients
-- **HIPAA** - Conformité médicale US (si applicable)
-- **Audit trails** - Traçabilité complète des accès données
+## 📁 Django Applications
 
-## 📚 Guides Rapides
+| App | Purpose | Key Features |
+|-----|---------|-------------|
+| **`core/`** | Foundation layer | BaseModel, RGPD compliance, translations |
+| **`analytics/`** | Data intelligence | Metrics, reporting, object permissions |
+| **`billing/`** | Financial management | Multi-tenant billing, payment processing |
+| **`compliance/`** | Regulatory framework | RGPD automation, audit trails |
 
-- [API Endpoints](./api/) - Tous les endpoints REST disponibles
-- [Models Guide](./models/) - Relations et validations des modèles
-- [Authentication](./authentication/) - JWT, permissions, rôles
-- [Testing Strategy](./testing/) - Tests unitaires et d'intégration
+## 🔌 API Development
+
+- **Framework**: Django Ninja 1.4.3 (FastAPI-style)
+- **Documentation**: Auto-generated OpenAPI/Swagger
+- **Authentication**: Django sessions + object permissions
+- **Endpoints**: `/api/` (see [ninja_api.py](../config/ninja_api.py))
+
+### Adding New Endpoints
+
+```python
+# In config/ninja_api.py
+@api.get("/your-endpoint", response=YourSchema, tags=["YourTag"])
+def your_function(request):
+    """Your endpoint description"""
+    return your_data
+```
+
+## 🧪 Testing & Development
+
+```bash
+# Run tests
+python manage.py test
+python manage.py test apps.analytics
+
+# Django shell with IPython
+python manage.py shell
+
+# Health check
+curl http://localhost:8000/health/
+```
+
+## 📚 Complete Documentation
+
+For detailed architecture, security, and deployment information:
+- **[Backend Architecture](./BACKEND_ARCHITECTURE.md)** - Complete technical documentation
+- **[Project Overview](../CLAUDE.md)** - Development workflow and setup
+- **API Docs**: `/api/docs` when server is running
+
+## 🔐 Data Protection & Compliance
+
+- **RGPD**: Data protection framework (see `apps.core.rgpd_compliance`)
+- **Audit Logging**: All model changes tracked via django-auditlog
+- **Multi-tenant**: Strict data isolation between tenants
+- **Object Permissions**: Fine-grained access control via django-guardian
+
+---
+
+*For frontend documentation and full-stack workflow, see the main [CLAUDE.md](../CLAUDE.md) file.*
