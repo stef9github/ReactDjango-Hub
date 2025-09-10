@@ -19,7 +19,8 @@
       "Bash(python:*)",
       "Bash(git add:*)",
       "Bash(find:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
