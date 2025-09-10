@@ -1,0 +1,88 @@
+# ====================================
+# CONTENT SERVICE - STANDALONE REQUIREMENTS
+# ====================================
+# Consolidated from shared + content-specific requirements
+
+# ====================================
+# CORE FRAMEWORK
+# ====================================
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+pydantic==2.11.7
+pydantic[email]==2.11.7
+pydantic-settings==2.8.0
+
+# ====================================
+# DATABASE & ORM
+# ====================================
+sqlalchemy==2.0.43
+alembic==1.14.0
+asyncpg==0.30.0
+
+# ====================================
+# REDIS & CACHING
+# ====================================
+redis==6.4.0
+aioredis==2.0.1
+
+# ====================================
+# AUTHENTICATION & SECURITY
+# ====================================
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+PyJWT==2.8.0
+bcrypt==4.2.0
+cryptography==42.0.8
+
+# ====================================
+# HTTP CLIENT
+# ====================================
+httpx==0.27.2
+
+# ====================================
+# ENVIRONMENT & CONFIG
+# ====================================
+python-dotenv==1.0.1
+python-multipart==0.0.12
+
+# ====================================
+# CONTENT SERVICE SPECIFIC
+# ====================================
+# File processing
+python-magic==0.4.27
+Pillow==10.1.0
+aiofiles==24.1.0
+
+# Document parsing
+PyPDF2==3.0.1
+python-docx==1.1.2
+openpyxl==3.1.5
+python-pptx==1.0.2
+odfpy==1.4.1
+beautifulsoup4==4.12.3
+lxml==5.3.0
+
+# OCR and image processing
+pytesseract==0.3.10
+
+# Date handling
+python-dateutil==2.9.0
+
+# Template engine
+jinja2==3.1.2
+
+# ====================================
+# DEVELOPMENT & TESTING
+# ====================================
+pytest==8.3.4
+pytest-asyncio==0.24.0
+black==25.1.0
+isort==5.13.2
+flake8==7.1.1
+
+# ====================================
+# MONITORING & SYSTEM
+# ====================================
+prometheus-client==0.21.1
+structlog==25.1.0
+psutil==5.9.8

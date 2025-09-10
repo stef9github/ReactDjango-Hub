@@ -18,7 +18,7 @@ celery[redis]==5.3.4
 
 # Email providers
 sendgrid==6.10.0
-mailgun2==2.0.8
+mailgun2==2.0.1
 
 # SMS providers
 twilio==8.10.1

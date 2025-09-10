@@ -35,7 +35,7 @@ alembic==1.14.0               # Latest database migrations
 # ====================================
 # REDIS & CACHING (Latest Stable)
 # ====================================
-redis==6.4.0                  # Latest Redis client (Aug 2025)
+redis==4.6.0                  # Redis client (compatible with Celery)
 aioredis==2.0.1               # Async Redis client
 
 # ====================================
