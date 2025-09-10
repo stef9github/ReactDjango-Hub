@@ -15,14 +15,17 @@
 ```bash
 cd services
 
-# Start all services with proper dependency ordering
-./start-all-services.sh
+# Start all services with automatic conflict resolution
+./scripts/start-all-services.sh     # Handles cleanup & startup automatically
 
 # Check service health
-./health-check-all.sh
+./scripts/health-check-all.sh
 
-# Stop all services gracefully
-./stop-all-services.sh
+# Stop all services gracefully  
+./scripts/stop-all-services.sh
+
+# Complete cleanup (removes all containers and volumes)
+./scripts/cleanup-services.sh       # Use when you need a fresh start
 ```
 
 ### Manual Docker Compose
@@ -167,20 +170,47 @@ See [`requirements.shared.txt`](./requirements.shared.txt) for the complete list
 # From services/ directory - manage all services together:
 cd services
 
-# Start everything with proper health checks and dependency ordering
-./start-all-services.sh
+# Start everything with automatic conflict resolution & health checks
+./scripts/start-all-services.sh    # Automatically stops conflicting standalone services
 
 # Monitor all services
-./health-check-all.sh
+./scripts/health-check-all.sh
 
 # View logs for specific service
 docker-compose logs -f identity-service
 
-# Scale a specific service
+# Scale a specific service  
 docker-compose up -d --scale communication-service=3
 
 # Stop everything gracefully
-./stop-all-services.sh
+./scripts/stop-all-services.sh
+
+# Complete cleanup when needed
+./scripts/cleanup-services.sh      # Removes all containers, volumes, and networks
+```
+
+### 🛠️ **Container Conflict Resolution**
+The startup script automatically handles common Docker conflicts:
+
+**Automatic Cleanup Features:**
+- **Standalone Service Detection**: Stops individual services that conflict with coordinated stack
+- **Port Conflict Resolution**: Automatically frees up ports 8001-8004 from standalone containers  
+- **Container Name Conflicts**: Removes containers with conflicting names
+- **Volume Cleanup**: Cleans up orphaned volumes to prevent data conflicts
+- **Network Management**: Recreates service networks with proper configuration
+
+**Manual Cleanup Options:**
+```bash
+# If you encounter "container name already in use" errors:
+./scripts/cleanup-services.sh
+
+# For quick restart without data loss (preserves volumes):
+./scripts/stop-all-services.sh
+docker-compose start
+
+# For debugging container conflicts:
+docker ps -a                       # See all containers
+docker-compose down --remove-orphans  # Clean up orphaned containers
 ```
 
 ### 🌐 **API Gateway Coordination**

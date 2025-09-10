@@ -10,7 +10,7 @@ services=(
     "identity-service:8001"
     "content-service:8002"
     "communication-service:8003"
-    "workflow-intelligence-service:8004"
+    "workflow-service:8004"
 )
 
 all_healthy=true

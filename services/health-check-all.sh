@@ -176,11 +176,11 @@ echo ""
 print_status "=== API GATEWAY HEALTH CHECKS ==="
 ((total_services+=2))
 
-if check_service_health "Kong Proxy" "http://localhost:8000/"; then
+if check_service_health "Kong Proxy" "http://localhost:8000/health"; then
     ((healthy_services++))
 fi
 
-if check_service_health "Kong Admin API" "http://localhost:8445/"; then
+if check_service_health "Kong Admin API" "http://localhost:8445/status"; then
     ((healthy_services++))
 fi
 

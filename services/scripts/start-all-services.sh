@@ -12,6 +12,18 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
+# Stop any standalone services that might conflict with coordinated stack
+echo "🛑 Stopping standalone services that may conflict..."
+docker stop identity-service workflow-intelligence-service docker-content-service-1 identity-service-auth-db-1 identity-service-auth-redis-1 2>/dev/null || true
+
+# Clean up any existing containers and volumes to prevent conflicts
+echo "🧹 Cleaning up existing containers and volumes..."
+docker-compose down --volumes --remove-orphans 2>/dev/null || true
+
+# Remove any dangling containers that might cause naming conflicts
+echo "🔄 Removing dangling containers..."
+docker system prune -f --volumes 2>/dev/null || true
+
 # Start services with Docker Compose
 echo "🐳 Starting services with Docker Compose..."
 docker-compose up -d

@@ -186,8 +186,8 @@ services:
                 - exp
 
   # Workflow Intelligence Service
-  - name: workflow-intelligence-service
-    url: http://workflow-intelligence-service:8004
+  - name: workflow-service
+    url: http://workflow-service:8004
     protocol: http
     port: 8004
     retries: 3
@@ -250,6 +250,20 @@ plugins:
       client_errors_severity: warning
       server_errors_severity: err
 
+# Health Check Routes (Global)
+routes:
+  - name: kong-health-check
+    paths:
+      - /health
+    strip_path: true
+    methods:
+      - GET
+    plugins:
+      - name: request-termination
+        config:
+          status_code: 200
+          body: '{"service":"kong-gateway","status":"healthy","version":"3.4","port":8000}'
+
 upstreams:
   # Load balancing for identity service
   - name: identity-service-upstream
@@ -303,8 +317,8 @@ upstreams:
       - target: content-service-1:8002
         weight: 100
         
-  # Load balancing for workflow-intelligence service
-  - name: workflow-intelligence-service-upstream
+  # Load balancing for workflow service
+  - name: workflow-service-upstream
     algorithm: round-robin
     healthchecks:
       active:
@@ -317,5 +331,5 @@ upstreams:
           interval: 5
           http_failures: 3
     targets:
-      - target: workflow-intelligence-service-1:8004
+      - target: workflow-service-1:8004
         weight: 100

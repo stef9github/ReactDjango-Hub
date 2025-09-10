@@ -18,6 +18,7 @@ pydantic-settings==2.8.0
 # ====================================
 sqlalchemy==2.0.43
 alembic==1.14.0
+asyncpg==0.29.0
 
 # ====================================
 # REDIS & CACHING (Compatible with Celery)
