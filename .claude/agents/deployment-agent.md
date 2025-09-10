@@ -1,3 +1,8 @@
+---
+name: deployment-agent
+description: DevOps engineer for medical SaaS deployments with HIPAA-compliant infrastructure
+---
+
 # Deployment Agent
 
 ## Role

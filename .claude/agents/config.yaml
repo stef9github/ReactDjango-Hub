@@ -1,51 +1,87 @@
 version: 1.0.0
 project: ReactDjango-Hub Medical
 description: Agent configuration system for specialized Claude assistants
+
+# Standardized agent definitions with consistent naming
 agents:
-  backend:
+  # Core Development Agents
+  django-backend-expert:
     enabled: true
-    template: templates/backend.yaml
-    config: configs/backend.yaml
-  frontend:
+    description: Senior Django backend developer for medical SaaS platforms with HIPAA/RGPD compliance expertise
+    working_directory: backend/
+    specialization: Django, REST API, Medical Compliance
+    
+  react-frontend-expert:
     enabled: true
-    template: templates/frontend.yaml
-    config: configs/frontend.yaml
-  identity:
+    description: Senior React frontend developer specializing in TypeScript and medical UI/UX requirements
+    working_directory: frontend/
+    specialization: React, TypeScript, Medical UI/UX
+    
+  # Microservice Specialists
+  identity-service-expert:
     enabled: true
-    template: templates/identity.yaml
-    config: configs/identity.yaml
-  content:
+    description: FastAPI authentication specialist for identity microservice with MFA and user management
+    working_directory: services/identity-service/
+    specialization: FastAPI, Authentication, MFA
+    
+  communication-service:
     enabled: true
-    template: templates/content.yaml
-    config: configs/content.yaml
-  communication:
+    description: Communication microservice specialist for notifications and messaging
+    working_directory: services/communication-service/
+    specialization: Messaging, Notifications, Email/SMS
+    
+  content-service:
     enabled: true
-    template: templates/communication.yaml
-    config: configs/communication.yaml
-  workflow:
+    description: Content management microservice specialist for documents and search
+    working_directory: services/content-service/
+    specialization: Document Management, Search, File Processing
+    
+  workflow-intelligence-service:
     enabled: true
-    template: templates/workflow.yaml
-    config: configs/workflow.yaml
-  infrastructure:
+    description: Workflow and intelligence microservice specialist for automation and AI
+    working_directory: services/workflow-intelligence-service/
+    specialization: Workflows, Automation, AI Integration
+    
+  # Cross-Service Coordination
+  services-coordinator:
     enabled: true
-    template: templates/infrastructure.yaml
-    config: configs/infrastructure.yaml
-  testing:
+    description: Cross-service coordination, API Gateway management, and microservices documentation
+    working_directory: services/
+    specialization: Microservices Architecture, API Gateway, Service Mesh
+    
+  # Quality & Security
+  code-reviewer:
     enabled: true
-    template: templates/testing.yaml
-    config: configs/testing.yaml
-  security:
+    description: Senior code reviewer specializing in Django, React, and medical software compliance
+    working_directory: ./
+    specialization: Code Quality, Security, Medical Compliance
+    
+  security-compliance-expert:
     enabled: true
-    template: templates/security.yaml
-    config: configs/security.yaml
-  documentation:
+    description: Cybersecurity and compliance specialist for HIPAA/RGPD compliance and security audits
+    working_directory: ./
+    specialization: Security Audits, HIPAA/RGPD, Penetration Testing
+    
+  # Operations & Infrastructure
+  deployment-agent:
     enabled: true
-    template: templates/documentation.yaml
-    config: configs/documentation.yaml
-  claude-code-expert:
+    description: DevOps engineer for medical SaaS deployments with HIPAA-compliant infrastructure
+    working_directory: infrastructure/
+    specialization: Docker, Kubernetes, CI/CD
+    
+  # Project Management
+  tech-lead:
     enabled: true
-    template: templates/claude-code-expert.yaml
-    config: configs/claude-code-expert.yaml
+    description: Technical lead for architecture decisions, project planning, and team coordination
+    working_directory: ./
+    specialization: Architecture, Project Planning, Technical Leadership
+    
+  # Claude Code Optimization
+  claude-code-optimization-expert:
+    enabled: true
+    description: Claude Code specialist for optimizing development workflows, agent configurations, and automation
+    working_directory: .claude/
+    specialization: Claude Code, Agent Configuration, Workflow Optimization
 global_settings:
   audit_logging: true
   compliance:

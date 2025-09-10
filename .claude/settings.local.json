@@ -27,7 +27,17 @@
       "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/frontend/docs/api/**)",
       "Bash(mkdir:*)",
       "Bash(cp:*)",
-      "Bash(./launch_agent.sh:*)"
+      "Bash(./launch_agent.sh:*)",
+      "Bash(rm:*)",
+      "Bash(for service in identity-service communication-service content-service workflow-intelligence-service)",
+      "Bash(do echo \"=== $service ===\")",
+      "Bash(ls:*)",
+      "Bash(done)",
+      "Bash(do echo \"=== $service Files Overview ===\")",
+      "Read(/Users/stephanerichard/**)",
+      "Read(/Users/stephanerichard/.claude/**)",
+      "Read(/Users/stephanerichard/.claude/**)",
+      "Read(/private/tmp/**)"
     ],
     "deny": [],
     "ask": []

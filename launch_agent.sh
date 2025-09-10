@@ -205,9 +205,12 @@ main() {
     echo -e "${PURPLE}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
     echo -e "${CYAN}Quick Commands:${NC}"
-    echo "  • View agent config: cat .claude/agents/configs/${AGENT_TYPE}.yaml"
-    echo "  • Edit agent config: nano .claude/agents/configs/${AGENT_TYPE}.yaml"
+    echo "  • Access agents in Claude Code: /agents"
+    echo "  • View agent config: cat .claude/agents/${AGENT_TYPE}.md"
+    echo "  • Edit agent config: nano .claude/agents/${AGENT_TYPE}.md"
     echo "  • Re-launch agent:   ./launch_agent.sh ${AGENT_TYPE}"
+    echo ""
+    echo -e "${YELLOW}Note: Use '/agents' in Claude Code to access your specialized agents${NC}"
     echo ""
 }
 
