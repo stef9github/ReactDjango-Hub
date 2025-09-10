@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip3 install:*)",
+      "Bash(source:*)",
+      "Bash(python3:*)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)",
+      "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/docs/project-medical-hub/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
