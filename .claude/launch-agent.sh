@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Define available agents
-VALID_AGENTS="ag-backend ag-frontend ag-identity ag-communication ag-content ag-workflow ag-infrastructure ag-coordinator ag-security ag-reviewer ag-techlead"
+VALID_AGENTS="ag-backend ag-frontend ag-identity ag-communication ag-content ag-workflow ag-infrastructure ag-coordinator ag-security ag-reviewer ag-techlead ag-surgical-product-manager"
 
 # Function to get agent info
 get_agent_info() {
@@ -33,6 +33,7 @@ get_agent_info() {
         ag-security) echo "Security & Compliance|Security audits, compliance, vulnerability scanning" ;;
         ag-reviewer) echo "Code Review|Code quality, PR reviews, best practices" ;;
         ag-techlead) echo "Technical Lead|Architecture decisions, research analysis, strategic planning" ;;
+        ag-surgical-product-manager) echo "Surgical Product Manager|Product strategy for surgical SaaS, French healthcare market expertise" ;;
         *) echo "Unknown|Unknown agent" ;;
     esac
 }
@@ -67,6 +68,14 @@ show_usage() {
     
     echo -e "${GREEN}Leadership & Quality:${NC}"
     for agent in ag-techlead ag-security ag-reviewer; do
+        info=$(get_agent_info "$agent")
+        IFS='|' read -r title desc <<< "$info"
+        printf "  %-20s - %s\n" "$agent" "$desc"
+    done
+    echo ""
+    
+    echo -e "${GREEN}Product Management:${NC}"
+    for agent in ag-surgical-product-manager; do
         info=$(get_agent_info "$agent")
         IFS='|' read -r title desc <<< "$info"
         printf "  %-20s - %s\n" "$agent" "$desc"
@@ -171,6 +180,11 @@ show_agent_instructions() {
             echo "  📁 Working Directory: $PROJECT_ROOT"
             echo "  🔧 Focus: Architecture, ADRs, research analysis"
             echo "  📝 Documentation: docs/architecture/adr/"
+            ;;
+        ag-surgical-product-manager)
+            echo "  📁 Working Directory: $PROJECT_ROOT/docs/products/project-medical-hub"
+            echo "  🔧 Focus: Product strategy, market analysis, go-to-market"
+            echo "  📝 Key Areas: French healthcare, surgical specialties, SaaS pricing"
             ;;
     esac
     echo ""
