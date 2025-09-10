@@ -1,0 +1,90 @@
+# ====================================
+# WORKFLOW INTELLIGENCE SERVICE - STANDALONE REQUIREMENTS
+# ====================================
+# This file combines shared requirements and service-specific dependencies
+# for Docker containerization.
+
+# ====================================
+# CORE FRAMEWORK (From shared requirements)
+# ====================================
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+pydantic==2.11.7
+pydantic[email]==2.11.7
+pydantic-settings==2.8.0
+
+# ====================================
+# DATABASE & ORM (From shared requirements)
+# ====================================
+sqlalchemy==2.0.43
+alembic==1.14.0
+
+# ====================================
+# REDIS & CACHING (Compatible with Celery)
+# ====================================
+redis==4.6.0
+aioredis==2.0.1
+
+# ====================================
+# AUTHENTICATION & SECURITY (From shared requirements)
+# ====================================
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+PyJWT==2.8.0
+bcrypt==4.2.0
+cryptography==42.0.8
+
+# ====================================
+# HTTP CLIENT (From shared requirements)
+# ====================================
+httpx==0.27.2
+
+# ====================================
+# ENVIRONMENT & CONFIG (From shared requirements)
+# ====================================
+python-dotenv==1.0.1
+python-multipart==0.0.12
+
+# ====================================
+# DEVELOPMENT & TESTING (From shared requirements)
+# ====================================
+pytest==8.3.4
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+black==25.1.0
+isort==5.13.2
+flake8==7.1.1
+
+# ====================================
+# PRODUCTION & MONITORING (From shared requirements)
+# ====================================
+prometheus-client==0.21.1
+structlog==25.1.0
+
+# ====================================
+# SERVICE-SPECIFIC DATABASE DRIVER
+# ====================================
+psycopg2-binary==2.9.9  # sync PostgreSQL driver
+
+# ====================================
+# WORKFLOW-INTELLIGENCE-SERVICE SPECIFIC DEPENDENCIES
+# ====================================
+
+# Task queues
+celery==5.3.4
+
+# AI/ML integrations
+anthropic==0.7.8
+openai==1.3.5
+
+# Workflow engine
+python-statemachine==2.5.0
+
+# Date and time handling
+python-dateutil==2.8.2
+
+# JSON schema validation
+jsonschema==4.20.0
+
+# System monitoring for health checks
+psutil==5.9.6

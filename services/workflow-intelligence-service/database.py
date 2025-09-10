@@ -66,8 +66,9 @@ def check_database_connection() -> bool:
         bool: True if connection is successful, False otherwise
     """
     try:
+        from sqlalchemy import text
         with engine.connect() as connection:
-            connection.execute("SELECT 1")
+            connection.execute(text("SELECT 1"))
         return True
     except Exception as e:
         logger.error(f"Database connection check failed: {str(e)}")
@@ -83,7 +84,7 @@ def get_database_info() -> dict:
     try:
         from sqlalchemy import text
         with engine.connect() as connection:
-            result = connection.execute(text("SELECT sqlite_version()"))  # SQLite version
+            result = connection.execute(text("SELECT version()"))  # PostgreSQL version
             db_version = result.fetchone()[0] if result.rowcount > 0 else "Unknown"
             
             # Get connection pool info
@@ -96,7 +97,7 @@ def get_database_info() -> dict:
                 "checked_in": pool.checkedin(),
                 "checked_out": pool.checkedout(),
                 "overflow": pool.overflow(),
-                "invalid": pool.invalid()
+                "invalid": 0  # invalid() method doesn't exist in newer SQLAlchemy
             }
     except Exception as e:
         return {
