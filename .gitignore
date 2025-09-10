@@ -25,3 +25,7 @@ Security
 *.pem
 *.key
 secrets/
+
+# Claude Agent Files
+.claude/agent_sessions.json
+.claude/claude-*
