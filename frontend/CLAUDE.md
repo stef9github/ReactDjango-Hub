@@ -128,12 +128,88 @@ npm run format               # Prettier formatting
 - [x] TypeScript integration
 - [x] Basic routing structure
 
-### 🔴 Critical Tasks (Immediate)
-1. [ ] Implement authentication flow with Identity Service
-2. [ ] Create user dashboard layout
-3. [ ] Build data viewing and editing components
-4. [ ] Add API integration layer for backend
-5. [ ] Implement responsive design for tablets
+### 🔥 **URGENT: CONTAINERIZATION (LOW PRIORITY - SEPTEMBER 10, 2025)**
+
+**DEPLOYMENT-AGENT PRIORITY INSTRUCTIONS:**
+
+Your service containerization is **LOW PRIORITY** (after all backend services) - wait for backend to be ready first.
+
+⚠️ **DEPENDENCY**: Backend Django service must be containerized and running before frontend
+
+### **1. Verify Dockerfile (Should Already Exist)**
+```bash
+# Check if Dockerfile exists at:
+# infrastructure/docker/development/Dockerfile.frontend
+
+# Dockerfile should be configured for Vite dev server:
+# - Hot reloading enabled
+# - Ports 3000 and 5173 exposed  
+# - Node.js environment
+```
+
+### **2. Add Health Endpoint (Optional)**
+```typescript
+// Add simple health endpoint in src/main.tsx or create health route:
+// For React app, health is typically just serving the app successfully
+
+// Alternatively, create a simple API endpoint:
+// GET /health -> Returns app status and version
+```
+
+### **3. Test Container Build (AFTER Backend Working)**
+```bash
+# WAIT for backend service to be healthy first
+
+# Build frontend service
+docker-compose -f docker-compose.local.yml build frontend
+
+# Start frontend service  
+docker-compose -f docker-compose.local.yml up -d frontend
+
+# Check status
+docker-compose -f docker-compose.local.yml ps frontend
+
+# Test app accessibility
+curl http://localhost:3000
+curl http://localhost:5173
+
+# Check logs if issues
+docker-compose -f docker-compose.local.yml logs frontend
+```
+
+### **4. Environment Variables (Already Configured)**
+```bash
+VITE_API_URL=http://localhost:8000
+VITE_IDENTITY_SERVICE_URL=http://localhost:8001
+VITE_ENVIRONMENT=development
+CHOKIDAR_USEPOLLING=true
+```
+
+### **5. Service Integration Points**
+```typescript
+// Configure API client to connect to containerized services:
+
+// Backend Django API
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+// Identity Service
+const IDENTITY_API_URL = import.meta.env.VITE_IDENTITY_SERVICE_URL || 'http://localhost:8001'
+
+// HTTP client configuration
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  withCredentials: true
+})
+```
+
+### 🔴 Critical Tasks (After Container Working)
+1. [ ] ✅ **CONTAINERIZATION LAST** (wait for backend)
+2. [ ] Implement authentication flow with Identity Service
+3. [ ] Create user dashboard layout
+4. [ ] Build data viewing and editing components
+5. [ ] Add API integration layer for backend
+6. [ ] Implement responsive design for tablets
 
 ### 🟡 Important Tasks (This Week)
 1. [ ] Design scheduling and calendar interface

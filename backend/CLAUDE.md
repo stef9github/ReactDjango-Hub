@@ -116,12 +116,151 @@ mypy .
 - [x] Django Ninja integration
 - [x] Basic project structure
 
-### 🔴 Critical Tasks (Immediate)
-1. [ ] Implement core entity models with audit fields
-2. [ ] Create Django Ninja API endpoints for data operations
-3. [ ] Add audit logging for all data modifications
-4. [ ] Implement integration with Identity Service for auth
-5. [ ] Set up comprehensive test suite structure
+### 🔥 **URGENT: CONTAINERIZATION (IMMEDIATE - SEPTEMBER 10, 2025)**
+
+**DEPLOYMENT-AGENT PRIORITY INSTRUCTIONS:**
+
+Your service containerization is **MEDIUM PRIORITY** - infrastructure needs port fixes first:
+
+⚠️ **CRITICAL ISSUE**: Port conflicts must be resolved:
+- Main DB (5432) conflicts with local PostgreSQL 
+- Main Redis (6379) conflicts with local Redis
+
+### **1. Fix Port Conflicts in docker-compose.local.yml FIRST**
+```bash
+# Navigate to project root and edit docker-compose.local.yml
+# Change these port mappings:
+
+main-db:
+  ports:
+    - "5437:5432"  # Changed from 5432 to avoid conflict
+
+main-redis:
+  ports:
+    - "6384:6379"  # Changed from 6379 to avoid conflict
+
+# Update backend service environment:
+backend:
+  environment:
+    - DATABASE_URL=postgresql://postgres:postgres@main-db:5432/reactdjango_hub
+    - REDIS_URL=redis://main-redis:6379/0
+```
+
+### **2. Verify Dockerfile Exists**
+```bash
+# Check if Dockerfile exists at:
+# infrastructure/docker/development/Dockerfile.backend
+
+# If missing, create it:
+cat > infrastructure/docker/development/Dockerfile.backend << 'EOF'
+FROM python:3.13-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        gcc \
+        postgresql-client \
+        gettext \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Copy project
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p /app/static /app/media
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/api/health/ || exit 1
+
+# Default command (can be overridden in docker-compose)
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+EOF
+```
+
+### **3. Add Health Endpoint**
+```python
+# Add to your Django URLs (apps/api/urls.py):
+from django.http import JsonResponse
+from datetime import datetime
+
+def health_check(request):
+    return JsonResponse({
+        "status": "healthy",
+        "service": "backend-django",
+        "version": "1.0.0", 
+        "timestamp": datetime.utcnow().isoformat(),
+        "database": "connected",  # Add actual DB check
+        "features": [
+            "✅ Django REST API",
+            "✅ Business logic",
+            "✅ Data management",
+            "✅ Identity integration"
+        ]
+    })
+
+# Add to urls.py:
+urlpatterns = [
+    path('api/health/', health_check, name='health'),
+    # ... other URLs
+]
+```
+
+### **4. Test Container Build (AFTER Port Fix)**
+```bash
+# Fix ports first, then:
+
+# Build backend service
+docker-compose -f docker-compose.local.yml build backend
+
+# Start backend service  
+docker-compose -f docker-compose.local.yml up -d main-db main-redis backend
+
+# Check status
+docker-compose -f docker-compose.local.yml ps backend
+
+# Test health endpoint
+curl http://localhost:8000/api/health/
+
+# Check logs if issues
+docker-compose -f docker-compose.local.yml logs backend
+```
+
+### **5. Environment Variables (Already Configured)**
+```bash
+DATABASE_URL=postgresql://postgres:postgres@main-db:5432/reactdjango_hub
+REDIS_URL=redis://main-redis:6379/0
+IDENTITY_SERVICE_URL=http://identity-service:8001
+DEBUG=true
+SECRET_KEY=dev-secret-key-change-in-production
+ALLOWED_HOSTS=localhost,127.0.0.1,backend
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
+```
+
+### 🔴 Critical Tasks (After Container Working)
+1. [ ] ✅ **CONTAINERIZATION FIRST** (this section)
+2. [ ] Implement core entity models with audit fields
+3. [ ] Create Django Ninja API endpoints for data operations
+4. [ ] Add audit logging for all data modifications
+5. [ ] Implement integration with Identity Service for auth
+6. [ ] Set up comprehensive test suite structure
 
 ### 🟡 Important Tasks (This Week)
 1. [ ] Design transaction models and workflows

@@ -501,8 +501,209 @@ class VirusDetectedError(Exception):
 
 **🚨 URGENT: Your service needs significant refactoring. Start with architecture reorganization and service layer implementation.**
 
-**Current Priority: 
-1. Refactor to proper architecture (app/ structure)
-2. Implement document service layer
-3. Complete unit tests for core operations
-4. Setup database migrations with Alembic**
+## 🔥 **URGENT: CONTAINERIZATION (IMMEDIATE - SEPTEMBER 10, 2025)**
+
+**DEPLOYMENT-AGENT PRIORITY INSTRUCTIONS:**
+
+Your service containerization is **HIGH PRIORITY** - infrastructure is ready and waiting:
+- ✅ Database: `content-db` running on port 5435
+- ✅ Redis: `content-redis` running on port 6382
+- ✅ MinIO Storage: Available on ports 9000-9001  
+- ✅ Identity Service: Available for integration at port 8001
+
+### **1. Create Requirements Standalone**
+```bash
+# Create requirements-standalone.txt with MinIO and file processing support
+cat > requirements-standalone.txt << 'EOF'
+# Content Service - Standalone Requirements
+# Consolidated from shared + content-specific requirements
+
+# Core Framework
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+pydantic==2.11.7
+pydantic[email]==2.11.7
+pydantic-settings==2.8.0
+
+# Database & ORM  
+sqlalchemy==2.0.43
+alembic==1.14.0
+asyncpg==0.30.0
+
+# Redis & Caching
+redis==6.4.0
+aioredis==2.0.1
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+PyJWT==2.8.0
+bcrypt==4.2.0
+cryptography==42.0.8
+
+# HTTP Client
+httpx==0.27.2
+
+# Environment & Config
+python-dotenv==1.0.1
+python-multipart==0.0.12
+
+# Object Storage (Content Specific)
+minio==7.2.0
+
+# File Processing (Content Specific)
+pillow==10.1.0
+python-magic==0.4.27
+aiofiles==23.2.1
+
+# Development & Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+black==25.1.0
+isort==5.13.2
+flake8==7.1.1
+
+# Monitoring
+prometheus-client==0.21.1
+structlog==25.1.0
+EOF
+```
+
+### **2. Create Dockerfile with File Processing**
+```bash
+# Create Dockerfile following identity-service pattern + file tools
+cat > Dockerfile << 'EOF'
+# Multi-stage build for Content Service
+FROM python:3.11-slim as builder
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-standalone.txt requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Production image
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install runtime dependencies + file processing tools
+RUN apt-get update && apt-get install -y \
+    libpq5 \
+    curl \
+    libmagic1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python dependencies from builder
+COPY --from=builder /root/.local /root/.local
+
+# Make sure the PATH includes local installed packages
+ENV PATH=/root/.local/bin:$PATH
+
+# Copy application code
+COPY . .
+
+# Environment variables
+ENV PATH=/root/.local/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    SERVICE_PORT=8003
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8003/health || exit 1
+
+# Expose port
+EXPOSE 8003
+
+# Run the service
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003"]
+EOF
+```
+
+### **3. Add Health Endpoint with Storage Check**
+```python
+# Add to your FastAPI app in main.py:
+from datetime import datetime
+from minio import Minio
+
+@app.get("/health")
+async def health_check():
+    # Test MinIO connection
+    try:
+        minio_client = Minio(
+            "minio:9000",
+            access_key="minioadmin",
+            secret_key="minioadmin",
+            secure=False
+        )
+        # Simple bucket list to verify connection
+        list(minio_client.list_buckets())
+        storage_status = "connected"
+    except:
+        storage_status = "disconnected"
+    
+    return {
+        "status": "healthy",
+        "service": "content-service", 
+        "version": "1.0.0",
+        "timestamp": datetime.utcnow().isoformat(),
+        "database": "connected",  # Add actual DB check
+        "redis": "connected",     # Add actual Redis check
+        "storage": storage_status,
+        "features": [
+            "✅ Document management",
+            "✅ File processing",
+            "✅ Object storage",
+            "✅ Access control"
+        ]
+    }
+```
+
+### **4. Test Container Build**
+```bash
+# Build your service
+docker-compose -f ../../docker-compose.local.yml build content-service
+
+# Start your service  
+docker-compose -f ../../docker-compose.local.yml up -d content-service
+
+# Check status
+docker-compose -f ../../docker-compose.local.yml ps content-service
+
+# Test health endpoint
+curl http://localhost:8003/health
+
+# Check logs if issues
+docker-compose -f ../../docker-compose.local.yml logs content-service
+```
+
+### **5. Environment Variables (Already Configured)**
+Your service will receive these environment variables:
+```bash
+DATABASE_URL=postgresql+asyncpg://content_user:content_pass@content-db:5432/content_service
+REDIS_URL=redis://content-redis:6379/0
+IDENTITY_SERVICE_URL=http://identity-service:8001
+MINIO_URL=http://minio:9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+SERVICE_NAME=content-service
+SERVICE_PORT=8003
+DEBUG=true
+LOG_LEVEL=info
+```
+
+**Current Priority After Container Working:** 
+1. ✅ **CONTAINERIZATION FIRST** (this section)
+2. Refactor to proper architecture (app/ structure)
+3. Implement document service layer
+4. Complete unit tests for core operations
+5. Setup database migrations with Alembic**

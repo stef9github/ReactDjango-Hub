@@ -538,11 +538,225 @@ class OpenAIProvider(AIProvider):
 
 **🚨 CRITICAL: Your service's core functionality (workflow engine and AI integration) is completely untested. This is the highest priority.**
 
-**Current Priority: 
-1. Create workflow engine unit tests
-2. Implement state machine testing
-3. Add AI integration tests with proper mocking
-4. Setup database migrations with Alembic
-5. Achieve >80% test coverage for core functionality**
+## 🔥 **URGENT: CONTAINERIZATION (IMMEDIATE - SEPTEMBER 10, 2025)**
+
+**DEPLOYMENT-AGENT PRIORITY INSTRUCTIONS:**
+
+Your service containerization is **MEDIUM PRIORITY** (after Communication + Content) - infrastructure is ready:
+- ✅ Database: `workflow-db` running on port 5436
+- ✅ Redis: `workflow-redis` running on port 6383
+- ✅ Identity Service: Available for integration at port 8001
+- ⚠️ **DEPENDENCY**: Wait for Communication + Content services to be containerized first
+
+### **1. Create Requirements Standalone with AI Libraries**
+```bash
+# Create requirements-standalone.txt with AI and workflow support
+cat > requirements-standalone.txt << 'EOF'
+# Workflow Intelligence Service - Standalone Requirements
+# Consolidated from shared + workflow/AI-specific requirements
+
+# Core Framework
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+pydantic==2.11.7
+pydantic[email]==2.11.7
+pydantic-settings==2.8.0
+
+# Database & ORM  
+sqlalchemy==2.0.43
+alembic==1.14.0
+asyncpg==0.30.0
+
+# Redis & Caching
+redis==6.4.0
+aioredis==2.0.1
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+PyJWT==2.8.0
+bcrypt==4.2.0
+cryptography==42.0.8
+
+# HTTP Client
+httpx==0.27.2
+
+# Environment & Config
+python-dotenv==1.0.1
+python-multipart==0.0.12
+
+# Task Queue (Workflow Specific)
+celery==5.3.4
+
+# AI/ML Libraries (Workflow Specific)
+openai==1.3.5
+numpy==1.24.3
+pandas==2.0.3
+
+# Development & Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+black==25.1.0
+isort==5.13.2
+flake8==7.1.1
+
+# Monitoring
+prometheus-client==0.21.1
+structlog==25.1.0
+EOF
+```
+
+### **2. Create Dockerfile with AI Dependencies**
+```bash
+# Create Dockerfile following identity-service pattern + AI libs
+cat > Dockerfile << 'EOF'
+# Multi-stage build for Workflow Intelligence Service
+FROM python:3.11-slim as builder
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements-standalone.txt requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Production image
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python dependencies from builder
+COPY --from=builder /root/.local /root/.local
+
+# Make sure the PATH includes local installed packages
+ENV PATH=/root/.local/bin:$PATH
+
+# Copy application code
+COPY . .
+
+# Environment variables
+ENV PATH=/root/.local/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    SERVICE_PORT=8004
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8004/health || exit 1
+
+# Expose port
+EXPOSE 8004
+
+# Run the service
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]
+EOF
+```
+
+### **3. Add Health Endpoint with Service Dependencies**
+```python
+# Add to your FastAPI app in main.py:
+from datetime import datetime
+import httpx
+
+@app.get("/health")
+async def health_check():
+    # Test service dependencies
+    service_status = {}
+    
+    async with httpx.AsyncClient() as client:
+        # Test identity service
+        try:
+            response = await client.get("http://identity-service:8001/health", timeout=5.0)
+            service_status["identity"] = "connected" if response.status_code == 200 else "error"
+        except:
+            service_status["identity"] = "disconnected"
+            
+        # Test communication service (if available)
+        try:
+            response = await client.get("http://communication-service:8002/health", timeout=5.0)
+            service_status["communication"] = "connected" if response.status_code == 200 else "error"
+        except:
+            service_status["communication"] = "disconnected"
+            
+        # Test content service (if available)
+        try:
+            response = await client.get("http://content-service:8003/health", timeout=5.0)
+            service_status["content"] = "connected" if response.status_code == 200 else "error"
+        except:
+            service_status["content"] = "disconnected"
+    
+    return {
+        "status": "healthy",
+        "service": "workflow-intelligence-service", 
+        "version": "1.0.0",
+        "timestamp": datetime.utcnow().isoformat(),
+        "database": "connected",  # Add actual DB check
+        "redis": "connected",     # Add actual Redis check
+        "services": service_status,
+        "features": [
+            "✅ Workflow automation",
+            "✅ AI integration", 
+            "✅ Process management",
+            "✅ State machine"
+        ]
+    }
+```
+
+### **4. Test Container Build (AFTER Communication + Content)**
+```bash
+# WAIT for communication-service and content-service to be running first
+
+# Build your service
+docker-compose -f ../../docker-compose.local.yml build workflow-intelligence-service
+
+# Start your service  
+docker-compose -f ../../docker-compose.local.yml up -d workflow-intelligence-service
+
+# Check status
+docker-compose -f ../../docker-compose.local.yml ps workflow-intelligence-service
+
+# Test health endpoint
+curl http://localhost:8004/health
+
+# Check logs if issues
+docker-compose -f ../../docker-compose.local.yml logs workflow-intelligence-service
+```
+
+### **5. Environment Variables (Already Configured)**
+Your service will receive these environment variables:
+```bash
+DATABASE_URL=postgresql+asyncpg://workflow_user:workflow_pass@workflow-db:5432/workflow_service
+REDIS_URL=redis://workflow-redis:6379/0
+CELERY_BROKER_URL=redis://workflow-redis:6379/1
+IDENTITY_SERVICE_URL=http://identity-service:8001
+COMMUNICATION_SERVICE_URL=http://communication-service:8002
+CONTENT_SERVICE_URL=http://content-service:8003
+SERVICE_NAME=workflow-intelligence-service
+SERVICE_PORT=8004
+DEBUG=true
+LOG_LEVEL=info
+OPENAI_API_KEY=${OPENAI_API_KEY:-}
+```
+
+**Current Priority After Container Working:** 
+1. ✅ **CONTAINERIZATION FIRST** (this section)
+2. Create workflow engine unit tests
+3. Implement state machine testing
+4. Add AI integration tests with proper mocking
+5. Setup database migrations with Alembic
+6. Achieve >80% test coverage for core functionality**
 
 **Remember: A workflow engine without tests is a liability, not an asset. Every state transition must be validated, every AI call must be mocked, and every edge case must be covered.**
