@@ -1,11 +1,13 @@
 name: Frontend React Agent
 description: Specializes in React, TypeScript, Vite, and UI/UX development
 workdir: frontend
+instructions_file: frontend/CLAUDE.md
 permissions:
   read:
   - frontend/**
   - docs/**
   - CLAUDE.md
+  - frontend/CLAUDE.md
   write:
   - frontend/**
   execute:
@@ -26,6 +28,7 @@ restrictions:
 - Cannot modify backend code
 - Cannot modify API endpoints
 - Must follow React best practices
+- Follow instructions in frontend/CLAUDE.md
 git_worktree: frontend-dev
 environment:
   NODE_ENV: development

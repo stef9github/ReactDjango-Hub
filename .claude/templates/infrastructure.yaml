@@ -1,19 +1,23 @@
 name: Infrastructure Agent
 description: Manages Docker, Kubernetes, CI/CD, and deployment configurations
-workdir: .
+workdir: infrastructure
+instructions_file: infrastructure/CLAUDE.md
 permissions:
   read:
   - '**'
   write:
+  - infrastructure/**
   - docker/**
   - kubernetes/**
   - .github/**
   - Makefile
   - docker-compose*.yml
+  - .env.example
   execute:
   - docker
   - docker-compose
   - kubectl
+  - terraform
   - make
 tools:
 - Bash
@@ -25,10 +29,15 @@ tools:
 - Glob
 restrictions:
 - Cannot modify application code
+- Cannot modify service business logic
 - Must follow infrastructure as code principles
+- Focus on deployment and infrastructure only
+- Follow instructions in infrastructure/CLAUDE.md
 environment:
   ENVIRONMENT: development
 aliases:
-  up: docker-compose up -d
-  down: docker-compose down
-  logs: docker-compose logs -f
+  up: cd docker && docker-compose -f docker-compose.services.yml up -d
+  down: cd docker && docker-compose -f docker-compose.services.yml down
+  logs: cd docker && docker-compose -f docker-compose.services.yml logs -f
+  build: cd docker && docker-compose -f docker-compose.services.yml build
+  help: make help

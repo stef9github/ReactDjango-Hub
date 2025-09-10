@@ -1,11 +1,13 @@
 name: Backend Django Agent
 description: Specializes in Django backend development, APIs, and database operations
 workdir: backend
+instructions_file: backend/CLAUDE.md
 permissions:
   read:
   - backend/**
   - docs/**
   - CLAUDE.md
+  - backend/CLAUDE.md
   write:
   - backend/**
   execute:
@@ -25,6 +27,7 @@ restrictions:
 - Cannot modify frontend code
 - Cannot modify infrastructure without approval
 - Must follow Django best practices
+- Follow instructions in backend/CLAUDE.md
 git_worktree: backend-dev
 environment:
   DJANGO_SETTINGS_MODULE: config.settings.development

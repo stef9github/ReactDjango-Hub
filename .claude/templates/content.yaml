@@ -1,11 +1,13 @@
 name: Content Service Agent
 description: Manages document processing, file storage, and content management
 workdir: services/content-service
+instructions_file: services/content-service/CLAUDE.md
 permissions:
   read:
   - services/content-service/**
   - docs/**
   - CLAUDE.md
+  - services/content-service/CLAUDE.md
   write:
   - services/content-service/**
   execute:
@@ -24,6 +26,7 @@ restrictions:
 - Cannot modify other services directly
 - Must handle file uploads securely
 - Must follow data retention policies
+- Follow instructions in services/content-service/CLAUDE.md
 environment:
   SERVICE_NAME: content-service
   PORT: '8002'

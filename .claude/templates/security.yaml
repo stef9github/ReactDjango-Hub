@@ -2,6 +2,7 @@ name: Security Agent
 description: Focuses on security audits, HIPAA/RGPD compliance, and vulnerability
   scanning
 workdir: .
+instructions_file: CLAUDE.md
 permissions:
   read:
   - '**'
@@ -26,6 +27,7 @@ restrictions:
 - Must prioritize security over features
 - Cannot disable security features
 - Must maintain compliance standards
+- Follow instructions in CLAUDE.md
 environment:
   SECURITY_SCAN: 'true'
 aliases:

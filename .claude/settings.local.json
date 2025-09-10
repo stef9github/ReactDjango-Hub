@@ -37,7 +37,11 @@
       "Read(/Users/stephanerichard/**)",
       "Read(/Users/stephanerichard/.claude/**)",
       "Read(/Users/stephanerichard/.claude/**)",
-      "Read(/private/tmp/**)"
+      "Read(/private/tmp/**)",
+      "Bash(for:*)",
+      "Bash(if grep -q \"instructions_file:\" \"$file\")",
+      "Bash(else echo \"❌ Missing instructions_file\")",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": []

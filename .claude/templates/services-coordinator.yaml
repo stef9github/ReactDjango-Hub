@@ -1,0 +1,44 @@
+name: Services Coordinator Agent
+description: Cross-service coordination, API Gateway management, and microservices documentation
+workdir: services
+instructions_file: services/CLAUDE.md
+permissions:
+  read:
+  - services/**
+  - api-gateway/**
+  - docker-compose*.yml
+  - docs/**
+  - CLAUDE.md
+  - services/CLAUDE.md
+  write:
+  - services/*.md
+  - services/docker-compose.yml
+  - services/scripts/**
+  - services/docs/**
+  - api-gateway/**
+  execute:
+  - docker
+  - docker-compose
+  - curl
+  - kong
+tools:
+- Bash
+- Read
+- Write
+- Edit
+- MultiEdit
+- Grep
+- Glob
+restrictions:
+- Cannot modify individual service code
+- Cannot modify service-specific business logic
+- Must maintain service boundaries
+- Focus on coordination and integration only
+- Follow instructions in services/CLAUDE.md
+environment:
+  SERVICE_NAME: services-coordinator
+aliases:
+  up: docker-compose up -d
+  down: docker-compose down
+  logs: docker-compose logs -f
+  health: ./scripts/health-check-all.sh

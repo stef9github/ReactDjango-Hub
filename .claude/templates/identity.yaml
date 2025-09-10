@@ -1,11 +1,13 @@
 name: Identity Service Agent
 description: Manages authentication, authorization, MFA, and user management
 workdir: services/identity-service
+instructions_file: services/identity-service/CLAUDE.md
 permissions:
   read:
   - services/identity-service/**
   - docs/**
   - CLAUDE.md
+  - services/identity-service/CLAUDE.md
   write:
   - services/identity-service/**
   execute:
@@ -26,6 +28,7 @@ restrictions:
 - Cannot modify other services directly
 - Must maintain HIPAA/RGPD compliance
 - Must follow security best practices
+- Follow instructions in services/identity-service/CLAUDE.md
 environment:
   SERVICE_NAME: identity-service
   PORT: '8001'

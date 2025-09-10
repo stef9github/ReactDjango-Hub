@@ -1,6 +1,7 @@
 name: Testing Specialist Agent
 description: Focuses on test creation, coverage, CI/CD, and quality assurance
 workdir: .
+instructions_file: CLAUDE.md
 permissions:
   read:
   - '**'
@@ -27,6 +28,7 @@ tools:
 restrictions:
 - Should not modify business logic
 - Focus on test coverage and quality
+- Follow instructions in CLAUDE.md
 environment:
   TESTING: 'true'
 aliases:

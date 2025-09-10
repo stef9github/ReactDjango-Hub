@@ -1,11 +1,13 @@
 name: Communication Service Agent
 description: Handles notifications, emails, SMS, and messaging
 workdir: services/communication-service
+instructions_file: services/communication-service/CLAUDE.md
 permissions:
   read:
   - services/communication-service/**
   - docs/**
   - CLAUDE.md
+  - services/communication-service/CLAUDE.md
   write:
   - services/communication-service/**
   execute:
@@ -24,6 +26,7 @@ restrictions:
 - Cannot modify other services directly
 - Must handle PII securely in communications
 - Must respect communication preferences
+- Follow instructions in services/communication-service/CLAUDE.md
 environment:
   SERVICE_NAME: communication-service
   PORT: '8003'

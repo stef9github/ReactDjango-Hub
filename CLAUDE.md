@@ -2,6 +2,89 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 📋 **AGENT ARCHITECTURE & ROLES**
+
+### **🏗️ Agent Hierarchy**
+
+This project uses a **specialized agent architecture** where each agent has a specific domain and clear boundaries:
+
+#### **🎯 Service Specialists** (Business Logic Owners)
+- **`backend/CLAUDE.md`** - **Django Backend Agent**: Medical records, billing, business logic
+- **`frontend/CLAUDE.md`** - **React Frontend Agent**: UI/UX, patient portal, dashboards
+- **`services/identity-service/CLAUDE.md`** - **Identity Service Agent**: Authentication, users, MFA, RBAC
+- **`services/communication-service/CLAUDE.md`** - **Communication Service Agent**: Notifications, messaging, real-time chat
+- **`services/workflow-intelligence-service/CLAUDE.md`** - **Workflow Service Agent**: Process automation, AI workflows
+- **`services/content-service/CLAUDE.md`** - **Content Service Agent**: Document management, file storage, search
+
+#### **🤝 Coordination Specialists** (Integration Layer)
+- **`services/CLAUDE.md`** - **Services Coordinator Agent**: API contracts, service discovery, Kong gateway
+- **`infrastructure/CLAUDE.md`** - **Infrastructure Agent**: Docker, Kubernetes, CI/CD, cloud resources
+
+#### **🔒 Cross-Cutting Specialists** (Quality & Security)
+- **Security Agent**: HIPAA compliance, vulnerability scanning, security audits
+- **Testing Agent**: Test coverage, quality assurance, CI testing
+
+### **🚫 Agent Boundaries (Strict Separation)**
+
+| **Agent Type** | **Can Modify** | **Cannot Modify** |
+|----------------|----------------|-------------------|
+| **Service Agents** | Own service code, APIs, models, tests | Other services, infrastructure, coordination |
+| **Services Coordinator** | API contracts, service discovery, Kong config | Individual service logic, infrastructure deployment |
+| **Infrastructure Agent** | Docker, K8s, CI/CD, cloud resources | Service business logic, API endpoints |
+| **Cross-Cutting Agents** | Quality/security configs, global standards | Service implementation, infrastructure |
+
+### **🔄 Agent Collaboration Pattern**
+
+```mermaid
+graph TB
+    A[Infrastructure Agent] --> B[Services Coordinator]
+    B --> C[Identity Service]
+    B --> D[Communication Service]
+    B --> E[Content Service]  
+    B --> F[Workflow Service]
+    B --> G[Backend Service]
+    B --> H[Frontend Service]
+    
+    I[Security Agent] -.-> A
+    I -.-> B
+    I -.-> C
+    I -.-> D
+    I -.-> E
+    I -.-> F
+    I -.-> G
+    I -.-> H
+    
+    J[Testing Agent] -.-> A
+    J -.-> B
+    J -.-> C
+    J -.-> D
+    J -.-> E
+    J -.-> F
+    J -.-> G
+    J -.-> H
+```
+
+### **🎯 Agent Interaction Rules**
+
+#### **Service-to-Service Communication**
+- ✅ Services communicate **only through APIs** (managed by Services Coordinator)
+- ✅ Use **Services Coordinator** for integration questions
+- ❌ **Never directly modify another service's code**
+
+#### **Infrastructure Requests**
+- ✅ Service agents request deployment changes from **Infrastructure Agent**
+- ✅ **Infrastructure Agent** implements without changing business logic
+- ❌ **Service agents cannot modify Docker/K8s configs directly**
+
+#### **Documentation Maintenance**
+- ✅ Each agent maintains **its own CLAUDE.md file**
+- ✅ Update priorities and completed tasks regularly
+- ✅ Services Coordinator maintains **cross-service integration docs**
+
+## 📄 **AGENT DOCUMENTATION FILES**
+
+Each agent has a dedicated CLAUDE.md file with specific instructions:
+
 ## 🏥 **PROJECT OVERVIEW**
 
 **ReactDjango Hub Medical** - A modern, secure, and scalable SaaS platform for medical practices with HIPAA/RGPD compliance, built on microservices architecture.
