@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload, joinedload
 
 from .base import BaseRepository
-from ..models.document import Document, DocumentVersion
+from models.document import Document, DocumentVersion
 from ..schemas.document import DocumentListItem, DocumentStatsResponse
 
 
@@ -57,6 +57,18 @@ class DocumentRepository(BaseRepository[Document]):
     async def find_by_hash(self, file_hash: str) -> Optional[Document]:
         """Find document by file hash (duplicate detection)."""
         return await self.find_one(file_hash=file_hash)
+    
+    async def get_by_id_and_organization(self, document_id: UUID, organization_id: UUID) -> Optional[Document]:
+        """Get document by ID with organization check for security."""
+        stmt = select(Document).where(
+            and_(
+                Document.id == document_id,
+                Document.organization_id == organization_id,
+                Document.status == "active"
+            )
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
     
     async def find_by_organization(
         self,

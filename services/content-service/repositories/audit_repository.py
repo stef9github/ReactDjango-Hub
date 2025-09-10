@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from .base import BaseRepository
-from ..models.audit import DocumentAudit
+from models.audit import DocumentAudit
 
 
 class AuditRepository(BaseRepository[DocumentAudit]):

@@ -11,7 +11,7 @@ from sqlalchemy import select, update, delete, func, and_, or_, desc, asc
 from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.sql import Select
 
-from ..database.connection import Base
+from database.connection import Base
 
 T = TypeVar('T', bound=Base)
 

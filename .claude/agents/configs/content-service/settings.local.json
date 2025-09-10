@@ -8,7 +8,9 @@
       "Bash(docker logs:*)",
       "Bash(docker build:*)",
       "Bash(git add:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(pip install:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

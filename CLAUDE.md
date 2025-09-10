@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### **🏗️ Microservices Architecture**
 | Service | Purpose | Port | Technology | Status |
 |---------|---------|------|------------|---------|
-| **`auth-service`** | Authentication, users, organizations, MFA | 8001 | FastAPI + PostgreSQL | ✅ Production Ready |
+| **`identity-service`** | Authentication, users, organizations, MFA | 8001 | FastAPI + PostgreSQL | ✅ **100% Production Ready + Enterprise Testing** |
 | **`backend` (Django)** | Business logic, medical records, billing | 8000 | Django + PostgreSQL | 🚧 Integrates with auth-service |
 | **`frontend`** | User interface | 3000/5173 | React + Vite + Tailwind | 🔄 Connects to both services |
 
@@ -22,7 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### **Key Features**
 - **Microservices Architecture**: Separate authentication and business logic services
-- **Comprehensive Authentication**: 30+ endpoints with MFA, user management, organizations
+- **Comprehensive Authentication**: 40 endpoints with MFA, user management, organizations + enterprise testing
 - **Multi-tenant Architecture**: Organization isolation managed by auth-service
 - **Medical Records Management**: Patient data, HL7/DICOM support in Django service
 - **HIPAA/RGPD Compliance**: Full audit logging across all services
@@ -32,10 +32,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### **Local Development Commands**
 
-#### **🔐 Auth Service (Start First)**
+#### **🔐 Identity Service (Start First)**
 ```bash
-# Auth service - handles authentication, users, organizations
-cd services/auth-service
+# Identity service - handles authentication, users, organizations  
+cd services/identity-service
 pip install -r requirements.txt
 python main.py                    # Runs on http://localhost:8001
 # OR: docker-compose up -d         # Full containerized stack
@@ -72,8 +72,8 @@ npm run type-check
 
 #### **🚀 Quick Full Stack Startup**
 ```bash
-# Terminal 1: Auth Service
-cd services/auth-service && python main.py
+# Terminal 1: Identity Service  
+cd services/identity-service && python main.py
 
 # Terminal 2: Django Backend  
 cd backend && python manage.py runserver

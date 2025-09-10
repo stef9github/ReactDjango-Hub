@@ -13,7 +13,7 @@ from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB, INET
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from ..database.connection import Base
+from database.connection import Base
 
 
 class DocumentAudit(Base):

@@ -7,13 +7,19 @@ import time
 import logging
 import psutil
 import httpx
+import aiofiles
+import magic
+import uuid as uuid_lib
 from contextlib import asynccontextmanager
-from typing import List
+from typing import List, Optional
 from uuid import UUID
+from pathlib import Path
+from datetime import datetime
 
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import database and models
@@ -21,11 +27,18 @@ from database import (
     db, get_db_session, init_database, close_database, check_database_health
 )
 from models import Document
-from repositories import DocumentRepository, AuditRepository
+from repositories import DocumentRepository, AuditRepository, PermissionRepository
 from schemas import (
     DocumentCreate, DocumentResponse, DocumentListResponse, 
-    DocumentDetailResponse, ErrorResponse, PaginationParams
+    DocumentDetailResponse, ErrorResponse, PaginationParams,
+    GrantUserPermissionRequest, GrantRolePermissionRequest,
+    ShareDocumentRequest, ShareDocumentResponse,
+    DocumentPermissionSummary, EffectivePermissionsResponse,
+    DocumentAccessCheckRequest, DocumentAccessCheckResponse
 )
+
+# Import missing dependencies
+import aiofiles.os
 
 # Configure logging
 logging.basicConfig(
@@ -39,6 +52,21 @@ SERVICE_NAME = os.getenv("SERVICE_NAME", "content-service")
 SERVICE_VERSION = "1.0.0"
 SERVICE_PORT = int(os.getenv("SERVICE_PORT", 8002))
 IDENTITY_SERVICE_URL = os.getenv("IDENTITY_SERVICE_URL", "http://localhost:8001")
+
+# File upload configuration
+MAX_FILE_SIZE_MB = int(os.getenv("MAX_FILE_SIZE_MB", 50))
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+UPLOAD_DIRECTORY = Path(os.getenv("UPLOAD_DIRECTORY", "./uploads"))
+STORAGE_DIRECTORY = Path(os.getenv("STORAGE_DIRECTORY", "./storage"))
+ALLOWED_CONTENT_TYPES = os.getenv(
+    "ALLOWED_CONTENT_TYPES", 
+    "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,image/jpeg,image/png,image/tiff"
+).split(",")
+
+# Ensure directories exist
+UPLOAD_DIRECTORY.mkdir(parents=True, exist_ok=True)
+STORAGE_DIRECTORY.mkdir(parents=True, exist_ok=True)
+
 start_time = time.time()
 
 # JWT Authentication setup
@@ -225,7 +253,52 @@ async def get_current_user(current_user: dict = Depends(validate_jwt_token)):
     }
 
 
-# Document management endpoints
+# =============================================================================
+# PERMISSION HELPER FUNCTIONS
+# =============================================================================
+
+async def _get_user_permissions(document: Document, current_user: dict, session: AsyncSession) -> dict:
+    """Get user's effective permissions for a document."""
+    try:
+        perm_repo = PermissionRepository(session)
+        
+        # Owner has all permissions
+        if document.created_by == current_user["id"]:
+            return {
+                "read": True,
+                "write": True,
+                "delete": True,
+                "share": True,
+                "admin": True
+            }
+        
+        # Get user roles
+        user_roles = current_user.get("roles", [])
+        
+        # Get effective permissions from database
+        effective_perms = await perm_repo.get_user_effective_permissions(
+            document_id=document.id,
+            user_id=current_user["id"],
+            user_roles=user_roles
+        )
+        
+        return effective_perms
+        
+    except Exception as e:
+        logger.error(f"Error getting user permissions: {e}")
+        # Default to minimal permissions on error
+        return {
+            "read": False,
+            "write": False,
+            "delete": False,
+            "share": False,
+            "admin": False
+        }
+
+
+# =============================================================================
+# DOCUMENT MANAGEMENT ENDPOINTS
+# =============================================================================
 @app.get("/api/v1/documents", response_model=DocumentListResponse)
 async def list_documents(
     pagination: PaginationParams = Depends(),
@@ -379,13 +452,7 @@ async def get_document(
             text_preview=document.extracted_text[:500] + "..." if document.extracted_text and len(document.extracted_text) > 500 else document.extracted_text,
             current_version=document.current_version,
             version_count=len(document.versions),
-            permissions={
-                "read": True,
-                "write": True,  # TODO: implement proper permissions
-                "delete": True,
-                "share": True,
-                "admin": True
-            }
+            permissions=await _get_user_permissions(document, current_user, session)
         )
         
     except HTTPException:
@@ -579,14 +646,1019 @@ async def get_document_statistics(
         )
 
 
-# Placeholder endpoints for future implementation
-@app.post("/api/v1/documents")
-async def upload_document():
-    return {"message": "Document upload endpoint - will be implemented in Week 2"}
+# File validation utilities
+async def validate_file(file: UploadFile) -> str:
+    """Validate uploaded file for security and compliance"""
+    # Check file size
+    if file.size and file.size > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File size ({file.size} bytes) exceeds maximum allowed size ({MAX_FILE_SIZE_MB}MB)"
+        )
+    
+    # Read file content for validation (without loading entire file)
+    content_start = await file.read(1024)  # Read first 1KB
+    await file.seek(0)  # Reset file pointer
+    
+    # Validate MIME type using python-magic
+    mime_type = magic.from_buffer(content_start, mime=True)
+    if mime_type not in ALLOWED_CONTENT_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File type '{mime_type}' not allowed. Allowed types: {', '.join(ALLOWED_CONTENT_TYPES)}"
+        )
+    
+    # Basic security checks
+    if file.filename:
+        # Prevent path traversal
+        if ".." in file.filename or "/" in file.filename or "\\" in file.filename:
+            raise HTTPException(status_code=400, detail="Invalid filename")
+        
+        # Check for dangerous extensions
+        dangerous_extensions = [".exe", ".bat", ".cmd", ".scr", ".vbs", ".js"]
+        if any(file.filename.lower().endswith(ext) for ext in dangerous_extensions):
+            raise HTTPException(status_code=400, detail="Dangerous file type not allowed")
+    
+    return mime_type
 
-@app.post("/api/v1/documents/{doc_id}/process")
-async def process_document(doc_id: UUID):
-    return {"message": f"Document {doc_id} processing - will be implemented in Week 3"}
+
+async def save_uploaded_file(file: UploadFile, document_id: UUID) -> tuple[Path, int]:
+    """Save uploaded file to storage and return file path and size"""
+    # Generate unique filename
+    file_extension = Path(file.filename or "unknown").suffix.lower()
+    unique_filename = f"{document_id}{file_extension}"
+    file_path = STORAGE_DIRECTORY / unique_filename
+    
+    # Save file
+    total_size = 0
+    async with aiofiles.open(file_path, 'wb') as f:
+        while chunk := await file.read(8192):  # Read in 8KB chunks
+            total_size += len(chunk)
+            if total_size > MAX_FILE_SIZE_BYTES:
+                await aiofiles.os.remove(file_path)  # Clean up partial file
+                raise HTTPException(
+                    status_code=413, 
+                    detail=f"File size exceeds maximum allowed size ({MAX_FILE_SIZE_MB}MB)"
+                )
+            await f.write(chunk)
+    
+    return file_path, total_size
+
+
+# Document upload and download endpoints
+@app.post("/api/v1/documents")
+async def upload_document(
+    file: UploadFile = File(...),
+    description: Optional[str] = Form(None),
+    tags: Optional[str] = Form(None),
+    category: Optional[str] = Form(None),
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Upload a new document with validation and metadata extraction"""
+    try:
+        # Validate file
+        mime_type = await validate_file(file)
+        
+        # Generate document ID
+        document_id = uuid_lib.uuid4()
+        
+        # Save file to storage
+        file_path, file_size = await save_uploaded_file(file, document_id)
+        
+        # Generate file hash for duplicate detection
+        import hashlib
+        file_hash = hashlib.sha256()
+        await file.seek(0)  # Reset file pointer
+        while chunk := await file.read(8192):
+            file_hash.update(chunk)
+        await file.seek(0)  # Reset again for saving
+        
+        file_hash_hex = file_hash.hexdigest()
+        
+        # Save to database using repository method
+        doc_repo = DocumentRepository(db)
+        document = await doc_repo.create_document(
+            filename=file.filename or "unknown",
+            original_filename=file.filename or "unknown", 
+            content_type=mime_type,
+            file_size=file_size,
+            file_hash=file_hash_hex,
+            storage_path=str(file_path),
+            created_by=current_user["user_id"],
+            organization_id=current_user["organization_id"],
+            metadata={
+                "description": description,
+                "tags": [tag.strip() for tag in tags.split(",")] if tags else [],
+                "category": category,
+                "upload_source": "api"
+            }
+        )
+        
+        # Log audit trail
+        audit_repo = AuditRepository(db)
+        await audit_repo.log_action(
+            action="uploaded",
+            user_id=current_user["user_id"],
+            organization_id=current_user["organization_id"],
+            document_id=document.id,
+            details={
+                "filename": file.filename,
+                "content_type": mime_type,
+                "file_size": file_size
+            }
+        )
+        
+        logger.info(f"Document {document.id} uploaded successfully by user {current_user['user_id']}")
+        
+        return {
+            "id": str(document.id),
+            "filename": document.filename,
+            "original_filename": document.original_filename,
+            "content_type": document.content_type,
+            "file_size": document.file_size,
+            "file_hash": document.file_hash,
+            "status": document.status,
+            "document_type": document.document_type,
+            "metadata": document.metadata or {},
+            "created_at": document.created_at.isoformat(),
+            "updated_at": document.updated_at.isoformat(),
+            "organization_id": str(document.organization_id)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to upload document: {e}")
+        # Clean up file if it was created
+        if 'file_path' in locals():
+            try:
+                await aiofiles.os.remove(file_path)
+            except:
+                pass
+        raise HTTPException(status_code=500, detail="Failed to upload document")
+
+
+@app.get("/api/v1/documents/{document_id}/download")
+async def download_document(
+    document_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Download a document with security checks"""
+    try:
+        doc_repo = DocumentRepository(db)
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Check file exists on disk
+        file_path = Path(document.file_path)
+        if not file_path.exists():
+            logger.error(f"Document file missing: {file_path}")
+            raise HTTPException(status_code=404, detail="Document file not found")
+        
+        # Log audit trail
+        audit_repo = AuditRepository(db)
+        await audit_repo.log_action(
+            action="downloaded",
+            user_id=current_user["user_id"],
+            organization_id=current_user["organization_id"],
+            document_id=document.id,
+            details={
+                "filename": document.filename,
+                "file_size": document.file_size
+            }
+        )
+        
+        # Return file response with proper headers
+        return FileResponse(
+            path=str(file_path),
+            filename=document.original_filename or document.filename,
+            media_type=document.content_type,
+            headers={
+                "Content-Disposition": f"attachment; filename=\"{document.original_filename or document.filename}\"",
+                "Content-Length": str(document.file_size),
+                "X-Content-Type-Options": "nosniff",
+                "X-Frame-Options": "DENY"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to download document {document_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to download document")
+
+
+@app.get("/api/v1/documents/{document_id}/stream")
+async def stream_document(
+    document_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Stream a document for browser viewing (PDFs, images)"""
+    try:
+        doc_repo = DocumentRepository(db)
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        file_path = Path(document.file_path)
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="Document file not found")
+        
+        # Only allow streaming of safe content types
+        streamable_types = [
+            "application/pdf", 
+            "image/jpeg", "image/png", "image/gif", "image/tiff",
+            "text/plain"
+        ]
+        
+        if document.content_type not in streamable_types:
+            raise HTTPException(
+                status_code=400, 
+                detail="Document type not suitable for streaming. Use download instead."
+            )
+        
+        # Create streaming response
+        async def file_streamer():
+            async with aiofiles.open(file_path, 'rb') as file:
+                while chunk := await file.read(8192):
+                    yield chunk
+        
+        # Log audit trail
+        audit_repo = AuditRepository(db)
+        await audit_repo.log_action(
+            action="viewed",
+            user_id=current_user["user_id"],
+            organization_id=current_user["organization_id"],
+            document_id=document.id,
+            details={
+                "filename": document.filename,
+                "view_type": "stream"
+            }
+        )
+        
+        return StreamingResponse(
+            file_streamer(),
+            media_type=document.content_type,
+            headers={
+                "Content-Length": str(document.file_size),
+                "Content-Disposition": f"inline; filename=\"{document.filename}\"",
+                "Cache-Control": "private, no-cache",
+                "X-Content-Type-Options": "nosniff"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to stream document {document_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to stream document")
+
+
+# Document processing endpoints
+@app.post("/api/v1/documents/{document_id}/process")
+async def process_document(
+    document_id: UUID,
+    processing_type: str = "metadata_extraction",  # metadata_extraction, ocr, content_analysis
+    priority: int = 5,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Queue document for background processing"""
+    try:
+        # Get document with organization check
+        doc_repo = DocumentRepository(db)
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Check if document file exists
+        file_path = Path(document.storage_path)
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="Document file not found on disk")
+        
+        # Check if already processing
+        if document.processing_status == "processing":
+            raise HTTPException(status_code=409, detail="Document is already being processed")
+        
+        # Validate processing type
+        valid_types = ["metadata_extraction", "ocr", "content_analysis"]
+        if processing_type not in valid_types:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid processing type. Must be one of: {', '.join(valid_types)}"
+            )
+        
+        # Import processing components
+        from processing.queue_manager import ProcessingQueueManager, ProcessingTask
+        
+        # Create queue manager
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+        queue_manager = ProcessingQueueManager(redis_url)
+        await queue_manager.connect()
+        
+        try:
+            # Create processing task
+            task = ProcessingTask(
+                id=str(uuid_lib.uuid4()),
+                document_id=str(document_id),
+                organization_id=str(current_user["organization_id"]),
+                user_id=str(current_user["user_id"]),
+                task_type=processing_type,
+                priority=max(1, min(10, priority)),  # Clamp priority between 1-10
+                file_path=str(file_path),
+                mime_type=document.content_type,
+                parameters={
+                    "filename": document.filename,
+                    "original_filename": document.original_filename,
+                    "file_size": document.file_size
+                }
+            )
+            
+            # Enqueue task
+            success = await queue_manager.enqueue_task(task)
+            
+            if not success:
+                raise HTTPException(status_code=500, detail="Failed to queue processing task")
+            
+            # Update document processing status
+            await doc_repo.update_by_id(document_id, processing_status="pending")
+            
+            # Log audit trail
+            audit_repo = AuditRepository(db)
+            await audit_repo.log_action(
+                action="processing_queued",
+                user_id=current_user["user_id"],
+                organization_id=current_user["organization_id"],
+                document_id=document_id,
+                details={
+                    "task_id": task.id,
+                    "processing_type": processing_type,
+                    "priority": priority,
+                    "filename": document.filename
+                }
+            )
+            
+            logger.info(f"Queued {processing_type} task {task.id} for document {document_id}")
+            
+            return {
+                "task_id": task.id,
+                "document_id": str(document_id),
+                "processing_type": processing_type,
+                "status": "queued",
+                "priority": priority,
+                "estimated_duration_seconds": 120,  # Default estimate
+                "message": f"Document queued for {processing_type.replace('_', ' ')}"
+            }
+            
+        finally:
+            await queue_manager.disconnect()
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to queue processing for document {document_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to queue document processing")
+
+
+@app.get("/api/v1/documents/{document_id}/processing-status")
+async def get_processing_status(
+    document_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Get document processing status"""
+    try:
+        # Get document with organization check
+        doc_repo = DocumentRepository(db)
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Get processing tasks from queue
+        from processing.queue_manager import ProcessingQueueManager
+        
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+        queue_manager = ProcessingQueueManager(redis_url)
+        await queue_manager.connect()
+        
+        try:
+            # Get queue stats for this document (simplified)
+            queue_stats = await queue_manager.get_queue_stats()
+            
+            return {
+                "document_id": str(document_id),
+                "processing_status": document.processing_status,
+                "ocr_completed": document.ocr_completed,
+                "text_extraction_confidence": document.text_extraction_confidence,
+                "last_processed": document.updated_at.isoformat(),
+                "has_extracted_text": bool(document.extracted_text),
+                "word_count": document.word_count,
+                "language": document.language,
+                "queue_stats": {
+                    "total_pending": sum([
+                        queue_stats.get("queue_high_length", 0),
+                        queue_stats.get("queue_normal_length", 0),
+                        queue_stats.get("queue_low_length", 0)
+                    ]),
+                    "currently_processing": queue_stats.get("processing_count", 0)
+                }
+            }
+            
+        finally:
+            await queue_manager.disconnect()
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get processing status for document {document_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get processing status")
+
+
+@app.get("/api/v1/processing/queue-stats")
+async def get_queue_statistics(
+    current_user: dict = Depends(get_current_user)
+):
+    """Get processing queue statistics"""
+    try:
+        from processing.queue_manager import ProcessingQueueManager
+        
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+        queue_manager = ProcessingQueueManager(redis_url)
+        await queue_manager.connect()
+        
+        try:
+            stats = await queue_manager.get_queue_stats()
+            
+            return {
+                "queue_stats": stats,
+                "organization_id": str(current_user["organization_id"]),
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            
+        finally:
+            await queue_manager.disconnect()
+            
+    except Exception as e:
+        logger.error(f"Failed to get queue statistics: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get queue statistics")
+
+# =============================================================================
+# DOCUMENT PERMISSION ENDPOINTS
+# =============================================================================
+
+@app.post("/api/v1/documents/{document_id}/permissions/users")
+async def grant_user_permission(
+    document_id: UUID,
+    request: GrantUserPermissionRequest,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+):
+    """Grant permissions to a user for a document."""
+    try:
+        doc_repo = DocumentRepository(session)
+        perm_repo = PermissionRepository(session)
+        audit_repo = AuditRepository(session)
+        
+        # Verify document exists and user has admin access
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Check if current user has admin permission or is owner
+        if document.created_by != current_user["id"]:
+            # TODO: Check admin permissions when role system is complete
+            pass
+        
+        # Grant permission
+        permission = await perm_repo.grant_user_permission(
+            document_id=document_id,
+            user_id=request.user_id,
+            permissions=request.permissions,
+            granted_by=current_user["id"],
+            expires_at=request.expires_at
+        )
+        
+        # Log the action
+        await audit_repo.log_action(
+            action="grant_user_permission",
+            user_id=current_user["id"],
+            organization_id=current_user["organization_id"],
+            document_id=document_id,
+            details={
+                "target_user_id": str(request.user_id),
+                "permissions": request.permissions,
+                "expires_at": request.expires_at.isoformat() if request.expires_at else None
+            }
+        )
+        
+        await session.commit()
+        
+        return {
+            "success": True,
+            "message": "User permission granted successfully",
+            "permission_id": str(permission.id),
+            "user_id": str(request.user_id),
+            "permissions": request.permissions,
+            "expires_at": request.expires_at
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        await session.rollback()
+        logger.error(f"Error granting user permission: {e}")
+        raise HTTPException(status_code=500, detail="Failed to grant permission")
+
+
+@app.post("/api/v1/documents/{document_id}/permissions/roles")
+async def grant_role_permission(
+    document_id: UUID,
+    request: GrantRolePermissionRequest,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+):
+    """Grant permissions to a role for a document."""
+    try:
+        doc_repo = DocumentRepository(session)
+        perm_repo = PermissionRepository(session)
+        audit_repo = AuditRepository(session)
+        
+        # Verify document exists and user has admin access
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Check if current user has admin permission or is owner
+        if document.created_by != current_user["id"]:
+            # TODO: Check admin permissions when role system is complete
+            pass
+        
+        # Grant permission
+        permission = await perm_repo.grant_role_permission(
+            document_id=document_id,
+            role_name=request.role_name,
+            permissions=request.permissions,
+            granted_by=current_user["id"],
+            expires_at=request.expires_at
+        )
+        
+        # Log the action
+        await audit_repo.log_action(
+            action="grant_role_permission",
+            user_id=current_user["id"],
+            organization_id=current_user["organization_id"],
+            document_id=document_id,
+            details={
+                "target_role": request.role_name,
+                "permissions": request.permissions,
+                "expires_at": request.expires_at.isoformat() if request.expires_at else None
+            }
+        )
+        
+        await session.commit()
+        
+        return {
+            "success": True,
+            "message": "Role permission granted successfully",
+            "permission_id": str(permission.id),
+            "role_name": request.role_name,
+            "permissions": request.permissions,
+            "expires_at": request.expires_at
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        await session.rollback()
+        logger.error(f"Error granting role permission: {e}")
+        raise HTTPException(status_code=500, detail="Failed to grant permission")
+
+
+@app.get("/api/v1/documents/{document_id}/permissions")
+async def get_document_permissions(
+    document_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+) -> DocumentPermissionSummary:
+    """Get all permissions for a document."""
+    try:
+        doc_repo = DocumentRepository(session)
+        perm_repo = PermissionRepository(session)
+        
+        # Verify document exists and user has access
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Get permission summary
+        summary = await perm_repo.get_permission_summary(document_id)
+        
+        return DocumentPermissionSummary(**summary)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting document permissions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get permissions")
+
+
+@app.get("/api/v1/documents/{document_id}/permissions/effective")
+async def get_effective_permissions(
+    document_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+) -> EffectivePermissionsResponse:
+    """Get effective permissions for the current user."""
+    try:
+        doc_repo = DocumentRepository(session)
+        perm_repo = PermissionRepository(session)
+        
+        # Verify document exists and user has access
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Get user roles from current_user context
+        user_roles = current_user.get("roles", [])
+        
+        # Get effective permissions
+        effective_perms = await perm_repo.get_user_effective_permissions(
+            document_id=document_id,
+            user_id=current_user["id"],
+            user_roles=user_roles
+        )
+        
+        # Determine sources
+        sources = []
+        if document.created_by == current_user["id"]:
+            sources.append("owner")
+            effective_perms = {perm: True for perm in effective_perms}  # Owner has all permissions
+        
+        # Check for direct user permissions
+        user_perm = await perm_repo.get_user_permissions(document_id, current_user["id"])
+        if user_perm and not user_perm.is_expired:
+            sources.append("direct")
+        
+        # Check role permissions
+        for role in user_roles:
+            role_perm = await perm_repo.get_role_permissions(document_id, role)
+            if role_perm and not role_perm.is_expired:
+                sources.append(f"role:{role}")
+        
+        return EffectivePermissionsResponse(
+            user_id=current_user["id"],
+            document_id=document_id,
+            permissions=effective_perms,
+            sources=sources
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting effective permissions: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get effective permissions")
+
+
+@app.post("/api/v1/documents/{document_id}/share")
+async def share_document(
+    document_id: UUID,
+    request: ShareDocumentRequest,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+) -> ShareDocumentResponse:
+    """Share a document with a user or role."""
+    try:
+        doc_repo = DocumentRepository(session)
+        perm_repo = PermissionRepository(session)
+        audit_repo = AuditRepository(session)
+        
+        # Verify document exists and user has share permission
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Check if user can share (owner or has share permission)
+        can_share = document.created_by == current_user["id"]
+        if not can_share:
+            user_roles = current_user.get("roles", [])
+            can_share = await perm_repo.check_user_permission(
+                document_id, current_user["id"], user_roles, "share"
+            )
+        
+        if not can_share:
+            raise HTTPException(status_code=403, detail="No permission to share this document")
+        
+        # Share the document
+        if request.share_type == "user":
+            permission = await perm_repo.grant_user_permission(
+                document_id=document_id,
+                user_id=UUID(request.target_id),
+                permissions=request.permissions,
+                granted_by=current_user["id"],
+                expires_at=request.expires_at
+            )
+        else:  # role
+            permission = await perm_repo.grant_role_permission(
+                document_id=document_id,
+                role_name=request.target_id,
+                permissions=request.permissions,
+                granted_by=current_user["id"],
+                expires_at=request.expires_at
+            )
+        
+        # Log the share action
+        await audit_repo.log_action(
+            action="share_document",
+            user_id=current_user["id"],
+            organization_id=current_user["organization_id"],
+            document_id=document_id,
+            details={
+                "share_type": request.share_type,
+                "target_id": request.target_id,
+                "permissions": request.permissions,
+                "message": request.message,
+                "expires_at": request.expires_at.isoformat() if request.expires_at else None
+            }
+        )
+        
+        await session.commit()
+        
+        return ShareDocumentResponse(
+            success=True,
+            message=f"Document shared with {request.share_type} successfully",
+            permission_id=permission.id,
+            shared_with=request.target_id,
+            permissions_granted=request.permissions,
+            expires_at=request.expires_at
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        await session.rollback()
+        logger.error(f"Error sharing document: {e}")
+        raise HTTPException(status_code=500, detail="Failed to share document")
+
+
+@app.delete("/api/v1/documents/{document_id}/permissions/users/{user_id}")
+async def revoke_user_permission(
+    document_id: UUID,
+    user_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+):
+    """Revoke user permissions for a document."""
+    try:
+        doc_repo = DocumentRepository(session)
+        perm_repo = PermissionRepository(session)
+        audit_repo = AuditRepository(session)
+        
+        # Verify document exists and user has admin access
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Check if current user has admin permission or is owner
+        if document.created_by != current_user["id"]:
+            # TODO: Check admin permissions when role system is complete
+            pass
+        
+        # Revoke permission
+        revoked = await perm_repo.revoke_user_permission(document_id, user_id)
+        
+        if not revoked:
+            raise HTTPException(status_code=404, detail="Permission not found")
+        
+        # Log the action
+        await audit_repo.log_action(
+            action="revoke_user_permission",
+            user_id=current_user["id"],
+            organization_id=current_user["organization_id"],
+            document_id=document_id,
+            details={"target_user_id": str(user_id)}
+        )
+        
+        await session.commit()
+        
+        return {"success": True, "message": "User permission revoked successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        await session.rollback()
+        logger.error(f"Error revoking user permission: {e}")
+        raise HTTPException(status_code=500, detail="Failed to revoke permission")
+
+
+@app.delete("/api/v1/documents/{document_id}/permissions/roles/{role_name}")
+async def revoke_role_permission(
+    document_id: UUID,
+    role_name: str,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+):
+    """Revoke role permissions for a document."""
+    try:
+        doc_repo = DocumentRepository(session)
+        perm_repo = PermissionRepository(session)
+        audit_repo = AuditRepository(session)
+        
+        # Verify document exists and user has admin access
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Check if current user has admin permission or is owner
+        if document.created_by != current_user["id"]:
+            # TODO: Check admin permissions when role system is complete
+            pass
+        
+        # Revoke permission
+        revoked = await perm_repo.revoke_role_permission(document_id, role_name)
+        
+        if not revoked:
+            raise HTTPException(status_code=404, detail="Permission not found")
+        
+        # Log the action
+        await audit_repo.log_action(
+            action="revoke_role_permission",
+            user_id=current_user["id"],
+            organization_id=current_user["organization_id"],
+            document_id=document_id,
+            details={"target_role": role_name}
+        )
+        
+        await session.commit()
+        
+        return {"success": True, "message": "Role permission revoked successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        await session.rollback()
+        logger.error(f"Error revoking role permission: {e}")
+        raise HTTPException(status_code=500, detail="Failed to revoke permission")
+
+
+@app.post("/api/v1/documents/{document_id}/access-check")
+async def check_document_access(
+    document_id: UUID,
+    request: DocumentAccessCheckRequest,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+) -> DocumentAccessCheckResponse:
+    """Check if a user has access to a document."""
+    try:
+        doc_repo = DocumentRepository(session)
+        perm_repo = PermissionRepository(session)
+        
+        # Verify document exists
+        document = await doc_repo.get_by_id_and_organization(
+            document_id, current_user["organization_id"]
+        )
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Check access
+        has_access = await perm_repo.check_user_permission(
+            document_id=document_id,
+            user_id=request.user_id,
+            user_roles=request.user_roles,
+            permission_type=request.permission_type
+        )
+        
+        # Determine access source
+        access_source = None
+        if has_access:
+            if document.created_by == request.user_id:
+                access_source = "owner"
+            else:
+                # Check for direct permission
+                user_perm = await perm_repo.get_user_permissions(document_id, request.user_id)
+                if user_perm and not user_perm.is_expired:
+                    access_source = "direct"
+                else:
+                    # Check role permissions
+                    for role in request.user_roles:
+                        role_perm = await perm_repo.get_role_permissions(document_id, role)
+                        if role_perm and not role_perm.is_expired:
+                            access_source = f"role:{role}"
+                            break
+        
+        # Get effective permissions
+        effective_perms = await perm_repo.get_user_effective_permissions(
+            document_id=document_id,
+            user_id=request.user_id,
+            user_roles=request.user_roles
+        )
+        
+        # Owner has all permissions
+        if document.created_by == request.user_id:
+            effective_perms = {perm: True for perm in effective_perms}
+        
+        return DocumentAccessCheckResponse(
+            user_id=request.user_id,
+            document_id=document_id,
+            has_access=has_access,
+            permission_type=request.permission_type,
+            access_source=access_source,
+            effective_permissions=effective_perms
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error checking document access: {e}")
+        raise HTTPException(status_code=500, detail="Failed to check access")
+
+
+@app.get("/api/v1/users/{user_id}/accessible-documents")
+async def get_user_accessible_documents(
+    user_id: UUID,
+    user_roles: List[str] = [],
+    limit: int = 50,
+    offset: int = 0,
+    current_user: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session)
+):
+    """Get documents accessible to a user based on permissions."""
+    try:
+        perm_repo = PermissionRepository(session)
+        
+        # Get accessible documents
+        documents = await perm_repo.get_user_accessible_documents(
+            user_id=user_id,
+            user_roles=user_roles,
+            organization_id=current_user["organization_id"],
+            limit=limit,
+            offset=offset
+        )
+        
+        # Convert to response format
+        document_list = []
+        for doc in documents:
+            document_list.append({
+                "id": str(doc.id),
+                "filename": doc.filename,
+                "content_type": doc.content_type,
+                "file_size": doc.file_size,
+                "created_at": doc.created_at.isoformat(),
+                "created_by": str(doc.created_by),
+                "status": doc.status
+            })
+        
+        return {
+            "total_count": len(document_list),
+            "documents": document_list,
+            "page": offset // limit + 1,
+            "limit": limit,
+            "has_more": len(documents) == limit
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting accessible documents: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get accessible documents")
+
 
 @app.get("/api/v1/search")
 async def search_documents(q: str):

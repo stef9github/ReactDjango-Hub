@@ -23,6 +23,16 @@ from .search import (
     SemanticSearchRequest,
     SuggestionResponse
 )
+from .permission import (
+    GrantUserPermissionRequest,
+    GrantRolePermissionRequest,
+    ShareDocumentRequest,
+    ShareDocumentResponse,
+    DocumentPermissionSummary,
+    EffectivePermissionsResponse,
+    DocumentAccessCheckRequest,
+    DocumentAccessCheckResponse
+)
 from .common import (
     PaginationParams,
     ErrorResponse,
@@ -42,6 +52,14 @@ __all__ = [
     "SearchResponse",
     "SemanticSearchRequest",
     "SuggestionResponse",
+    "GrantUserPermissionRequest",
+    "GrantRolePermissionRequest",
+    "ShareDocumentRequest",
+    "ShareDocumentResponse",
+    "DocumentPermissionSummary",
+    "EffectivePermissionsResponse",
+    "DocumentAccessCheckRequest",
+    "DocumentAccessCheckResponse",
     "PaginationParams",
     "ErrorResponse",
     "SuccessResponse"

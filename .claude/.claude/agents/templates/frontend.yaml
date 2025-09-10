@@ -1,0 +1,36 @@
+name: Frontend React Agent
+description: Specializes in React, TypeScript, Vite, and UI/UX development
+workdir: frontend
+permissions:
+  read:
+  - frontend/**
+  - docs/**
+  - CLAUDE.md
+  write:
+  - frontend/**
+  execute:
+  - npm
+  - node
+  - vite
+  - jest
+  - vitest
+tools:
+- Bash
+- Read
+- Write
+- Edit
+- MultiEdit
+- Grep
+- Glob
+restrictions:
+- Cannot modify backend code
+- Cannot modify API endpoints
+- Must follow React best practices
+git_worktree: frontend-dev
+environment:
+  NODE_ENV: development
+aliases:
+  dev: npm run dev
+  build: npm run build
+  test: npm test
+  lint: npm run lint

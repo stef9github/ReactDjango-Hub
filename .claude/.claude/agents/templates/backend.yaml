@@ -1,0 +1,35 @@
+name: Backend Django Agent
+description: Specializes in Django backend development, APIs, and database operations
+workdir: backend
+permissions:
+  read:
+  - backend/**
+  - docs/**
+  - CLAUDE.md
+  write:
+  - backend/**
+  execute:
+  - python
+  - pip
+  - django-admin
+  - pytest
+tools:
+- Bash
+- Read
+- Write
+- Edit
+- MultiEdit
+- Grep
+- Glob
+restrictions:
+- Cannot modify frontend code
+- Cannot modify infrastructure without approval
+- Must follow Django best practices
+git_worktree: backend-dev
+environment:
+  DJANGO_SETTINGS_MODULE: config.settings.development
+  PYTHONPATH: ${workdir}
+aliases:
+  migrate: python manage.py migrate
+  test: python manage.py test
+  shell: python manage.py shell

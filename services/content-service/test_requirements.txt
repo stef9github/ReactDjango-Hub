@@ -1,0 +1,118 @@
+# ====================================
+# TESTING DEPENDENCIES
+# ====================================
+
+# Core testing framework
+pytest==7.4.4
+pytest-asyncio==0.23.2
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-xdist==3.5.0  # For parallel test execution
+pytest-html==4.1.1   # For HTML test reports
+pytest-json-report==1.5.0  # For JSON test reports
+
+# HTTP testing
+httpx==0.26.0
+pytest-httpx==0.27.0
+requests-mock==1.11.0
+
+# Database testing
+pytest-postgresql==5.0.0
+psycopg2-binary==2.9.9
+sqlalchemy-utils==0.41.1
+alembic==1.13.1
+
+# Async testing
+aiofiles==24.1.0
+aiohttp==3.9.1
+aioresponses==0.7.6
+
+# File testing and mocking
+Pillow==10.1.0
+python-magic==0.4.27
+fake-useragent==1.4.0
+
+# Time/Date testing
+freezegun==1.2.2
+
+# Data generation for testing
+Faker==21.0.0
+factory-boy==3.3.0
+
+# Performance and load testing
+locust==2.20.0
+
+# Code quality and linting (for CI)
+black==23.12.1
+isort==5.13.2
+flake8==7.0.0
+mypy==1.8.0
+bandit==1.7.5
+
+# Documentation testing
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+
+# Security testing
+safety==2.3.5
+
+# Environment and configuration testing
+python-dotenv==1.0.0
+
+# Memory profiling for performance tests
+memory-profiler==0.61.0
+psutil==5.9.7
+
+# Fixtures and test data
+pytest-fixtures==0.1.0
+
+# Additional testing utilities
+pytest-timeout==2.2.0  # Test timeouts
+pytest-rerunfailures==12.0  # Rerun flaky tests
+pytest-benchmark==4.0.0  # Performance benchmarking
+pytest-clarity==1.0.1  # Better assertion output
+
+# Redis testing (for queue testing)
+fakeredis==2.21.1
+redis==5.0.1
+
+# File format testing
+PyPDF2==3.0.1
+python-docx==1.1.2
+openpyxl==3.1.5
+python-pptx==1.0.2
+odfpy==1.4.1
+
+# Mock and stubbing
+responses==0.24.1
+vcrpy==5.1.0  # For recording HTTP interactions
+
+# Test reporting and metrics
+coverage==7.4.0
+pytest-sugar==0.9.7  # Better output formatting
+
+# Container testing (if using Docker in tests)
+testcontainers==3.7.1
+
+# API testing
+jsonschema==4.20.0
+pydantic==2.5.3
+
+# Parallel processing testing
+concurrent-futures==3.1.1
+
+# File system testing
+pyfakefs==5.3.4
+
+# Network testing
+pytest-socket==0.6.0  # Control network access in tests
+
+# Load testing utilities
+artillery==0.1.2
+
+# Test fixtures for common scenarios
+pytest-lazy-fixture==0.6.3
+
+# Additional development dependencies for testing
+ipython==8.18.1  # For debugging tests
+ipdb==0.13.13    # Python debugger for tests

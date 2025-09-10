@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from .base import BaseRepository
-from ..models.processing import ProcessingJob, ProcessingJobType, JobStatus
+from models.processing import ProcessingJob, ProcessingJobType, JobStatus
 
 
 class ProcessingJobRepository(BaseRepository[ProcessingJob]):

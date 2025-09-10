@@ -14,7 +14,7 @@ from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from ..database.connection import Base
+from database.connection import Base
 
 
 class Document(Base):
@@ -166,6 +166,24 @@ class Document(Base):
     
     permissions: Mapped[List["DocumentPermission"]] = relationship(
         "DocumentPermission",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
+    
+    shares: Mapped[List["DocumentShare"]] = relationship(
+        "DocumentShare",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
+    
+    comments: Mapped[List["DocumentComment"]] = relationship(
+        "DocumentComment",
+        back_populates="document",
+        cascade="all, delete-orphan"
+    )
+    
+    activities: Mapped[List["DocumentActivity"]] = relationship(
+        "DocumentActivity",
         back_populates="document",
         cascade="all, delete-orphan"
     )

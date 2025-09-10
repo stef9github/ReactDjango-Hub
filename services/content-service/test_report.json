@@ -1,0 +1,76 @@
+{
+  "service": "content-service",
+  "timestamp": "2025-09-10T03:23:44.712993",
+  "status": "READY_FOR_TESTING",
+  "test_suite": {
+    "total_files": 11,
+    "total_lines": 5206,
+    "categories": {
+      "unit_tests": [
+        "test_unit_repositories.py"
+      ],
+      "integration_tests": [
+        "test_auth_integration.py",
+        "test_integration_pipeline.py",
+        "test_database_persistence.py"
+      ],
+      "security_tests": [
+        "test_auth_failures.py",
+        "test_endpoints_security.py",
+        "test_permissions.py"
+      ],
+      "feature_tests": [
+        "test_upload_download.py",
+        "test_metadata_extraction.py",
+        "test_file_streaming.py",
+        "test_audit_logging.py"
+      ]
+    }
+  },
+  "components": {
+    "models": [
+      "Document",
+      "DocumentShare",
+      "DocumentVersion",
+      "AuditLog"
+    ],
+    "repositories": [
+      "DocumentRepository",
+      "PermissionRepository",
+      "CollaborationRepository",
+      "AuditRepository"
+    ],
+    "apis": [
+      "Document Management",
+      "Permission Control",
+      "File Upload/Download",
+      "Metadata Extraction",
+      "Audit Logging"
+    ]
+  },
+  "database": {
+    "migrations": 3,
+    "tables": [
+      "documents",
+      "document_shares",
+      "document_versions",
+      "permissions",
+      "audit_logs"
+    ]
+  },
+  "dependencies": {
+    "required": [
+      "FastAPI",
+      "SQLAlchemy",
+      "PostgreSQL",
+      "Redis",
+      "MinIO"
+    ],
+    "test_tools": [
+      "pytest",
+      "pytest-asyncio",
+      "pytest-cov",
+      "fakeredis"
+    ]
+  }
+}

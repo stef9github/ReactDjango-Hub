@@ -24,3 +24,15 @@ aioredis==2.0.1
 
 # Template engine
 jinja2==3.1.2
+
+# File handling for upload/download
+aiofiles==24.1.0
+
+# Metadata extraction dependencies
+python-docx==1.1.2        # Microsoft Word documents
+openpyxl==3.1.5           # Excel spreadsheets  
+python-pptx==1.0.2        # PowerPoint presentations
+odfpy==1.4.1              # OpenDocument formats
+beautifulsoup4==4.12.3    # HTML parsing
+lxml==5.3.0               # XML processing
+python-dateutil==2.9.0    # Date parsing
