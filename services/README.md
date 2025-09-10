@@ -189,28 +189,77 @@ docker-compose up -d --scale communication-service=3
 ./scripts/cleanup-services.sh      # Removes all containers, volumes, and networks
 ```
 
-### 🛠️ **Container Conflict Resolution**
-The startup script automatically handles common Docker conflicts:
+### 🛠️ **Service Management Patterns & Conflict Resolution**
+
+#### **Two Service Deployment Patterns**
+1. **🐳 Coordinated Docker Stack** (Recommended for integration testing)
+   - All services run in Docker containers with shared networking
+   - Managed via `docker-compose` with centralized configuration
+   - Best for testing service-to-service communication
+
+2. **⚡ Standalone Development** (Recommended for individual service development)
+   - Services run directly via `python main.py` with local virtual environments
+   - Each service has `setup-dev-env.sh` and `requirements-standalone.txt`
+   - Faster development cycle with instant reloading
+
+#### **⚠️ Conflict Prevention & Resolution**
+
+**Common Conflict Scenario:**
+```bash
+# If a standalone Communication Service is running:
+python main.py  # (running on port 8003)
+
+# And you try to start the coordinated stack:
+docker-compose up -d  # ❌ Will fail - port 8003 already in use
+```
 
 **Automatic Cleanup Features:**
-- **Standalone Service Detection**: Stops individual services that conflict with coordinated stack
-- **Port Conflict Resolution**: Automatically frees up ports 8001-8004 from standalone containers  
-- **Container Name Conflicts**: Removes containers with conflicting names
-- **Volume Cleanup**: Cleans up orphaned volumes to prevent data conflicts
-- **Network Management**: Recreates service networks with proper configuration
+- **✅ Standalone Service Detection**: Stops Python processes on ports 8001-8004 that conflict with Docker stack
+- **✅ Port Conflict Resolution**: Automatically frees up service ports from standalone containers  
+- **✅ Container Name Conflicts**: Removes containers with conflicting names
+- **✅ Volume Cleanup**: Cleans up orphaned volumes to prevent data conflicts
+- **✅ Network Management**: Recreates service networks with proper configuration
 
-**Manual Cleanup Options:**
+**Service Management Commands:**
 ```bash
-# If you encounter "container name already in use" errors:
-./scripts/cleanup-services.sh
+# Enhanced cleanup that handles both Docker AND standalone services:
+./scripts/cleanup-services.sh      # Stops Python processes + removes containers
 
-# For quick restart without data loss (preserves volumes):
-./scripts/stop-all-services.sh
-docker-compose start
+# Enhanced stop that handles both deployment patterns:
+./scripts/stop-all-services.sh     # Gracefully stops Docker + standalone services
 
-# For debugging container conflicts:
+# Start with automatic conflict resolution:
+./scripts/start-all-services.sh    # Auto-detects and stops conflicting services
+```
+
+**Manual Troubleshooting:**
+```bash
+# Check what's running on service ports:
+lsof -i :8001  # Identity Service
+lsof -i :8002  # Content Service  
+lsof -i :8003  # Communication Service
+lsof -i :8004  # Workflow Service
+
+# Stop specific standalone service:
+kill $(lsof -t -i:8003)  # Stop Communication Service on port 8003
+
+# Debug Docker conflicts:
 docker ps -a                       # See all containers
 docker-compose down --remove-orphans  # Clean up orphaned containers
+```
+
+**Recommended Development Workflow:**
+```bash
+# Option A: Individual Service Development (fastest iteration)
+cd services/communication-service
+./setup-dev-env.sh      # Set up virtual environment
+source venv/bin/activate
+python main.py          # Run standalone on port 8003
+
+# Option B: Full Integration Testing (most realistic)
+cd services
+./scripts/start-all-services.sh    # Auto-stops standalone, starts Docker stack
+./scripts/health-check-all.sh      # Verify all services are healthy
 ```
 
 ### 🌐 **API Gateway Coordination**

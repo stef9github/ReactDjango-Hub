@@ -34,6 +34,32 @@ docker network rm services_services-network 2>/dev/null || true
 echo "💾 Removing conflicting volumes..."
 docker volume rm $(docker volume ls -q --filter name=services_) 2>/dev/null || true
 
+# Stop any standalone service processes
+echo "🛑 Checking for standalone service processes..."
+echo "Stopping standalone services on ports 8001-8004..."
+
+# Function to stop process on specific port
+stop_service_on_port() {
+    local port=$1
+    local service_name=$2
+    local pid=$(lsof -t -i:$port 2>/dev/null)
+    if [ -n "$pid" ]; then
+        echo "   🔍 Found standalone $service_name (PID: $pid) on port $port"
+        kill -TERM $pid 2>/dev/null && echo "   ✅ Stopped $service_name" || echo "   ⚠️  Failed to stop $service_name"
+        sleep 2
+        # Force kill if still running
+        if kill -0 $pid 2>/dev/null; then
+            kill -KILL $pid 2>/dev/null && echo "   ⚡ Force stopped $service_name"
+        fi
+    fi
+}
+
+# Check and stop all service ports
+stop_service_on_port 8001 "Identity Service"
+stop_service_on_port 8002 "Content Service"
+stop_service_on_port 8003 "Communication Service"
+stop_service_on_port 8004 "Workflow Intelligence Service"
+
 # Clean up dangling resources
 echo "🔄 Cleaning up dangling resources..."
 docker system prune -f --volumes
@@ -43,5 +69,5 @@ echo "📦 Cleaning up build cache..."
 docker builder prune -f
 
 echo ""
-echo "✅ Cleanup complete! All services resources have been removed."
+echo "✅ Cleanup complete! All Docker containers and standalone services have been stopped."
 echo "You can now start services cleanly with: ./scripts/start-all-services.sh"
