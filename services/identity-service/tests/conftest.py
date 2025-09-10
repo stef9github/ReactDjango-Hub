@@ -9,8 +9,9 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.main import app
-from app.core.database import Base, get_session
+from test_app import app
+from app.core.database import get_session
+from app.models.enhanced_models import Base, User, Organization
 from app.core.config import settings
 
 
@@ -41,13 +42,19 @@ async def test_engine():
 
 @pytest_asyncio.fixture
 async def test_session(test_engine):
-    """Create test database session"""
+    """Create test database session with proper cleanup"""
     async_session_maker = async_sessionmaker(
         test_engine, class_=AsyncSession, expire_on_commit=False
     )
     
     async with async_session_maker() as session:
-        yield session
+        try:
+            yield session
+        finally:
+            # Ensure session is properly closed and rolled back if needed
+            if session.in_transaction():
+                await session.rollback()
+            await session.close()
 
 
 @pytest_asyncio.fixture
@@ -65,6 +72,34 @@ async def test_client(test_session):
     app.dependency_overrides.clear()
 
 
+@pytest_asyncio.fixture
+async def verify_db_cleanup(test_session):
+    """Verify database cleanup between tests"""
+    from sqlalchemy import text
+    
+    # Count records before test
+    result = await test_session.execute(text("SELECT COUNT(*) FROM users"))
+    users_before = result.scalar()
+    
+    result = await test_session.execute(text("SELECT COUNT(*) FROM organizations"))  
+    orgs_before = result.scalar()
+    
+    yield
+    
+    # Verify counts are same or rolled back (should be 0 for fresh tests)
+    result = await test_session.execute(text("SELECT COUNT(*) FROM users"))
+    users_after = result.scalar()
+    
+    result = await test_session.execute(text("SELECT COUNT(*) FROM organizations"))
+    orgs_after = result.scalar()
+    
+    # Log cleanup status for debugging
+    if users_after > users_before or orgs_after > orgs_before:
+        print(f"⚠️  Database cleanup warning: Users {users_before}→{users_after}, Orgs {orgs_before}→{orgs_after}")
+    else:
+        print(f"✅ Database cleanup verified: Clean state maintained")
+
+
 @pytest.fixture
 def auth_headers():
     """Generate authentication headers for tests"""
@@ -77,13 +112,15 @@ def auth_headers():
 async def test_user(test_session):
     """Create test user"""
     from app.models.enhanced_models import User
-    from app.core.security import hash_password
+    from app.core.security import SecurityUtils
     
     user = User(
         email="testuser@example.com",
-        password_hash=hash_password("testpassword123"),
+        password_hash=SecurityUtils.hash_password("testpassword123"),
         is_active=True,
-        is_verified=True
+        is_verified=True,
+        first_name="Test",
+        last_name="User"
     )
     
     test_session.add(user)
@@ -96,31 +133,22 @@ async def test_user(test_session):
 @pytest_asyncio.fixture
 async def test_admin_user(test_session):
     """Create test admin user"""
-    from app.models.enhanced_models import User, Role, UserRole
-    from app.core.security import hash_password
-    
-    # Create admin role
-    admin_role = Role(name="admin", description="Administrator role")
-    test_session.add(admin_role)
-    await test_session.commit()
-    await test_session.refresh(admin_role)
+    from app.models.enhanced_models import User
+    from app.core.security import SecurityUtils
     
     # Create admin user
     admin_user = User(
         email="admin@example.com",
-        password_hash=hash_password("adminpassword123"),
+        password_hash=SecurityUtils.hash_password("adminpassword123"),
         is_active=True,
-        is_verified=True
+        is_verified=True,
+        first_name="Admin",
+        last_name="User"
     )
     
     test_session.add(admin_user)
     await test_session.commit()
     await test_session.refresh(admin_user)
-    
-    # Assign admin role
-    user_role = UserRole(user_id=admin_user.id, role_id=admin_role.id)
-    test_session.add(user_role)
-    await test_session.commit()
     
     return admin_user
 

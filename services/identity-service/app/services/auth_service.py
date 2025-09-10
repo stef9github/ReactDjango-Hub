@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, and_
 from sqlalchemy.orm import selectinload
 
-from app.models.enhanced_models import User, Role, Permission, UserRole, EmailVerification, PasswordReset
+from app.models.enhanced_models import User, EmailVerification, PasswordReset
 from app.services.email_service import EmailService
 from app.core.config import settings
 

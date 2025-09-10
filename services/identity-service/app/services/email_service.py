@@ -8,16 +8,16 @@ import secrets
 import hashlib
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
-from email.mime.text import MimeText
-from email.mime.multipart import MimeMultipart
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from dataclasses import dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 
-from .enhanced_models import User, EmailVerification, PasswordReset
-from .config import settings
+from app.models.enhanced_models import User, EmailVerification, PasswordReset
+from app.core.config import settings
 
 
 @dataclass
@@ -44,14 +44,14 @@ class EmailService:
     async def send_email(self, to_email: str, template: EmailTemplate) -> bool:
         """Send email using SMTP"""
         try:
-            msg = MimeMultipart('alternative')
+            msg = MIMEMultipart('alternative')
             msg['Subject'] = template.subject
             msg['From'] = f"{self.from_name} <{self.from_email}>"
             msg['To'] = to_email
             
             # Add text and HTML parts
-            text_part = MimeText(template.text_body, 'plain')
-            html_part = MimeText(template.html_body, 'html')
+            text_part = MIMEText(template.text_body, 'plain')
+            html_part = MIMEText(template.html_body, 'html')
             
             msg.attach(text_part)
             msg.attach(html_part)

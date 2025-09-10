@@ -84,7 +84,6 @@ class User(Base):
     
     # Relationships
     organization = relationship("Organization", back_populates="users")
-    user_roles = relationship("UserRole", back_populates="user", cascade="all, delete-orphan")
     sessions = relationship("UserSession", back_populates="user", cascade="all, delete-orphan")
     activity_logs = relationship("UserActivityLog", back_populates="user")
 
@@ -142,7 +141,6 @@ class Organization(Base):
     
     # Relationships
     users = relationship("User", back_populates="organization")
-    roles = relationship("Role", back_populates="organization")
 
 
 class UserProfile(Base):
@@ -185,8 +183,8 @@ class UserProfile(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    user = relationship("User")
-    manager = relationship("User", remote_side="User.id")
+    user = relationship("User", foreign_keys=[user_id])
+    manager = relationship("User", foreign_keys=[manager_user_id])
 
 
 class UserActivityLog(Base):

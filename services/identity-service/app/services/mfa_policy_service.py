@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
 
-from .enhanced_models import User, Organization
+from app.models.enhanced_models import User, Organization
 
 
 class MFARequirement(str, Enum):
@@ -371,7 +371,7 @@ class MFAPolicyService:
     
     async def _log_policy_change(self, level: str, action: str, details: Dict) -> None:
         """Log MFA policy changes"""
-        from .enhanced_models import UserActivityLog
+        from app.models.enhanced_models import UserActivityLog
         
         log_entry = UserActivityLog(
             user_id=None,  # System-level change
