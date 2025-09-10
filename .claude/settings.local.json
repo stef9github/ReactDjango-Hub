@@ -67,7 +67,8 @@
       "Bash(./start-all-services.sh:*)",
       "Bash(pwdx:*)",
       "Bash(tree:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(open:*)"
     ],
     "deny": [],
     "ask": []
