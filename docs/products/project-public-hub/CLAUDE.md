@@ -48,6 +48,22 @@ PublicHub is an AI-powered platform that transforms how public entities manage p
 
 ### 4. Analytics Dashboard
 - Procurement performance metrics
+
+## Documentation Structure
+
+The PublicHub documentation has been simplified to match the medical-hub structure:
+
+### Core Documents
+- **[strategie.md](./strategie.md)** - Complete strategy and market positioning
+- **[roadmap.md](./roadmap.md)** - Detailed timeline 2025-2027
+- **[equipe.md](./equipe.md)** - Team composition and growth plan
+- **[technique.md](./technique.md)** - Technical architecture and AI strategy
+- **[financement.md](./financement.md)** - Fundraising timeline and financial projections
+- **[concurrents.md](./concurrents.md)** - Competitive analysis
+- **[acteurs-principaux.md](./acteurs-principaux.md)** - Main market actors
+
+### Archive
+Previous detailed documentation is available in the [archive/](./archive/) folder for historical reference.
 - Vendor performance tracking
 - Budget optimization insights
 - Market intelligence reports
