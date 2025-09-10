@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Define available agents
-VALID_AGENTS="ag-backend ag-frontend ag-identity ag-communication ag-content ag-workflow ag-infrastructure ag-coordinator ag-security ag-reviewer ag-techlead ag-surgical-product-manager"
+VALID_AGENTS="ag-backend ag-frontend ag-identity ag-communication ag-content ag-workflow ag-infrastructure ag-coordinator ag-security ag-reviewer ag-techlead ag-surgical-product-manager ag-public-procurement-product-manager"
 
 # Function to get agent info
 get_agent_info() {
@@ -34,6 +34,7 @@ get_agent_info() {
         ag-reviewer) echo "Code Review|Code quality, PR reviews, best practices" ;;
         ag-techlead) echo "Technical Lead|Architecture decisions, research analysis, strategic planning" ;;
         ag-surgical-product-manager) echo "Surgical Product Manager|Product strategy for surgical SaaS, French healthcare market expertise" ;;
+        ag-public-procurement-product-manager) echo "Public Procurement Product Manager|B2G SaaS strategy, CCTP intelligence, French public sector expertise" ;;
         *) echo "Unknown|Unknown agent" ;;
     esac
 }
@@ -75,10 +76,10 @@ show_usage() {
     echo ""
     
     echo -e "${GREEN}Product Management:${NC}"
-    for agent in ag-surgical-product-manager; do
+    for agent in ag-surgical-product-manager ag-public-procurement-product-manager; do
         info=$(get_agent_info "$agent")
         IFS='|' read -r title desc <<< "$info"
-        printf "  %-20s - %s\n" "$agent" "$desc"
+        printf "  %-30s - %s\n" "$agent" "$desc"
     done
     echo ""
     echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
@@ -228,6 +229,22 @@ main() {
     fi
     
     local agent_name="$1"
+    
+    # Handle common aliases (without ag- prefix)
+    case "$agent_name" in
+        backend) agent_name="ag-backend" ;;
+        frontend) agent_name="ag-frontend" ;;
+        identity) agent_name="ag-identity" ;;
+        communication) agent_name="ag-communication" ;;
+        content) agent_name="ag-content" ;;
+        workflow) agent_name="ag-workflow" ;;
+        infrastructure) agent_name="ag-infrastructure" ;;
+        coordinator) agent_name="ag-coordinator" ;;
+        security) agent_name="ag-security" ;;
+        reviewer) agent_name="ag-reviewer" ;;
+        techlead) agent_name="ag-techlead" ;;
+        surgical-product-manager) agent_name="ag-surgical-product-manager" ;;
+    esac
     
     # Validate agent name
     if [[ ! " $VALID_AGENTS " =~ " $agent_name " ]]; then

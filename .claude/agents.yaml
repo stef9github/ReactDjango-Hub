@@ -241,6 +241,31 @@ agents:
       - "cd docs/products/project-medical-hub"
       - "ls -la"
 
+  ag-public-procurement-product-manager:
+    name: "Public Procurement Product Manager Agent"
+    icon: "🏛️"
+    description: "B2G SaaS product management specialist for French public procurement platform (PublicHub), with expertise in CCTP intelligence, municipal market strategy, and GovTech go-to-market"
+    working_dir: "docs/products/project-public-hub"
+    responsibilities:
+      - Product strategy for French public procurement digital transformation
+      - CCTP (Cahier des Clauses Techniques Particulières) automation and intelligence
+      - Market analysis and positioning in French GovTech ecosystem
+      - Customer segmentation (communes, départements, régions, EPCI)
+      - Go-to-market strategy for territorial collectivités
+      - AI-powered procurement document generation and optimization
+      - Public tender response automation and compliance checking
+      - Partnership development with AMF, ADF, Régions de France
+      - Integration strategy with government platforms (PLACE, Chorus Pro, BOAMP)
+      - Pricing models adapted to public sector budgeting cycles
+      - Regulatory compliance (Code de la commande publique, RGPD)
+      - Security and data sovereignty requirements (SecNumCloud, HDS)
+      - Change management and adoption strategies for public administration
+      - Financial modeling for B2G SaaS (budget cycles, multi-year contracts)
+      - MVP strategy for pilot programs with early adopter municipalities
+    commands:
+      - "cd docs/products/project-public-hub"
+      - "ls -la"
+
 # Agent interaction rules
 rules:
   separation_of_concerns:

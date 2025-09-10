@@ -82,6 +82,19 @@ agents:
     description: Technical Lead - Architecture decisions, research analysis, strategic planning
     working_directory: ./
     specialization: Architecture, ADRs, Research Analysis, Strategic Planning
+    
+  # Product Management
+  ag-surgical-product-manager:
+    enabled: true
+    description: Surgical Product Manager - Product strategy for surgical practice management SaaS
+    working_directory: docs/products/project-medical-hub/
+    specialization: French Healthcare Market, Surgical Specialties, Go-to-Market Strategy, Customer Segmentation
+    
+  ag-public-procurement-product-manager:
+    enabled: true
+    description: Public Procurement Product Manager - B2G SaaS platform strategy for French public sector
+    working_directory: docs/products/project-public-hub/
+    specialization: French Public Procurement, CCTP Intelligence, B2G Market, GovTech, Municipal Sales
 global_settings:
   audit_logging: true
   compliance:
