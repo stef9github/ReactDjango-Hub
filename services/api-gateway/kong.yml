@@ -96,9 +96,9 @@ services:
 
   # Communication Service
   - name: communication-service
-    url: http://communication-service:8002
+    url: http://communication-service:8003
     protocol: http
-    port: 8002
+    port: 8003
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
@@ -143,9 +143,9 @@ services:
 
   # Content Service
   - name: content-service
-    url: http://content-service:8003
+    url: http://content-service:8002
     protocol: http
-    port: 8003
+    port: 8002
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
@@ -187,9 +187,9 @@ services:
 
   # Workflow Intelligence Service
   - name: workflow-intelligence-service
-    url: http://workflow-intelligence-service:8005
+    url: http://workflow-intelligence-service:8004
     protocol: http
-    port: 8005
+    port: 8004
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
@@ -283,7 +283,7 @@ upstreams:
           interval: 5
           http_failures: 3
     targets:
-      - target: communication-service-1:8002
+      - target: communication-service-1:8003
         weight: 100
         
   # Load balancing for content service  
@@ -300,7 +300,7 @@ upstreams:
           interval: 5
           http_failures: 3
     targets:
-      - target: content-service-1:8003
+      - target: content-service-1:8002
         weight: 100
         
   # Load balancing for workflow-intelligence service
@@ -317,5 +317,5 @@ upstreams:
           interval: 5
           http_failures: 3
     targets:
-      - target: workflow-intelligence-service-1:8005
+      - target: workflow-intelligence-service-1:8004
         weight: 100

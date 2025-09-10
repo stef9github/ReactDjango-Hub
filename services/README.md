@@ -11,7 +11,21 @@
 
 ## 🚀 **Quick Start**
 
-### Start All Services
+### ⭐ **Centralized Service Orchestration** (RECOMMENDED)
+```bash
+cd services
+
+# Start all services with proper dependency ordering
+./start-all-services.sh
+
+# Check service health
+./health-check-all.sh
+
+# Stop all services gracefully
+./stop-all-services.sh
+```
+
+### Manual Docker Compose
 ```bash
 cd services
 docker-compose up -d
@@ -36,8 +50,13 @@ cd services/workflow-intelligence-service
 python main.py  # or uvicorn main:app --reload --port 8004
 ```
 
-## 📡 **API Documentation**
+## 📡 **API Documentation & Endpoints**
 
+### 🚪 **API Gateway (Kong) - Primary Access Point**
+- **Kong Proxy**: http://localhost:8000 (routes to all services)
+- **Kong Admin API**: http://localhost:8445
+
+### 📖 **Service Documentation**
 When services are running, access interactive API docs:
 
 - **Identity Service**: http://localhost:8001/docs ✅ **Production Ready**
@@ -143,7 +162,48 @@ See [`requirements.shared.txt`](./requirements.shared.txt) for the complete list
 
 ## 🎯 **Development Workflow**
 
-### Using Specialized Agents
+### 🔧 **Centralized Service Management**
+```bash
+# From services/ directory - manage all services together:
+cd services
+
+# Start everything with proper health checks and dependency ordering
+./start-all-services.sh
+
+# Monitor all services
+./health-check-all.sh
+
+# View logs for specific service
+docker-compose logs -f identity-service
+
+# Scale a specific service
+docker-compose up -d --scale communication-service=3
+
+# Stop everything gracefully
+./stop-all-services.sh
+```
+
+### 🌐 **API Gateway Coordination**
+All frontend requests should route through Kong API Gateway at `http://localhost:8000`:
+
+```javascript
+// Frontend API calls should use gateway endpoints:
+const API_BASE = 'http://localhost:8000/api/v1';
+
+// Authentication
+fetch(`${API_BASE}/auth/login`, { ... });
+
+// Documents  
+fetch(`${API_BASE}/documents`, { ... });
+
+// Notifications
+fetch(`${API_BASE}/notifications`, { ... });
+
+// Workflows
+fetch(`${API_BASE}/workflows`, { ... });
+```
+
+### 🤖 **Using Specialized Agents**
 Each service has a dedicated Claude Code agent in `.claude/agents/`:
 
 - `identity-service-agent.md` - Auth + Users + Roles specialist
@@ -153,7 +213,7 @@ Each service has a dedicated Claude Code agent in `.claude/agents/`:
 
 ### Service-Specific Development
 ```bash
-# Work on identity service
+# Work on individual services (for service-specific agents)
 cd services/identity-service
 claude  # Uses identity-service-agent
 
@@ -175,6 +235,26 @@ claude  # Uses content-service-agent
 - **Content**: Medical documents, patient records  
 - **Communication**: Patient reminders, clinical messaging
 - **Workflow**: Patient care pathway automation
+
+## 🔄 **Service Coordination Features**
+
+### ✅ **Health Monitoring**
+- Comprehensive health checks for all services, databases, and Redis
+- Dependency-aware startup sequence
+- Graceful shutdown with proper cleanup
+- Real-time service status monitoring
+
+### 🔗 **Service Discovery**
+- Kong API Gateway manages all service routing
+- Proper service-to-service communication patterns
+- Load balancing and failover support
+- API versioning and backward compatibility
+
+### 🏗️ **Infrastructure Coordination**
+- Unified Docker Compose orchestration
+- Shared environment configuration
+- Centralized logging and monitoring
+- Database and Redis instance management
 
 ---
 

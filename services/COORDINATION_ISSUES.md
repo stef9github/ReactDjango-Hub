@@ -7,6 +7,63 @@ This file tracks cross-service coordination issues that require Services Coordin
 
 ## 📋 **Current Open Issues**
 
+### ✅ **RESOLVED** - Issue #004: Critical API Gateway and Service Orchestration
+**Date**: 2025-09-10  
+**Reporter**: Services Coordinator Agent  
+**Severity**: **CRITICAL**  
+**Description**: Multiple critical coordination failures preventing proper service communication and deployment  
+**Service(s) Affected**: ALL SERVICES + API Gateway  
+
+**Issues Found**:
+1. **Kong API Gateway Port Misalignments**:
+   - Communication service: Kong pointed to port 8002, should be 8003
+   - Content service: Kong pointed to port 8003, should be 8002  
+   - Workflow service: Kong pointed to port 8005, should be 8004
+   - Upstream targets also had wrong port mappings
+
+2. **Missing Centralized Orchestration**:
+   - No unified Docker Compose file for all services
+   - No proper dependency management between services
+   - No health check coordination
+   - No startup/shutdown scripts for development
+
+3. **Kong Admin Port Conflict**:
+   - Kong admin API conflicted with identity service on port 8001
+
+**Resolution Actions**:
+✅ **Kong Configuration Fixed**:
+- Updated `/services/api-gateway/kong.yml` with correct service ports
+- Fixed all upstream target port mappings
+- Resolved Kong admin port conflict (moved to 8445)
+
+✅ **Centralized Orchestration Created**:
+- Created `/services/docker-compose.yml` with full service stack
+- Added proper health checks for all databases and services  
+- Implemented dependency-aware service startup ordering
+- Added Kong API Gateway integration
+
+✅ **Coordination Scripts Created**:
+- `start-all-services.sh` - Coordinated startup with dependency ordering
+- `stop-all-services.sh` - Graceful shutdown with cleanup options
+- `health-check-all.sh` - Comprehensive health monitoring
+
+✅ **Documentation Updated**:
+- Updated services README with centralized coordination instructions
+- Added API Gateway routing documentation
+- Added service coordination features documentation
+
+**Final Architecture**:
+```
+Frontend → Kong API Gateway (8000) → Services
+                                 ├── Identity Service (8001)
+                                 ├── Content Service (8002)  
+                                 ├── Communication Service (8003)
+                                 └── Workflow Service (8004)
+```
+
+**Testing Status**: Docker Compose configuration validated successfully  
+**Status**: ✅ **RESOLVED** - All services now properly coordinated through centralized orchestration
+
 ### ✅ **RESOLVED** - Issue #001: Requirements Management Pattern
 **Date**: 2025-09-09  
 **Reporter**: Services Coordinator (detected during identity-service requirements update)  

@@ -1,0 +1,394 @@
+version: '3.8'
+
+services:
+  # ====================
+  # DATABASES
+  # ====================
+  
+  # Identity Service Database
+  identity-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: identity_service
+      POSTGRES_USER: identity_user
+      POSTGRES_PASSWORD: identity_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - identity_db_data:/var/lib/postgresql/data
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U identity_user -d identity_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Content Service Database
+  content-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: content_service
+      POSTGRES_USER: content_user
+      POSTGRES_PASSWORD: content_pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - content_db_data:/var/lib/postgresql/data
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U content_user -d content_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Communication Service Database
+  communication-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: communication_service
+      POSTGRES_USER: communication_user
+      POSTGRES_PASSWORD: communication_pass
+    ports:
+      - "5435:5432"
+    volumes:
+      - communication_db_data:/var/lib/postgresql/data
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U communication_user -d communication_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Workflow Intelligence Service Database
+  workflow-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: workflow_intelligence_service
+      POSTGRES_USER: workflow_user
+      POSTGRES_PASSWORD: workflow_pass
+    ports:
+      - "5436:5432"
+    volumes:
+      - workflow_db_data:/var/lib/postgresql/data
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflow_user -d workflow_intelligence_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ====================
+  # REDIS INSTANCES
+  # ====================
+  
+  # Identity Service Redis
+  identity-redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - identity_redis_data:/data
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Content Service Redis
+  content-redis:
+    image: redis:7-alpine
+    ports:
+      - "6381:6379"
+    volumes:
+      - content_redis_data:/data
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Communication Service Redis
+  communication-redis:
+    image: redis:7-alpine
+    ports:
+      - "6382:6379"
+    volumes:
+      - communication_redis_data:/data
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Workflow Intelligence Service Redis
+  workflow-redis:
+    image: redis:7-alpine
+    ports:
+      - "6383:6379"
+    volumes:
+      - workflow_redis_data:/data
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ====================
+  # MICROSERVICES
+  # ====================
+
+  # Identity Service (Auth + Users + Roles + MFA) - PORT 8001
+  identity-service:
+    build:
+      context: ./identity-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    depends_on:
+      identity-db:
+        condition: service_healthy
+      identity-redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://identity_user:identity_pass@identity-db:5432/identity_service
+      REDIS_URL: redis://identity-redis:6379/0
+      SERVICE_PORT: 8001
+      SERVICE_NAME: identity-service
+    env_file:
+      - .env.shared
+      - ./identity-service/.env
+    volumes:
+      - ./identity-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Content Service (Documents + Search + Audit) - PORT 8002
+  content-service:
+    build:
+      context: ./content-service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    depends_on:
+      content-db:
+        condition: service_healthy
+      content-redis:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://content_user:content_pass@content-db:5432/content_service
+      REDIS_URL: redis://content-redis:6379/0
+      IDENTITY_SERVICE_URL: http://identity-service:8001
+      SERVICE_PORT: 8002
+      SERVICE_NAME: content-service
+    env_file:
+      - .env.shared
+      - ./content-service/.env
+    volumes:
+      - ./content-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Communication Service (Notifications + Messaging) - PORT 8003
+  communication-service:
+    build:
+      context: ./communication-service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    depends_on:
+      communication-db:
+        condition: service_healthy
+      communication-redis:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://communication_user:communication_pass@communication-db:5432/communication_service
+      REDIS_URL: redis://communication-redis:6379/0
+      CELERY_BROKER_URL: redis://communication-redis:6379/1
+      IDENTITY_SERVICE_URL: http://identity-service:8001
+      SERVICE_PORT: 8003
+      SERVICE_NAME: communication-service
+    env_file:
+      - .env.shared
+      - ./communication-service/.env
+    volumes:
+      - ./communication-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8003 --reload
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Communication Service Celery Worker
+  communication-worker:
+    build:
+      context: ./communication-service
+      dockerfile: Dockerfile
+    depends_on:
+      communication-db:
+        condition: service_healthy
+      communication-redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://communication_user:communication_pass@communication-db:5432/communication_service
+      REDIS_URL: redis://communication-redis:6379/0
+      CELERY_BROKER_URL: redis://communication-redis:6379/1
+      IDENTITY_SERVICE_URL: http://identity-service:8001
+      SERVICE_NAME: communication-worker
+    env_file:
+      - .env.shared
+      - ./communication-service/.env
+    volumes:
+      - ./communication-service:/app
+    command: celery -A communication_service.celery worker --loglevel=info
+    networks:
+      - services-network
+    restart: unless-stopped
+
+  # Workflow Intelligence Service (Process Automation + AI) - PORT 8004
+  workflow-service:
+    build:
+      context: ./workflow-intelligence-service
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    depends_on:
+      workflow-db:
+        condition: service_healthy
+      workflow-redis:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+      content-service:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://workflow_user:workflow_pass@workflow-db:5432/workflow_intelligence_service
+      REDIS_URL: redis://workflow-redis:6379/0
+      CELERY_BROKER_URL: redis://workflow-redis:6379/1
+      IDENTITY_SERVICE_URL: http://identity-service:8001
+      CONTENT_SERVICE_URL: http://content-service:8002
+      COMMUNICATION_SERVICE_URL: http://communication-service:8003
+      SERVICE_PORT: 8004
+      SERVICE_NAME: workflow-service
+    env_file:
+      - .env.shared
+      - ./workflow-intelligence-service/.env
+    volumes:
+      - ./workflow-intelligence-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8004 --reload
+    networks:
+      - services-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Workflow Intelligence Service Celery Worker
+  workflow-worker:
+    build:
+      context: ./workflow-intelligence-service
+      dockerfile: Dockerfile
+    depends_on:
+      workflow-db:
+        condition: service_healthy
+      workflow-redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://workflow_user:workflow_pass@workflow-db:5432/workflow_intelligence_service
+      REDIS_URL: redis://workflow-redis:6379/0
+      CELERY_BROKER_URL: redis://workflow-redis:6379/1
+      IDENTITY_SERVICE_URL: http://identity-service:8001
+      CONTENT_SERVICE_URL: http://content-service:8002
+      COMMUNICATION_SERVICE_URL: http://communication-service:8003
+      SERVICE_NAME: workflow-worker
+    env_file:
+      - .env.shared
+      - ./workflow-intelligence-service/.env
+    volumes:
+      - ./workflow-intelligence-service:/app
+    command: celery -A workflow_intelligence_service.celery worker --loglevel=info
+    networks:
+      - services-network
+    restart: unless-stopped
+
+  # ====================
+  # API GATEWAY (Kong)
+  # ====================
+  
+  kong:
+    image: kong:3.4-alpine
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8444"
+    ports:
+      - "8000:8000"   # Kong proxy port (main API gateway)
+      - "8443:8443"   # Kong SSL proxy port
+      - "8445:8444"   # Kong admin API port (remapped to avoid conflict)
+    volumes:
+      - ./api-gateway/kong.yml:/kong/kong.yml:ro
+    depends_on:
+      - identity-service
+      - content-service
+      - communication-service
+      - workflow-service
+    networks:
+      - services-network
+    restart: unless-stopped
+
+volumes:
+  # Database volumes
+  identity_db_data:
+  content_db_data:
+  communication_db_data:
+  workflow_db_data:
+  
+  # Redis volumes
+  identity_redis_data:
+  content_redis_data:
+  communication_redis_data:
+  workflow_redis_data:
+
+networks:
+  services-network:
+    name: reactdjango-hub-services
+    driver: bridge
