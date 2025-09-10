@@ -58,7 +58,15 @@
       "WebFetch(domain:hub.docker.com)",
       "Bash(git log:*)",
       "Bash(timeout 10s docker run --rm -p 8001:8001 identity-service-test)",
-      "Bash(./services/scripts/health-check-all.sh:*)"
+      "Bash(./services/scripts/health-check-all.sh:*)",
+      "Bash(happy help)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)",
+      "Bash(./scripts/start-all-services.sh:*)",
+      "Bash(./scripts/health-check-all.sh:*)",
+      "Bash(./start-all-services.sh:*)",
+      "Bash(pwdx:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []
