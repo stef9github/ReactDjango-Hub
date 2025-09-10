@@ -1,103 +1,81 @@
 # Claude Code Agents Documentation
 
-This document provides a comprehensive overview of all available Claude Code agents in the ReactDjango-Hub Medical SaaS project.
+This document provides a comprehensive overview of all available Claude Code agents in the ReactDjango-Hub Enterprise SaaS project.
 
 ## 📋 **Agent Overview**
 
-**Total Agents**: 14 specialized agents for different aspects of the medical SaaS platform.
+**Total Agents**: 10 specialized agents following the simplified `ag-` prefix naming convention.
 
-## 🏗️ **Architecture & Leadership Agents**
+## 🏗️ **Infrastructure & Coordination Agents**
 
-### **tech-lead** 
-- **Description**: Technical lead for architecture decisions, project planning, and team coordination
-- **Scope**: Project-wide architecture, technical decisions, team coordination
-- **Use Cases**: Strategic technical planning, architecture reviews, cross-team coordination
-
-### **services-coordinator**
-- **Description**: Cross-service coordination, API Gateway management, and microservices documentation  
+### **ag-coordinator**
+- **Description**: Services Coordinator - API gateway, service mesh, integration
 - **Scope**: `services/` directory, API Gateway, cross-service integration
 - **Use Cases**: Microservices orchestration, service integration, API Gateway management
 
-## 🛡️ **Security & Compliance Agents**
+### **ag-infrastructure**
+- **Description**: Infrastructure - Docker, Kubernetes, CI/CD, deployment
+- **Scope**: `infrastructure/` directory, CI/CD, cloud infrastructure
+- **Use Cases**: Production deployments, infrastructure management, DevOps automation
 
-### **security-compliance-expert**
-- **Description**: Cybersecurity and compliance specialist for HIPAA/RGPD compliance and security audits
+## 🛡️ **Quality & Compliance Agents**
+
+### **ag-security**
+- **Description**: Security & Compliance - Security audits, vulnerability scanning
 - **Scope**: Security audits, compliance validation, vulnerability assessments
-- **Use Cases**: HIPAA compliance checks, security reviews, audit trails
+- **Use Cases**: Compliance checks, security reviews, audit trails
 
-## 🔧 **Development & Optimization Agents**
-
-### **claude-code-optimization-expert**
-- **Description**: Claude Code specialist for optimizing development workflows, agent configurations, and automation
-- **Scope**: Claude Code setup, agent configurations, workflow optimization
-- **Use Cases**: Agent management, Claude Code setup, development workflow optimization
-
-### **code-reviewer**
-- **Description**: Senior code reviewer specializing in Django, React, and medical software compliance
+### **ag-reviewer**
+- **Description**: Code Review - Code quality, PR reviews, best practices
 - **Scope**: Code quality, security, performance, compliance validation
 - **Use Cases**: Pull request reviews, code quality audits, security validation
 
-### **deployment-agent**
-- **Description**: DevOps engineer for medical SaaS deployments with HIPAA-compliant infrastructure
-- **Scope**: CI/CD, cloud infrastructure, deployment automation
-- **Use Cases**: Production deployments, infrastructure management, DevOps automation
+## 🚀 **Core Service Agents**
 
-## 🎯 **Backend Development Agents**
-
-### **django-backend-expert**
-- **Description**: Senior Django backend developer for medical SaaS platforms with HIPAA/RGPD compliance expertise
+### **ag-backend**
+- **Description**: Django Backend - Core business logic, data models, REST APIs
 - **Scope**: `backend/` directory, Django application, business logic
-- **Use Cases**: Django development, medical records, billing systems, HIPAA compliance
+- **Use Cases**: Django development, REST APIs, data models, business logic
 
-### **identity-service-expert**
-- **Description**: FastAPI authentication specialist for identity microservice with MFA and user management
+### **ag-frontend**
+- **Description**: React Frontend - User interface, components, state management
+- **Scope**: `frontend/` directory, React application, UI/UX
+- **Use Cases**: React development, UI components, state management, user interfaces
+
+### **ag-identity**
+- **Description**: Identity Service - Authentication, users, MFA, RBAC
 - **Scope**: `services/identity-service/` directory, authentication systems
-- **Use Cases**: Authentication features, MFA implementation, user management
+- **Use Cases**: Authentication features, MFA implementation, user management, RBAC
 
-### **identity-service** (Microservice Agent)
-- **Description**: Identity microservice specialist for authentication and user management
-- **Scope**: `services/identity-service/` directory, microservice-specific development
-- **Use Cases**: Identity microservice development, service-specific features
-
-## 🎨 **Frontend Development Agents**
-
-### **react-frontend-expert**
-- **Description**: Senior React frontend developer specializing in TypeScript and medical UI/UX requirements
-- **Scope**: `frontend/` directory, React application, medical UI/UX
-- **Use Cases**: React development, medical dashboards, patient interfaces, French localization
-
-## 📊 **Microservice-Specific Agents**
-
-### **content-service**
-- **Description**: Content management microservice specialist for documents and search
-- **Scope**: `services/content-service/` directory
-- **Use Cases**: Document management, search functionality, content processing
-
-### **communication-service**
-- **Description**: Communication microservice specialist for notifications and messaging
+### **ag-communication**
+- **Description**: Communication Service - Notifications, messaging, real-time
 - **Scope**: `services/communication-service/` directory  
-- **Use Cases**: Notification systems, messaging, communication features
+- **Use Cases**: Notification systems, messaging, email/SMS, real-time communication
 
-### **workflow-intelligence-service**
-- **Description**: Workflow and intelligence microservice specialist for automation and AI
+### **ag-content**
+- **Description**: Content Service - Document management, file storage
+- **Scope**: `services/content-service/` directory
+- **Use Cases**: Document management, search functionality, file storage, content processing
+
+### **ag-workflow**
+- **Description**: Workflow Intelligence - Process automation, AI workflows
 - **Scope**: `services/workflow-intelligence-service/` directory
-- **Use Cases**: Process automation, AI integration, workflow management
+- **Use Cases**: Process automation, AI integration, workflow orchestration
 
 ## 🗂️ **Agent Directory Structure**
 
 ```
 .claude/agents/
-├── claude-code-optimization-expert.md    # Claude Code optimization
-├── code-reviewer.md                      # Code review and quality
-├── communication-service-agent.md        # Communication microservice
-├── content-service-agent.md              # Content microservice  
-├── deployment-agent.md                   # DevOps and deployment
-├── django-backend-expert.md              # Django backend development
-├── identity-service-agent.md             # Identity microservice
-├── identity-service-expert.md            # Identity service specialist
-├── react-frontend-expert.md              # React frontend development
-├── security-compliance-expert.md         # Security and compliance
-├── services-coordinator-agent.md         # Microservices coordination
+├── ag-backend.md                         # Django Backend Agent
+├── ag-frontend.md                        # React Frontend Agent
+├── ag-identity.md                        # Identity Service Agent
+├── ag-communication.md                   # Communication Service Agent
+├── ag-content.md                         # Content Service Agent
+├── ag-workflow.md                        # Workflow Intelligence Agent
+├── ag-infrastructure.md                  # Infrastructure Agent
+├── ag-coordinator.md                     # Services Coordinator Agent
+├── ag-security.md                        # Security & Compliance Agent
+├── ag-reviewer.md                        # Code Review Agent
 ├── tech-lead.md                          # Technical leadership
 └── workflow-intelligence-service-agent.md # Workflow microservice
 ```

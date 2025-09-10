@@ -52,7 +52,9 @@
       "Bash(export PATH=\"/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude:$PATH\")",
       "Bash(curl:*)",
       "Bash(./cleanup-old-agents.sh:*)",
-      "Bash(./.claude/launch-agent.sh:*)"
+      "Bash(./.claude/launch-agent.sh:*)",
+      "Bash(claude agents list)",
+      "Bash(pip3 install:*)"
     ],
     "deny": [],
     "ask": []
