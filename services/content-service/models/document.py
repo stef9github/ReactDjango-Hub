@@ -117,7 +117,7 @@ class Document(Base):
     )
     
     # Metadata storage
-    metadata: Mapped[Dict[str, Any]] = mapped_column(
+    file_metadata: Mapped[Dict[str, Any]] = mapped_column(
         JSONB, 
         nullable=False, 
         default=dict,
@@ -209,8 +209,8 @@ class Document(Base):
         Index("idx_documents_type", "document_type"),
         Index("idx_documents_status", "status"),
         Index("idx_documents_hash", "file_hash"),
-        Index("idx_documents_metadata", "metadata", postgresql_using="gin"),
-        Index("idx_documents_text", "extracted_text", postgresql_using="gin"),
+        Index("idx_documents_metadata", "file_metadata", postgresql_using="gin"),
+        Index("idx_documents_text", "extracted_text"),
     )
     
     def __repr__(self) -> str:
@@ -225,13 +225,13 @@ class Document(Base):
     
     def get_metadata_value(self, key: str, default: Any = None) -> Any:
         """Get a value from the metadata JSON."""
-        return self.metadata.get(key, default)
+        return self.file_metadata.get(key, default)
     
     def set_metadata_value(self, key: str, value: Any) -> None:
         """Set a value in the metadata JSON."""
-        if self.metadata is None:
-            self.metadata = {}
-        self.metadata[key] = value
+        if self.file_metadata is None:
+            self.file_metadata = {}
+        self.file_metadata[key] = value
     
     def is_processing_complete(self) -> bool:
         """Check if all processing is complete."""
@@ -305,7 +305,7 @@ class DocumentVersion(Base):
         nullable=True,
         doc="Summary of changes in this version"
     )
-    metadata: Mapped[Dict[str, Any]] = mapped_column(
+    version_metadata: Mapped[Dict[str, Any]] = mapped_column(
         JSONB, 
         nullable=False, 
         default=dict,
@@ -339,7 +339,7 @@ def update_document_timestamp(mapper, connection, target):
     target.updated_at = func.now()
 
 
-@event.listens_for(Document.metadata, "set")
+@event.listens_for(Document.file_metadata, "set")
 def validate_metadata(target, value, oldvalue, initiator):
     """Validate metadata structure."""
     if value is not None and not isinstance(value, dict):

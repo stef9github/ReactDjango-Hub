@@ -85,11 +85,15 @@ class DatabaseManager:
         @event.listens_for(self.engine.sync_engine, "connect")
         def set_sqlite_pragma(dbapi_connection, connection_record):
             """Set up connection-level settings."""
-            if "postgresql" in str(dbapi_connection.info):
-                # Set timezone to UTC
-                cursor = dbapi_connection.cursor()
-                cursor.execute("SET timezone TO 'UTC'")
-                cursor.close()
+            try:
+                # For PostgreSQL connections (both sync and async)
+                if "postgresql" in self.url.lower():
+                    cursor = dbapi_connection.cursor()
+                    cursor.execute("SET timezone TO 'UTC'")
+                    cursor.close()
+            except Exception:
+                # Skip if connection doesn't support cursor operations
+                pass
         
         @event.listens_for(self.engine.sync_engine, "checkout")
         def receive_checkout(dbapi_connection, connection_record, connection_proxy):

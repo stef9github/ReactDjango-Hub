@@ -108,7 +108,7 @@ class DocumentShare(Base):
     )
     
     # Additional metadata
-    metadata: Mapped[Dict[str, Any]] = mapped_column(
+    share_metadata: Mapped[Dict[str, Any]] = mapped_column(
         JSONB,
         nullable=False,
         default=dict,
@@ -330,7 +330,7 @@ class DocumentActivity(Base):
         nullable=True,
         doc="Target user for activities like sharing"
     )
-    metadata: Mapped[Dict[str, Any]] = mapped_column(
+    activity_metadata: Mapped[Dict[str, Any]] = mapped_column(
         JSONB,
         nullable=False,
         default=dict,
