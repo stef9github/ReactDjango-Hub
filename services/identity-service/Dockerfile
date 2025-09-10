@@ -27,21 +27,26 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Python dependencies from builder
-COPY --from=builder /root/.local /root/.local
+# Create non-root user for security
+RUN groupadd -r identityuser \
+    && useradd -r -g identityuser -d /app -s /bin/bash identityuser \
+    && chown -R identityuser:identityuser /app
 
-# Make sure the PATH includes local installed packages
-ENV PATH=/root/.local/bin:$PATH
+# Copy Python dependencies from builder with proper ownership
+COPY --from=builder --chown=identityuser:identityuser /root/.local /home/identityuser/.local
 
-# Copy application code
-COPY . .
+# Copy application code with proper ownership
+COPY --chown=identityuser:identityuser . .
 
-# For now, run as root to avoid permission issues
-# TODO: Fix user permissions properly
+# Switch to non-root user
+USER identityuser
+
+# Make sure the PATH includes user local installed packages
+ENV PATH=/home/identityuser/.local/bin:$PATH
 
 # Environment variables
-ENV PATH=/root/.local/bin:$PATH \
-    PYTHONUNBUFFERED=1 \
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/home/identityuser/.local/lib/python3.11/site-packages \
     SERVICE_PORT=8001
 
 # Health check

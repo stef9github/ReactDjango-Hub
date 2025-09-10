@@ -6,14 +6,16 @@ agents:
   ag-backend:
     name: "Django Backend Agent"
     icon: "🔧"
-    description: "Core business logic, data models, REST APIs"
+    description: "Django core business service specialist for enterprise data models, Django Ninja REST APIs, PostgreSQL management, and integration with 4 microservices via API Gateway"
     working_dir: "backend"
     responsibilities:
-      - Django application development
-      - Database models and migrations
-      - REST API endpoints (Django Ninja)
-      - Business logic implementation
-      - Backend testing and quality
+      - Django application development with enterprise patterns
+      - PostgreSQL database models, migrations, and complex queries
+      - Django Ninja REST API endpoints for frontend consumption
+      - Core business logic implementation and service integration
+      - API client integration with identity, communication, content, and workflow services
+      - Backend testing with pytest and microservices mocking
+      - Data aggregation from multiple microservices for unified frontend APIs
     commands:
       - "python manage.py runserver"
       - "python manage.py migrate"
@@ -22,14 +24,16 @@ agents:
   ag-frontend:
     name: "React Frontend Agent"
     icon: "🎨"
-    description: "User interface, components, state management"
+    description: "React TypeScript frontend specialist for enterprise UI/UX, API integration with Django backend and 4 microservices, state management, and responsive design with Tailwind CSS"
     working_dir: "frontend"
     responsibilities:
-      - React component development
-      - UI/UX implementation
-      - State management (Redux/Context)
-      - Frontend routing
-      - Component testing
+      - React TypeScript component development with enterprise design patterns
+      - API integration with Django backend and microservices (identity, communication, content, workflow)
+      - State management with Redux Toolkit and React Query for API caching
+      - Frontend routing and authentication-protected routes
+      - Responsive UI/UX with Tailwind CSS and component libraries
+      - Real-time features integration (WebSocket, notifications)
+      - Frontend testing with Jest, React Testing Library, and API mocking
     commands:
       - "npm run dev"
       - "npm run build"
@@ -38,14 +42,17 @@ agents:
   ag-identity:
     name: "Identity Service Agent"
     icon: "🔐"
-    description: "Authentication, authorization, user management"
+    description: "FastAPI authentication microservice specialist for JWT tokens, MFA, user management, RBAC, published API design, OpenAPI specification, and service unit testing"
     working_dir: "services/identity-service"
     responsibilities:
-      - Authentication endpoints
-      - User and organization management
-      - Multi-factor authentication (MFA)
-      - Role-based access control (RBAC)
-      - JWT token management
+      - FastAPI authentication endpoints and JWT token validation logic
+      - User and organization management with PostgreSQL integration
+      - Multi-factor authentication (email, SMS, TOTP) service implementation
+      - Role-based access control (RBAC) and permissions API development
+      - Published API contract design and OpenAPI specification for /auth/* endpoints
+      - Service unit testing with pytest and authentication flow validation
+      - API endpoint documentation and example responses for frontend/inter-service consumption
+      - Service-level error handling and response standardization
     commands:
       - "python main.py"
       - "pytest tests/"
@@ -53,42 +60,53 @@ agents:
   ag-communication:
     name: "Communication Service Agent"
     icon: "📧"
-    description: "Notifications, messaging, real-time communication"
+    description: "FastAPI communication microservice specialist for email notifications, SMS messaging, WebSocket real-time features, published API design, and service unit testing"
     working_dir: "services/communication-service"
     responsibilities:
-      - Email notifications
-      - SMS messaging
-      - Real-time chat/WebSocket
-      - Notification templates
-      - Message queuing
+      - FastAPI notification endpoints for email and SMS delivery implementation
+      - WebSocket implementation for real-time chat and notifications
+      - Message queue integration (Celery/Redis) for async communication handling
+      - Notification templates and personalization engine development
+      - Published API contract design and OpenAPI specification for /notifications/* and /messaging/* endpoints
+      - Service unit testing with pytest and notification delivery validation
+      - API endpoint documentation and example responses for frontend/inter-service consumption
+      - Service-level error handling and delivery status standardization
     commands:
       - "python main.py"
 
   ag-content:
     name: "Content Service Agent"
     icon: "📝"
-    description: "Document management, file storage, search"
+    description: "FastAPI content microservice specialist for document management, file processing, search indexing, media handling, published API design, and service unit testing"
     working_dir: "services/content-service"
     responsibilities:
-      - File upload/download
-      - Document versioning
-      - Content search and indexing
-      - Media processing
-      - Storage optimization
+      - FastAPI endpoints for file upload/download and document management implementation
+      - Document versioning and metadata management with PostgreSQL integration
+      - Content search and indexing (Elasticsearch integration) service logic
+      - Media processing (images, PDFs, OCR) and format conversion handling
+      - Storage optimization and cloud storage integration development
+      - Published API contract design and OpenAPI specification for /documents/* and /files/* endpoints
+      - Service unit testing with pytest and file processing validation
+      - API endpoint documentation and example responses for frontend/inter-service consumption
+      - Service-level error handling and file operation status standardization
     commands:
       - "python main.py"
 
   ag-workflow:
     name: "Workflow Intelligence Agent"
     icon: "🧠"
-    description: "Process automation, AI workflows, orchestration"
+    description: "FastAPI workflow microservice specialist for business process automation, AI/ML integration, task orchestration, event-driven workflows, published API design, and service unit testing"
     working_dir: "services/workflow-intelligence-service"
     responsibilities:
-      - Business process automation
-      - AI/ML workflow integration
-      - Task orchestration
-      - Event-driven workflows
-      - Process monitoring
+      - FastAPI endpoints for workflow definition and execution management implementation
+      - Business process automation and task orchestration engine development
+      - AI/ML workflow integration (OpenAI, Anthropic) and model management logic
+      - Event-driven workflows with message queue integration handling
+      - Process monitoring, analytics, and performance metrics collection
+      - Published API contract design and OpenAPI specification for /workflows/* and /automation/* endpoints
+      - Service unit testing with pytest and workflow execution validation
+      - API endpoint documentation and example responses for frontend/inter-service consumption
+      - Service-level error handling and workflow status standardization
     commands:
       - "python main.py"
 
@@ -96,32 +114,51 @@ agents:
   ag-infrastructure:
     name: "Infrastructure Agent"
     icon: "🚀"
-    description: "Docker, Kubernetes, CI/CD, cloud deployment"
+    description: "Docker containerization and Kubernetes deployment specialist for 4-microservices architecture with Kong API Gateway, multi-container orchestration, service mesh, and production deployment automation"
     working_dir: "infrastructure"
     responsibilities:
-      - Docker containerization
-      - Kubernetes deployments
-      - CI/CD pipelines
-      - Cloud infrastructure (AWS/GCP/Azure)
-      - Environment configuration
+      - Multi-container Docker orchestration for 4 FastAPI microservices + Kong API Gateway + Django backend + React frontend
+      - Docker Compose configuration with service dependencies, networking, and health checks
+      - Kubernetes manifests for microservices deployment with service discovery and load balancing
+      - Kong API Gateway containerization and routing configuration
+      - PostgreSQL multi-database setup for microservices data isolation
+      - Redis container orchestration for caching and message queuing
+      - Container networking and inter-service communication setup
+      - Environment variable management across all services and containers
+      - Production deployment automation with CI/CD pipelines for microservices
+      - Container monitoring, logging aggregation, and distributed tracing setup
+      - Docker image optimization and multi-stage builds for each service
     commands:
-      - "docker-compose up"
-      - "kubectl apply"
-      - "terraform apply"
+      - "docker-compose up --build"
+      - "docker-compose -f docker-compose.prod.yml up -d"
+      - "kubectl apply -f k8s/"
+      - "docker-compose logs -f [service-name]"
+      - "docker system prune -f"
+      - "terraform apply -var-file=microservices.tfvars"
 
   ag-coordinator:
     name: "Services Coordinator Agent"
     icon: "🎯"
-    description: "API gateway, service mesh, integration"
+    description: "API Gateway, microservices coordination, and integration testing specialist for Kong configuration, API contract validation, published API testing, frontend API aggregation, and inter-service communication orchestration"
     working_dir: "services"
     responsibilities:
-      - API contract management
-      - Service discovery
-      - Kong API gateway configuration
-      - Inter-service communication
-      - Service health monitoring
+      - Kong API Gateway configuration and routing for 4 microservices
+      - API contract testing and OpenAPI specification validation across all services
+      - Published API integration testing for frontend consumption endpoints
+      - Inter-service API contract testing and communication validation
+      - Frontend API aggregation testing and unified endpoint validation
+      - End-to-end testing workflows across microservices architecture
+      - API versioning testing and backward compatibility validation
+      - Cross-service authentication and authorization flow testing
+      - Service health monitoring, distributed tracing, and API performance testing
+      - Load balancing and rate limiting policy testing across microservices
+      - Contract-driven development coordination and API-first testing strategy
     commands:
       - "docker-compose up"
+      - "pytest services/tests/integration/"
+      - "newman run postman_collection.json"
+      - "spectral lint services/*/openapi.yaml"
+      - "curl -f http://localhost:8000/health"
 
   # Quality & Compliance Agents
   ag-security:
