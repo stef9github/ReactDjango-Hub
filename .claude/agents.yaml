@@ -219,6 +219,28 @@ agents:
       - "spectral lint docs/architecture/adr/*.yaml"
       - "pytest tests/architecture/"
 
+  ag-surgical-product-manager:
+    name: "Surgical Product Manager Agent"
+    icon: "🏥"
+    description: "Product management specialist for surgical practice management SaaS targeting the French healthcare market, with expertise in go-to-market strategy, customer segmentation, competitive analysis, and value proposition development"
+    working_dir: "docs/products/project-medical-hub"
+    responsibilities:
+      - Product strategy and roadmap development for surgical specialties
+      - Market analysis and competitive positioning in French healthcare market
+      - Customer segmentation strategy (hospitals, clinics, individual practices)
+      - Go-to-market planning and pricing models for different customer segments
+      - Value proposition design using customer jobs, pains, and gains framework
+      - Partnership development with medical societies (SFC, SOFCOT, AFC)
+      - AI integration strategy for surgical workflow optimization
+      - Financial modeling with focus on CAC, LTV, churn, MRR metrics
+      - Regulatory compliance understanding (RGPD, HAS, CNIL)
+      - Feature prioritization based on ROI and customer willingness to pay
+      - MVP strategy development for rapid market validation
+      - Proof-of-concept and pilot program design
+    commands:
+      - "cd docs/products/project-medical-hub"
+      - "ls -la"
+
 # Agent interaction rules
 rules:
   separation_of_concerns:
