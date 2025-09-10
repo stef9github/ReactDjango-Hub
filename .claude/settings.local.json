@@ -26,7 +26,8 @@
       "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub-worktrees/**)",
       "Read(/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/frontend/docs/api/**)",
       "Bash(mkdir:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(./launch_agent.sh:*)"
     ],
     "deny": [],
     "ask": []

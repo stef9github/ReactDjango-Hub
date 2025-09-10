@@ -37,6 +37,7 @@ usage() {
     echo "  testing         - Testing and QA specialist"
     echo "  security        - Security and compliance specialist"
     echo "  documentation   - Documentation specialist"
+    echo "  claude-code-expert - Claude Code optimization and workflow specialist"
     echo ""
     echo -e "${CYAN}Options:${NC}"
     echo "  --setup-worktree    Setup git worktree for the agent"
@@ -87,9 +88,8 @@ launch_agent() {
     echo -e "${PURPLE}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
     
-    # Run the agent configurator
-    cd .claude
-    python3 agent_configurator.py launch "$agent_type"
+    # Run the agent configurator from project root
+    python3 .claude/agent_configurator.py launch "$agent_type"
     
     # Check if launch script was created
     LAUNCH_SCRIPT=".claude/agents/scripts/launch_${agent_type}.sh"
@@ -109,9 +109,7 @@ setup_worktree() {
     local agent_type=$1
     
     echo -e "${BLUE}Setting up git worktree for ${agent_type} agent...${NC}"
-    cd .claude
-    python3 agent_configurator.py worktree "$agent_type"
-    cd ..
+    python3 .claude/agent_configurator.py worktree "$agent_type"
 }
 
 # Function to validate agent
@@ -119,9 +117,7 @@ validate_agent() {
     local agent_type=$1
     
     echo -e "${BLUE}Validating ${agent_type} agent configuration...${NC}"
-    cd .claude
-    python3 agent_configurator.py validate "$agent_type"
-    cd ..
+    python3 .claude/agent_configurator.py validate "$agent_type"
 }
 
 # Function to list agents
@@ -129,9 +125,7 @@ list_agents() {
     echo ""
     echo -e "${CYAN}Available Specialized Agents:${NC}"
     echo ""
-    cd .claude
-    python3 agent_configurator.py list
-    cd ..
+    python3 .claude/agent_configurator.py list
 }
 
 # Main script logic
@@ -170,7 +164,7 @@ main() {
                 VALIDATE=true
                 shift
                 ;;
-            backend|frontend|identity|content|communication|workflow|infrastructure|testing|security|documentation)
+            backend|frontend|identity|content|communication|workflow|infrastructure|testing|security|documentation|claude-code-expert)
                 AGENT_TYPE=$1
                 shift
                 ;;

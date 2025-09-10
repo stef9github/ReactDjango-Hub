@@ -9,9 +9,9 @@ from typing import Dict, Any, Optional
 from uuid import uuid4
 import time
 
-from ..extractors.factory import metadata_factory
-from ..repositories.document_repository import DocumentRepository
-from ..repositories.audit_repository import AuditRepository
+from extractors.factory import metadata_factory
+from repositories.document_repository import DocumentRepository
+from repositories.audit_repository import AuditRepository
 from database.connection import get_db_session
 from .queue_manager import ProcessingTask
 

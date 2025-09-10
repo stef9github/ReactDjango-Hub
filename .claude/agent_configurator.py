@@ -28,6 +28,7 @@ class AgentType(Enum):
     TESTING = "testing"
     SECURITY = "security"
     DOCUMENTATION = "documentation"
+    CLAUDE_CODE_EXPERT = "claude-code-expert"
 
 
 @dataclass
@@ -298,6 +299,69 @@ class AgentConfigurator:
                     "audit": "make security-audit",
                     "scan": "make vulnerability-scan"
                 }
+            },
+            
+            AgentType.CLAUDE_CODE_EXPERT: {
+                "name": "Claude Code Expert Agent",
+                "description": "Claude Code optimization specialist for agent configuration, workflow automation, and development efficiency",
+                "workdir": ".",
+                "permissions": {
+                    "read": ["**"],
+                    "write": [
+                        ".claude/**",
+                        "**/.claude/**", 
+                        "**/CLAUDE.md",
+                        "launch_agent.sh",
+                        "**/*.sh",
+                        "**/*.py",
+                        "Makefile",
+                        "docker-compose*.yml",
+                        ".github/**",
+                        "docs/**"
+                    ],
+                    "execute": [
+                        "python", "pip", "npm", "node", "git", "docker", "docker-compose", 
+                        "make", "bash", "chmod", "find", "grep", "sed", "awk"
+                    ]
+                },
+                "tools": [
+                    "Bash", "Read", "Write", "Edit", "MultiEdit", "Grep", "Glob", 
+                    "Task", "WebSearch", "WebFetch", "TodoWrite"
+                ],
+                "restrictions": [
+                    "Focus on optimization and efficiency improvements",
+                    "Must maintain backward compatibility",
+                    "Should document all configuration changes",
+                    "Must test configurations before deployment"
+                ],
+                "git_worktree": "claude-code-expert-dev",
+                "environment": {
+                    "CLAUDE_CODE_EXPERT": "true",
+                    "OPTIMIZATION_MODE": "enabled",
+                    "PYTHONPATH": "."
+                },
+                "aliases": {
+                    "configure": "python .claude/agent_configurator.py",
+                    "launch": "./launch_agent.sh",
+                    "optimize": "python .claude/agent_configurator.py optimize",
+                    "validate-all": "python .claude/agent_configurator.py validate-all",
+                    "agent-status": "python .claude/agent_configurator.py status",
+                    "create-agent": "python .claude/agent_configurator.py create",
+                    "lint-configs": "python .claude/agent_configurator.py lint",
+                    "backup-configs": "python .claude/agent_configurator.py backup"
+                },
+                "specializations": [
+                    "Agent configuration optimization",
+                    "Workflow automation and scripting", 
+                    "Development environment setup",
+                    "CI/CD pipeline optimization",
+                    "Git workflow management",
+                    "Docker and containerization",
+                    "Claude Code best practices",
+                    "Performance monitoring and profiling",
+                    "Code quality and linting setup",
+                    "Documentation automation"
+                ]
             }
         }
         

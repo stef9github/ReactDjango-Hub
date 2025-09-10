@@ -12,7 +12,7 @@ from sqlalchemy.orm import selectinload, joinedload
 
 from .base import BaseRepository
 from models.document import Document, DocumentVersion
-from ..schemas.document import DocumentListItem, DocumentStatsResponse
+from schemas.document import DocumentListItem, DocumentStatsResponse
 
 
 class DocumentRepository(BaseRepository[Document]):

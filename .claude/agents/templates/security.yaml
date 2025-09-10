@@ -1,0 +1,33 @@
+name: Security Agent
+description: Focuses on security audits, HIPAA/RGPD compliance, and vulnerability
+  scanning
+workdir: .
+permissions:
+  read:
+  - '**'
+  write:
+  - docs/security/**
+  - '**/security.py'
+  - '**/auth*.py'
+  execute:
+  - bandit
+  - safety
+  - pip-audit
+  - npm audit
+tools:
+- Bash
+- Read
+- Write
+- Edit
+- Grep
+- Glob
+- WebSearch
+restrictions:
+- Must prioritize security over features
+- Cannot disable security features
+- Must maintain compliance standards
+environment:
+  SECURITY_SCAN: 'true'
+aliases:
+  audit: make security-audit
+  scan: make vulnerability-scan

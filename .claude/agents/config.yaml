@@ -1,0 +1,59 @@
+version: 1.0.0
+project: ReactDjango-Hub Medical
+description: Agent configuration system for specialized Claude assistants
+agents:
+  backend:
+    enabled: true
+    template: templates/backend.yaml
+    config: configs/backend.yaml
+  frontend:
+    enabled: true
+    template: templates/frontend.yaml
+    config: configs/frontend.yaml
+  identity:
+    enabled: true
+    template: templates/identity.yaml
+    config: configs/identity.yaml
+  content:
+    enabled: true
+    template: templates/content.yaml
+    config: configs/content.yaml
+  communication:
+    enabled: true
+    template: templates/communication.yaml
+    config: configs/communication.yaml
+  workflow:
+    enabled: true
+    template: templates/workflow.yaml
+    config: configs/workflow.yaml
+  infrastructure:
+    enabled: true
+    template: templates/infrastructure.yaml
+    config: configs/infrastructure.yaml
+  testing:
+    enabled: true
+    template: templates/testing.yaml
+    config: configs/testing.yaml
+  security:
+    enabled: true
+    template: templates/security.yaml
+    config: configs/security.yaml
+  documentation:
+    enabled: true
+    template: templates/documentation.yaml
+    config: configs/documentation.yaml
+  claude-code-expert:
+    enabled: true
+    template: templates/claude-code-expert.yaml
+    config: configs/claude-code-expert.yaml
+global_settings:
+  audit_logging: true
+  compliance:
+  - HIPAA
+  - RGPD
+  default_branch: main
+  worktree_base: ../ReactDjango-Hub-worktrees
+communication:
+  protocol: file-based
+  shared_directory: .claude/shared
+  message_format: yaml

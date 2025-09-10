@@ -1,0 +1,35 @@
+name: Identity Service Agent
+description: Manages authentication, authorization, MFA, and user management
+workdir: services/identity-service
+permissions:
+  read:
+  - services/identity-service/**
+  - docs/**
+  - CLAUDE.md
+  write:
+  - services/identity-service/**
+  execute:
+  - python
+  - pip
+  - alembic
+  - pytest
+  - uvicorn
+tools:
+- Bash
+- Read
+- Write
+- Edit
+- MultiEdit
+- Grep
+- Glob
+restrictions:
+- Cannot modify other services directly
+- Must maintain HIPAA/RGPD compliance
+- Must follow security best practices
+environment:
+  SERVICE_NAME: identity-service
+  PORT: '8001'
+aliases:
+  run: python main.py
+  test: pytest
+  migrate: alembic upgrade head

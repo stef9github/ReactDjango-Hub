@@ -1,0 +1,32 @@
+name: Communication Service Agent
+description: Handles notifications, emails, SMS, and messaging
+workdir: services/communication-service
+permissions:
+  read:
+  - services/communication-service/**
+  - docs/**
+  - CLAUDE.md
+  write:
+  - services/communication-service/**
+  execute:
+  - python
+  - pip
+  - pytest
+tools:
+- Bash
+- Read
+- Write
+- Edit
+- MultiEdit
+- Grep
+- Glob
+restrictions:
+- Cannot modify other services directly
+- Must handle PII securely in communications
+- Must respect communication preferences
+environment:
+  SERVICE_NAME: communication-service
+  PORT: '8003'
+aliases:
+  run: python main.py
+  test: pytest

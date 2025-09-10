@@ -1,0 +1,32 @@
+name: Workflow Intelligence Agent
+description: Manages workflow automation, business rules, and process intelligence
+workdir: services/workflow-intelligence-service
+permissions:
+  read:
+  - services/workflow-intelligence-service/**
+  - docs/**
+  - CLAUDE.md
+  write:
+  - services/workflow-intelligence-service/**
+  execute:
+  - python
+  - pip
+  - pytest
+tools:
+- Bash
+- Read
+- Write
+- Edit
+- MultiEdit
+- Grep
+- Glob
+restrictions:
+- Cannot modify other services directly
+- Must validate business rules
+- Must maintain audit trails
+environment:
+  SERVICE_NAME: workflow-intelligence-service
+  PORT: '8004'
+aliases:
+  run: python main.py
+  test: pytest

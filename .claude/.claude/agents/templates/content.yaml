@@ -1,0 +1,32 @@
+name: Content Service Agent
+description: Manages document processing, file storage, and content management
+workdir: services/content-service
+permissions:
+  read:
+  - services/content-service/**
+  - docs/**
+  - CLAUDE.md
+  write:
+  - services/content-service/**
+  execute:
+  - python
+  - pip
+  - pytest
+tools:
+- Bash
+- Read
+- Write
+- Edit
+- MultiEdit
+- Grep
+- Glob
+restrictions:
+- Cannot modify other services directly
+- Must handle file uploads securely
+- Must follow data retention policies
+environment:
+  SERVICE_NAME: content-service
+  PORT: '8002'
+aliases:
+  run: python main.py
+  test: pytest
