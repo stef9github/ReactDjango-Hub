@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-service
+  namespace: hub-namespace
+  labels:
+    app: identity-service
+    component: authentication
+    version: v1.0
+    compliance: hipaa-ready
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: identity-service
+  template:
+    metadata:
+      labels:
+        app: identity-service
+        component: authentication
+        version: v1.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: identity-service-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: identity-service
+        image: ghcr.io/stephanerichard/reactdjango-hub/identity-service:latest
+        ports:
+        - containerPort: 8001
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "8001"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: identity-service-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: identity-service-secrets
+              key: redis-url
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: identity-service-secrets
+              key: jwt-secret-key
+        - name: ENVIRONMENT
+          value: "production"
+        - name: LOG_LEVEL
+          value: "INFO"
+        envFrom:
+        - configMapRef:
+            name: identity-service-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "medical-workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - identity-service
+              topologyKey: kubernetes.io/hostname
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: identity-service-pdb
+  namespace: hub-namespace
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: identity-service
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: identity-service-sa
+  namespace: hub-namespace
+  labels:
+    app: identity-service
+    component: authentication
+automountServiceAccountToken: false

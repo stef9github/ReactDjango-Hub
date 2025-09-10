@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hub-namespace
+  labels:
+    name: hub-namespace
+    app.kubernetes.io/name: medical-saas
+    app.kubernetes.io/component: namespace
+    compliance: hipaa-ready
+    environment: production
+  annotations:
+    description: "Medical SaaS platform namespace with HIPAA compliance"
+---
+# Resource Quota for the medical SaaS namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: medical-saas-quota
+  namespace: hub-namespace
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 4Gi
+    limits.cpu: "4"
+    limits.memory: 8Gi
+    persistentvolumeclaims: "4"
+    services: "10"
+    secrets: "20"
+    configmaps: "20"
+    pods: "20"
+---
+# Limit Range for containers in the namespace
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: medical-saas-limits
+  namespace: hub-namespace
+spec:
+  limits:
+  - default:
+      memory: 512Mi
+      cpu: 250m
+    defaultRequest:
+      memory: 256Mi
+      cpu: 100m
+    type: Container
+  - max:
+      memory: 2Gi
+      cpu: 1000m
+    min:
+      memory: 128Mi
+      cpu: 50m
+    type: Container

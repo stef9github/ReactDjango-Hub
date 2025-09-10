@@ -1,0 +1,327 @@
+# Medical SaaS Configuration Maps - Production Settings
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: identity-service-config
+  namespace: hub-namespace
+  labels:
+    app: identity-service
+    component: configuration
+    compliance: hipaa-ready
+data:
+  # Server configuration
+  SERVER_HOST: "0.0.0.0"
+  SERVER_PORT: "8001"
+  SERVER_WORKERS: "4"
+  
+  # Environment
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  
+  # CORS configuration
+  CORS_ORIGINS: "https://hub.stephanerichard.com,https://api.hub.stephanerichard.com"
+  CORS_ALLOW_CREDENTIALS: "true"
+  
+  # JWT configuration
+  JWT_ALGORITHM: "HS256"
+  JWT_ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  JWT_REFRESH_TOKEN_EXPIRE_DAYS: "7"
+  
+  # MFA configuration
+  MFA_TOTP_ISSUER: "Medical SaaS Hub"
+  MFA_SMS_ENABLED: "true"
+  MFA_EMAIL_ENABLED: "true"
+  MFA_TOTP_ENABLED: "true"
+  
+  # Password policy
+  PASSWORD_MIN_LENGTH: "12"
+  PASSWORD_REQUIRE_UPPERCASE: "true"
+  PASSWORD_REQUIRE_LOWERCASE: "true"
+  PASSWORD_REQUIRE_NUMBERS: "true"
+  PASSWORD_REQUIRE_SYMBOLS: "true"
+  
+  # Session configuration
+  SESSION_TIMEOUT_MINUTES: "60"
+  MAX_LOGIN_ATTEMPTS: "5"
+  ACCOUNT_LOCKOUT_DURATION_MINUTES: "30"
+  
+  # HIPAA compliance settings
+  AUDIT_LOG_ENABLED: "true"
+  DATA_RETENTION_DAYS: "2555"  # 7 years for HIPAA
+  ENCRYPTION_AT_REST: "true"
+  
+  # Email configuration
+  SMTP_HOST: "smtp.sendgrid.net"
+  SMTP_PORT: "587"
+  SMTP_TLS: "true"
+  FROM_EMAIL: "noreply@hub.stephanerichard.com"
+  
+  # Rate limiting
+  RATE_LIMIT_REQUESTS: "100"
+  RATE_LIMIT_WINDOW_MINUTES: "15"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-service-config
+  namespace: hub-namespace
+  labels:
+    app: backend-service
+    component: configuration
+    compliance: hipaa-ready
+data:
+  # Django configuration
+  DJANGO_SETTINGS_MODULE: "config.settings.production"
+  DEBUG: "False"
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  
+  # Server configuration
+  PORT: "8000"
+  WORKERS: "4"
+  WORKER_CLASS: "uvicorn.workers.UvicornWorker"
+  WORKER_CONNECTIONS: "1000"
+  
+  # Database configuration
+  DB_ENGINE: "postgresql"
+  DB_CONN_MAX_AGE: "300"
+  DB_CONN_HEALTH_CHECKS: "True"
+  
+  # Cache configuration
+  CACHE_BACKEND: "redis"
+  CACHE_TIMEOUT: "300"
+  SESSION_ENGINE: "redis"
+  SESSION_COOKIE_AGE: "3600"
+  SESSION_COOKIE_SECURE: "True"
+  SESSION_COOKIE_HTTPONLY: "True"
+  
+  # Security settings
+  SECURE_SSL_REDIRECT: "True"
+  SECURE_HSTS_SECONDS: "31536000"
+  SECURE_HSTS_INCLUDE_SUBDOMAINS: "True"
+  SECURE_HSTS_PRELOAD: "True"
+  SECURE_CONTENT_TYPE_NOSNIFF: "True"
+  SECURE_BROWSER_XSS_FILTER: "True"
+  X_FRAME_OPTIONS: "SAMEORIGIN"
+  
+  # CORS configuration
+  CORS_ALLOWED_ORIGINS: "https://hub.stephanerichard.com"
+  CORS_ALLOW_CREDENTIALS: "True"
+  CORS_ALLOW_ALL_ORIGINS: "False"
+  
+  # File storage configuration
+  DEFAULT_FILE_STORAGE: "django_s3_storage.S3Boto3Storage"
+  AWS_S3_REGION_NAME: "us-east-1"
+  AWS_S3_CUSTOM_DOMAIN: ""
+  AWS_S3_FILE_OVERWRITE: "False"
+  AWS_S3_SECURE_URLS: "True"
+  
+  # Identity service integration
+  identity-service-url: "http://identity-service:8001"
+  identity-service-timeout: "30"
+  
+  # HIPAA compliance settings
+  AUDIT_LOGGING: "True"
+  PHI_ENCRYPTION_ENABLED: "True"
+  DATA_RETENTION_YEARS: "7"
+  ACCESS_LOG_DETAILED: "True"
+  
+  # Email configuration
+  EMAIL_BACKEND: "django.core.mail.backends.smtp.EmailBackend"
+  EMAIL_HOST: "smtp.sendgrid.net"
+  EMAIL_PORT: "587"
+  EMAIL_USE_TLS: "True"
+  DEFAULT_FROM_EMAIL: "Medical SaaS <noreply@hub.stephanerichard.com>"
+  
+  # Celery configuration (for background tasks)
+  CELERY_BROKER_URL: "redis://redis:6379/2"
+  CELERY_RESULT_BACKEND: "redis://redis:6379/2"
+  CELERY_TASK_SERIALIZER: "json"
+  CELERY_ACCEPT_CONTENT: '["json"]'
+  
+  # Medical-specific configurations
+  HL7_ENABLED: "true"
+  DICOM_STORAGE_ENABLED: "true"
+  FHIR_VERSION: "R4"
+  ICD10_VALIDATION: "true"
+  
+  # Monitoring and logging
+  ENABLE_METRICS: "True"
+  METRICS_PORT: "9090"
+  SENTRY_TRACES_SAMPLE_RATE: "0.1"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: hub-namespace
+  labels:
+    app: nginx
+    component: reverse-proxy
+    compliance: hipaa-ready
+data:
+  nginx.conf: |
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+    
+    events {
+        worker_connections 1024;
+        use epoll;
+        multi_accept on;
+    }
+    
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        
+        # Logging format for HIPAA audit trails
+        log_format detailed '$remote_addr - $remote_user [$time_local] '
+                           '"$request" $status $body_bytes_sent '
+                           '"$http_referer" "$http_user_agent" '
+                           '$request_time $upstream_response_time '
+                           '$request_id';
+        
+        access_log /var/log/nginx/access.log detailed;
+        
+        # Security headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+        
+        # Rate limiting
+        limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=auth:10m rate=5r/s;
+        
+        # Gzip compression
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_comp_level 6;
+        gzip_types text/plain text/css application/json application/javascript text/javascript;
+        
+        # SSL configuration
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+        ssl_prefer_server_ciphers off;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 24h;
+        
+        # Upstream servers
+        upstream backend_service {
+            server backend-service:8000;
+            keepalive 32;
+        }
+        
+        upstream identity_service {
+            server identity-service:8001;
+            keepalive 32;
+        }
+        
+        server {
+            listen 80;
+            server_name hub.stephanerichard.com;
+            return 301 https://$server_name$request_uri;
+        }
+        
+        server {
+            listen 443 ssl http2;
+            server_name hub.stephanerichard.com;
+            
+            ssl_certificate /etc/ssl/certs/tls.crt;
+            ssl_certificate_key /etc/ssl/private/tls.key;
+            
+            # Security headers specific to medical data
+            add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https:; font-src 'self';" always;
+            
+            # API routes with rate limiting
+            location /api/ {
+                limit_req zone=api burst=20 nodelay;
+                proxy_pass http://backend_service;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header X-Request-ID $request_id;
+                
+                # Timeout settings for medical operations
+                proxy_connect_timeout 30s;
+                proxy_send_timeout 60s;
+                proxy_read_timeout 60s;
+            }
+            
+            # Authentication routes with stricter rate limiting
+            location /auth/ {
+                limit_req zone=auth burst=10 nodelay;
+                proxy_pass http://identity_service;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header X-Request-ID $request_id;
+            }
+            
+            # Frontend static files
+            location / {
+                root /usr/share/nginx/html;
+                index index.html;
+                try_files $uri $uri/ /index.html;
+                
+                # Cache control for static assets
+                location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+                    expires 1y;
+                    add_header Cache-Control "public, immutable";
+                }
+            }
+            
+            # Health check endpoint
+            location /health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+        }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: medical-compliance-config
+  namespace: hub-namespace
+  labels:
+    component: compliance
+    compliance: hipaa-ready
+data:
+  # HIPAA compliance settings
+  HIPAA_COMPLIANT: "true"
+  AUDIT_TRAIL_ENABLED: "true"
+  DATA_ENCRYPTION_REQUIRED: "true"
+  ACCESS_LOGGING_DETAILED: "true"
+  
+  # Data retention policies
+  PATIENT_DATA_RETENTION_YEARS: "7"
+  AUDIT_LOG_RETENTION_YEARS: "7"
+  BACKUP_RETENTION_DAYS: "90"
+  
+  # Security policies
+  PASSWORD_EXPIRY_DAYS: "90"
+  SESSION_TIMEOUT_MINUTES: "30"
+  FAILED_LOGIN_LOCKOUT_ATTEMPTS: "3"
+  LOCKOUT_DURATION_MINUTES: "15"
+  
+  # Compliance monitoring
+  COMPLIANCE_MONITORING_ENABLED: "true"
+  SECURITY_SCAN_FREQUENCY: "daily"
+  VULNERABILITY_SCAN_FREQUENCY: "weekly"
+  
+  # Emergency access
+  BREAK_GLASS_ACCESS_ENABLED: "true"
+  EMERGENCY_ACCESS_LOG_LEVEL: "DEBUG"
+  
+  # Backup and recovery
+  AUTOMATED_BACKUP_ENABLED: "true"
+  BACKUP_FREQUENCY_HOURS: "4"
+  BACKUP_ENCRYPTION_ENABLED: "true"
