@@ -1,18 +1,210 @@
 export default {
-content: [
-"./index.html",
-"./src/**/*.{js,ts,jsx,tsx}",
-],
-theme: {
-extend: {
-colors: {
-primary: {
-50: '#eff6ff',
-500: '#3b82f6',
-600: '#2563eb',
-}
-}
-},
-},
-plugins: [],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Design system colors using CSS custom properties
+        semantic: {
+          primary: {
+            50: 'var(--colors-semantic-primary-50)',
+            100: 'var(--colors-semantic-primary-100)',
+            200: 'var(--colors-semantic-primary-200)',
+            300: 'var(--colors-semantic-primary-300)',
+            400: 'var(--colors-semantic-primary-400)',
+            500: 'var(--colors-semantic-primary-500)',
+            600: 'var(--colors-semantic-primary-600)',
+            700: 'var(--colors-semantic-primary-700)',
+            800: 'var(--colors-semantic-primary-800)',
+            900: 'var(--colors-semantic-primary-900)',
+            950: 'var(--colors-semantic-primary-950)',
+          },
+          secondary: {
+            50: 'var(--colors-semantic-secondary-50)',
+            100: 'var(--colors-semantic-secondary-100)',
+            200: 'var(--colors-semantic-secondary-200)',
+            300: 'var(--colors-semantic-secondary-300)',
+            400: 'var(--colors-semantic-secondary-400)',
+            500: 'var(--colors-semantic-secondary-500)',
+            600: 'var(--colors-semantic-secondary-600)',
+            700: 'var(--colors-semantic-secondary-700)',
+            800: 'var(--colors-semantic-secondary-800)',
+            900: 'var(--colors-semantic-secondary-900)',
+            950: 'var(--colors-semantic-secondary-950)',
+          },
+          success: {
+            50: 'var(--colors-semantic-success-50)',
+            100: 'var(--colors-semantic-success-100)',
+            200: 'var(--colors-semantic-success-200)',
+            300: 'var(--colors-semantic-success-300)',
+            400: 'var(--colors-semantic-success-400)',
+            500: 'var(--colors-semantic-success-500)',
+            600: 'var(--colors-semantic-success-600)',
+            700: 'var(--colors-semantic-success-700)',
+            800: 'var(--colors-semantic-success-800)',
+            900: 'var(--colors-semantic-success-900)',
+            950: 'var(--colors-semantic-success-950)',
+          },
+          warning: {
+            50: 'var(--colors-semantic-warning-50)',
+            100: 'var(--colors-semantic-warning-100)',
+            200: 'var(--colors-semantic-warning-200)',
+            300: 'var(--colors-semantic-warning-300)',
+            400: 'var(--colors-semantic-warning-400)',
+            500: 'var(--colors-semantic-warning-500)',
+            600: 'var(--colors-semantic-warning-600)',
+            700: 'var(--colors-semantic-warning-700)',
+            800: 'var(--colors-semantic-warning-800)',
+            900: 'var(--colors-semantic-warning-900)',
+            950: 'var(--colors-semantic-warning-950)',
+          },
+          error: {
+            50: 'var(--colors-semantic-error-50)',
+            100: 'var(--colors-semantic-error-100)',
+            200: 'var(--colors-semantic-error-200)',
+            300: 'var(--colors-semantic-error-300)',
+            400: 'var(--colors-semantic-error-400)',
+            500: 'var(--colors-semantic-error-500)',
+            600: 'var(--colors-semantic-error-600)',
+            700: 'var(--colors-semantic-error-700)',
+            800: 'var(--colors-semantic-error-800)',
+            900: 'var(--colors-semantic-error-900)',
+            950: 'var(--colors-semantic-error-950)',
+          },
+          info: {
+            50: 'var(--colors-semantic-info-50)',
+            100: 'var(--colors-semantic-info-100)',
+            200: 'var(--colors-semantic-info-200)',
+            300: 'var(--colors-semantic-info-300)',
+            400: 'var(--colors-semantic-info-400)',
+            500: 'var(--colors-semantic-info-500)',
+            600: 'var(--colors-semantic-info-600)',
+            700: 'var(--colors-semantic-info-700)',
+            800: 'var(--colors-semantic-info-800)',
+            900: 'var(--colors-semantic-info-900)',
+            950: 'var(--colors-semantic-info-950)',
+          },
+        },
+        surface: {
+          background: 'var(--colors-surface-background)',
+          surface: 'var(--colors-surface-surface)',
+          variant: 'var(--colors-surface-surface-variant)',
+          container: 'var(--colors-surface-surface-container)',
+          'container-high': 'var(--colors-surface-surface-container-high)',
+          'container-highest': 'var(--colors-surface-surface-container-highest)',
+          overlay: 'var(--colors-surface-overlay)',
+        },
+        text: {
+          'on-background': 'var(--colors-text-on-background)',
+          'on-surface': 'var(--colors-text-on-surface)',
+          'on-surface-variant': 'var(--colors-text-on-surface-variant)',
+          'on-primary': 'var(--colors-text-on-primary)',
+          'on-secondary': 'var(--colors-text-on-secondary)',
+          'on-accent': 'var(--colors-text-on-accent)',
+          'on-success': 'var(--colors-text-on-success)',
+          'on-warning': 'var(--colors-text-on-warning)',
+          'on-error': 'var(--colors-text-on-error)',
+          'on-info': 'var(--colors-text-on-info)',
+        },
+        border: {
+          default: 'var(--colors-border-default)',
+          muted: 'var(--colors-border-muted)',
+          subtle: 'var(--colors-border-subtle)',
+          focus: 'var(--colors-border-focus)',
+          error: 'var(--colors-border-error)',
+          success: 'var(--colors-border-success)',
+          warning: 'var(--colors-border-warning)',
+        },
+      },
+      fontFamily: {
+        sans: ['var(--typography-font-family-sans)'],
+        serif: ['var(--typography-font-family-serif)'],
+        mono: ['var(--typography-font-family-mono)'],
+        display: ['var(--typography-font-family-display)'],
+      },
+      borderRadius: {
+        'theme-none': 'var(--border-radius-none)',
+        'theme-sm': 'var(--border-radius-sm)',
+        'theme-base': 'var(--border-radius-base)',
+        'theme-md': 'var(--border-radius-md)',
+        'theme-lg': 'var(--border-radius-lg)',
+        'theme-xl': 'var(--border-radius-xl)',
+        'theme-2xl': 'var(--border-radius-2xl)',
+        'theme-3xl': 'var(--border-radius-3xl)',
+        'theme-full': 'var(--border-radius-full)',
+      },
+      boxShadow: {
+        'theme-none': 'var(--box-shadow-none)',
+        'theme-sm': 'var(--box-shadow-sm)',
+        'theme-base': 'var(--box-shadow-base)',
+        'theme-md': 'var(--box-shadow-md)',
+        'theme-lg': 'var(--box-shadow-lg)',
+        'theme-xl': 'var(--box-shadow-xl)',
+        'theme-2xl': 'var(--box-shadow-2xl)',
+        'theme-inner': 'var(--box-shadow-inner)',
+      },
+      animation: {
+        'fade-in': 'fadeIn var(--animation-duration-300) var(--animation-easing-ease-out)',
+        'slide-up': 'slideUp var(--animation-duration-300) var(--animation-easing-ease-out)',
+        'slide-down': 'slideDown var(--animation-duration-300) var(--animation-easing-ease-out)',
+        'scale-in': 'scaleIn var(--animation-duration-200) var(--animation-easing-ease-out)',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        scaleIn: {
+          '0%': { transform: 'scale(0.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+      },
+      screens: {
+        'xs': 'var(--breakpoints-xs)',
+      },
+      zIndex: {
+        'dropdown': 'var(--z-index-dropdown)',
+        'modal': 'var(--z-index-modal)',
+        'popover': 'var(--z-index-popover)',
+        'tooltip': 'var(--z-index-tooltip)',
+        'toast': 'var(--z-index-toast)',
+      },
+    },
+  },
+  plugins: [
+    // Add support for custom CSS properties in arbitrary values
+    function({ addUtilities }) {
+      addUtilities({
+        '.theme-surface': {
+          'background-color': 'var(--colors-surface-background)',
+        },
+        '.theme-surface-variant': {
+          'background-color': 'var(--colors-surface-surface-variant)',
+        },
+        '.theme-text': {
+          'color': 'var(--colors-text-on-surface)',
+        },
+        '.theme-text-variant': {
+          'color': 'var(--colors-text-on-surface-variant)',
+        },
+        '.theme-border': {
+          'border-color': 'var(--colors-border-default)',
+        },
+        '.theme-focus': {
+          'outline': '2px solid var(--colors-border-focus)',
+          'outline-offset': '2px',
+        },
+      });
+    },
+  ],
 }
