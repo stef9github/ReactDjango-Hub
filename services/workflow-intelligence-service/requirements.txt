@@ -16,9 +16,10 @@ psycopg2-binary==2.9.9  # sync PostgreSQL driver
 celery==5.3.4
 celery[redis]==5.3.4
 
-# AI/ML integrations
-anthropic==0.7.8
-openai==1.3.5
+# AI/ML integrations - Updated for multi-provider architecture
+anthropic==0.40.0  # Latest with Claude Opus 4.1 support
+openai==1.58.1     # Latest with GPT-5 and o1 support
+python-dotenv==1.0.0  # For environment variable management
 
 # Workflow engine
 python-statemachine==2.5.0
