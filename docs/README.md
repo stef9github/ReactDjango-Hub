@@ -30,6 +30,8 @@ Guide de développement et bonnes pratiques
 - **[Standards Code](./development/coding-standards.md)** - Conventions et qualité
 - **[Git Worktrees](./development/git-worktrees.md)** - Développement parallèle
 - **[VS Code](./development/vscode-integration.md)** - Intégration IDE
+- **[Communication Inter-Agents](./development/inter-agent-communication.md)** - Protocoles Claude Code
+- **[Optimisation Agents](./development/agent-optimization-guide.md)** - Performance et efficacité
 
 ### 🔌 [API](./api/)
 Documentation des APIs REST
