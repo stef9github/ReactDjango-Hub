@@ -76,7 +76,12 @@ agents:
     working_directory: ./
     specialization: Claude Code Optimization, Workflow Automation, Development Tools
     
-  # Note: tech-lead is deprecated - role handled by ag-coordinator
+  # Technical Leadership
+  ag-techlead:
+    enabled: true
+    description: Technical Lead - Architecture decisions, research analysis, strategic planning
+    working_directory: ./
+    specialization: Architecture, ADRs, Research Analysis, Strategic Planning
 global_settings:
   audit_logging: true
   compliance:

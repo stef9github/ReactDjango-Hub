@@ -191,6 +191,34 @@ agents:
       - "git diff"
       - "pytest --cov"
 
+  ag-techlead:
+    name: "Technical Lead Agent"
+    icon: "🎯"
+    description: "Technical leadership specialist for architectural decision-making, cross-service design patterns, research analysis validation, technology evaluation, and strategic technical planning with critical thinking for complex architectural challenges"
+    working_dir: "."
+    responsibilities:
+      - Architectural Decision Records (ADRs) creation and strategic technical documentation
+      - Cross-service design patterns standardization and microservices architecture evolution
+      - Research analysis and validation - critically evaluate external research for project fit
+      - Technology stack evaluation and selection with risk-benefit analysis
+      - Technical debt identification, prioritization, and resolution strategies
+      - Performance and scalability architecture reviews across all microservices
+      - Development process optimization and engineering best practices establishment
+      - Technical risk assessment and mitigation planning with scenario analysis
+      - Sprint planning and complex technical task breakdown coordination
+      - Code review coordination with ag-reviewer for architectural compliance
+      - Technical mentorship through documentation and standards enforcement
+      - Inter-service communication patterns and API design standards
+      - Challenge architectural proposals with critical analysis to ensure optimal solutions
+      - Research digest analysis - synthesize complex technical research into actionable insights
+      - Technology roadmap planning and strategic technical direction
+    commands:
+      - "make architecture-review"
+      - "python scripts/tech-debt-analyzer.py"
+      - "npm run dependency-audit"
+      - "spectral lint docs/architecture/adr/*.yaml"
+      - "pytest tests/architecture/"
+
 # Agent interaction rules
 rules:
   separation_of_concerns:

@@ -16,6 +16,7 @@ This project uses a **simplified agent architecture** with one agent per service
 ./.claude/launch-agent.sh backend      # Django backend development
 ./.claude/launch-agent.sh frontend     # React frontend development
 ./.claude/launch-agent.sh identity     # Identity service
+./.claude/launch-agent.sh techlead     # Technical leadership and architecture
 ```
 
 ### **📦 Available Agents**
@@ -32,7 +33,8 @@ This project uses a **simplified agent architecture** with one agent per service
 - **`infrastructure`** - Infrastructure: Docker, Kubernetes, CI/CD, deployment
 - **`coordinator`** - Services Coordinator: API gateway, service mesh, integration
 
-#### **Quality & Compliance**
+#### **Leadership & Quality**
+- **`techlead`** - Technical Lead: Architecture decisions, research analysis, strategic planning
 - **`security`** - Security & Compliance: Audits, vulnerability scanning
 - **`review`** - Code Review: Quality assessment, best practices
 
@@ -361,3 +363,37 @@ VITE_ENVIRONMENT=production
 - Data privacy guidelines
 - Security audit procedures
 - Penetration testing protocols
+
+## 🤖 **AGENT CONFIGURATION NOTES**
+
+### **Agent File Format Requirements**
+All agents in `.claude/agents/` must use the correct YAML frontmatter format to be recognized by Claude Code:
+
+```markdown
+---
+name: agent-name
+description: Clear description of when this agent should be invoked
+tools: optional,comma,separated,list  # Optional - defaults to all tools
+---
+
+# Agent instructions content follows...
+```
+
+### **Recent Configuration Fixes**
+- ✅ **ag-techlead** - Fixed YAML frontmatter format (September 10, 2025)
+  - Added required `---` YAML frontmatter block
+  - Now properly recognized by Claude Code interface
+  - Configured for architectural decisions, research analysis, and strategic planning
+
+### **Agent Documentation Structure**
+```
+.claude/
+├── agents.yaml          # Main agent definitions
+├── agents/
+│   ├── config.yaml      # Agent configuration registry
+│   ├── ag-techlead.md   # Technical Lead agent (✅ YAML frontmatter)
+│   ├── ag-backend.md    # Backend agent
+│   ├── ag-frontend.md   # Frontend agent
+│   └── [other-agents].md
+└── launch-agent.sh      # Unified agent launcher
+```

@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Define available agents
-VALID_AGENTS="ag-backend ag-frontend ag-identity ag-communication ag-content ag-workflow ag-infrastructure ag-coordinator ag-security ag-reviewer"
+VALID_AGENTS="ag-backend ag-frontend ag-identity ag-communication ag-content ag-workflow ag-infrastructure ag-coordinator ag-security ag-reviewer ag-techlead"
 
 # Function to get agent info
 get_agent_info() {
@@ -32,6 +32,7 @@ get_agent_info() {
         ag-coordinator) echo "Services Coordinator|API contracts, service mesh, integration" ;;
         ag-security) echo "Security & Compliance|Security audits, compliance, vulnerability scanning" ;;
         ag-reviewer) echo "Code Review|Code quality, PR reviews, best practices" ;;
+        ag-techlead) echo "Technical Lead|Architecture decisions, research analysis, strategic planning" ;;
         *) echo "Unknown|Unknown agent" ;;
     esac
 }
@@ -64,8 +65,8 @@ show_usage() {
     done
     echo ""
     
-    echo -e "${GREEN}Quality & Compliance:${NC}"
-    for agent in ag-security ag-reviewer; do
+    echo -e "${GREEN}Leadership & Quality:${NC}"
+    for agent in ag-techlead ag-security ag-reviewer; do
         info=$(get_agent_info "$agent")
         IFS='|' read -r title desc <<< "$info"
         printf "  %-20s - %s\n" "$agent" "$desc"
@@ -165,6 +166,11 @@ show_agent_instructions() {
         ag-reviewer)
             echo "  📁 Working Directory: $PROJECT_ROOT"
             echo "  🔧 Focus: Code quality and PR reviews"
+            ;;
+        ag-techlead)
+            echo "  📁 Working Directory: $PROJECT_ROOT"
+            echo "  🔧 Focus: Architecture, ADRs, research analysis"
+            echo "  📝 Documentation: docs/architecture/adr/"
             ;;
     esac
     echo ""
