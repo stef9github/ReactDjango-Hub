@@ -69,6 +69,9 @@ STORAGE_DIRECTORY.mkdir(parents=True, exist_ok=True)
 
 start_time = time.time()
 
+# Connection tracking
+_active_connections = 0
+
 # JWT Authentication setup
 security = HTTPBearer()
 
@@ -114,6 +117,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Connection tracking middleware
+@app.middleware("http")
+async def track_connections(request, call_next):
+    """Track active connections for health metrics."""
+    global _active_connections
+    _active_connections += 1
+    
+    try:
+        response = await call_next(request)
+        return response
+    finally:
+        _active_connections -= 1
+
 # Helper functions for health check
 def get_uptime():
     return int(time.time() - start_time)
@@ -123,7 +139,14 @@ def get_memory_usage():
     return round(process.memory_info().rss / 1024 / 1024, 2)
 
 def get_active_connections():
-    return 0  # TODO: Implement actual connection tracking
+    """Get current active connection count."""
+    # Try to get actual FastAPI connection count
+    if hasattr(app, '_connection_count'):
+        return getattr(app, '_connection_count', 0)
+    
+    # Fallback to global tracking
+    global _active_connections
+    return _active_connections
 
 @app.get("/health")
 async def health_check():
@@ -144,8 +167,14 @@ async def health_check():
     # Check Redis connection
     try:
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6381/0")
+        redis_password = os.getenv("REDIS_PASSWORD")
         import redis.asyncio as redis
-        redis_client = redis.from_url(redis_url)
+        
+        if redis_password:
+            redis_client = redis.from_url(redis_url, password=redis_password)
+        else:
+            redis_client = redis.from_url(redis_url)
+            
         await redis_client.ping()
         await redis_client.close()
         health_status["dependencies"]["redis"] = "healthy"
