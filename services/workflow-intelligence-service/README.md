@@ -1,9 +1,9 @@
 # Workflow & Intelligence Service
 
-**Service**: Workflow Automation + AI Assistance  
+**Service**: Workflow Automation + Multi-Provider AI Architecture  
 **Port**: 8004  
-**Technology**: FastAPI + SQLAlchemy + Redis + Celery + PostgreSQL + AI/ML  
-**Status**: 🚀 **Production Ready** - 95% Complete with Comprehensive Testing
+**Technology**: FastAPI + SQLAlchemy + Redis + Celery + PostgreSQL + AI/ML (GPT-5, Claude Opus 4.1)  
+**Status**: 🚀 **Production Ready** - Enterprise-Grade AI Architecture with 16 Models
 
 ## 🎯 Purpose
 
@@ -15,10 +15,14 @@ Provides enterprise-grade business process automation (multi-step workflows) wit
 
 ## ⚙️ Architecture
 
-- **API**: FastAPI endpoints for workflow management
+- **API**: FastAPI endpoints for workflow management and AI operations
 - **Database**: PostgreSQL for workflows, steps, state machine
 - **Queue**: Redis pub/sub for state changes + Celery for scheduled tasks
-- **AI/NLP**: Claude/OpenAI integration (custom ML later)
+- **AI Architecture**: Multi-provider system with intelligent routing and fallback
+  - **OpenAI**: GPT-5, GPT-4.1, o1, ChatGPT-4o, GPT-4o variants
+  - **Anthropic**: Claude Opus 4.1, Claude Sonnet 4, Claude 3.x series
+  - **Selection Strategies**: Performance, cost, speed, balanced, fallback
+  - **Features**: Automatic provider switching, cost optimization, quality ranking
 - **Rules Engine**: Business logic validation and conditional workflows
 
 ## 🛠 Feature Set
@@ -27,7 +31,7 @@ Provides enterprise-grade business process automation (multi-step workflows) wit
 - ✅ **Workflow Engine**: Complete state machine with 42 dedicated tests
 - ✅ **API Endpoints**: Full REST API with 39 integration tests  
 - ✅ **Authentication**: 100% endpoint coverage with 29 security tests
-- ✅ **AI Integration**: OpenAI/Anthropic integration with 13 comprehensive tests
+- ✅ **Multi-Provider AI**: Enterprise AI architecture with 16 models, intelligent routing, and comprehensive testing
 - ✅ **Performance**: Load testing and benchmarking with 11 performance tests
 - ✅ **Database Models**: Complete schema with 21 model tests
 - ✅ **State Management**: Dynamic workflow transitions with validation
@@ -42,12 +46,58 @@ Provides enterprise-grade business process automation (multi-step workflows) wit
 - 📋 Parallel workflow execution
 - 📋 Advanced reporting and analytics dashboard
 
+## 🤖 AI Capabilities
+
+### Multi-Provider Architecture
+The service features a comprehensive AI architecture supporting multiple providers with intelligent routing:
+
+```python
+# Summarize documents with cost optimization
+POST /api/v1/ai/summarize
+{
+    "text": "Long document content...",
+    "strategy": "cost",     # performance, cost, speed, balanced, fallback
+    "max_cost": 0.10       # Optional cost limit
+}
+
+# Analyze content with best available model
+POST /api/v1/ai/analyze  
+{
+    "content": "Business proposal...",
+    "strategy": "performance"  # Use highest quality models
+}
+
+# Get intelligent workflow suggestions
+POST /api/v1/ai/suggest
+{
+    "context_data": "Current workflow state...",
+    "strategy": "balanced"
+}
+```
+
+### Supported Models
+- **OpenAI**: GPT-5, GPT-4.1, o1, ChatGPT-4o, GPT-4o, GPT-5-mini, o1-mini, GPT-4o-mini
+- **Anthropic**: Claude Opus 4.1, Claude Opus 4, Claude Sonnet 4, Claude 3.7 Sonnet, Claude 3.5 variants
+
+### Selection Strategies
+- **Performance**: Best quality models (GPT-5, Claude Opus 4.1)
+- **Cost**: Most economical models while meeting quality thresholds  
+- **Speed**: Fastest response times (mini/haiku variants)
+- **Balanced**: Optimal balance of quality, cost, and performance
+- **Fallback**: Automatic provider switching for maximum reliability
+
+For complete details on the AI architecture, see [AI_ARCHITECTURE.md](./AI_ARCHITECTURE.md).
+
 ## 🚀 Quick Start
 
 ### Development Setup
 ```bash
 cd services/workflow-intelligence-service
 pip install -r requirements.txt
+
+# Set up AI provider keys
+export OPENAI_API_KEY="your-openai-key"
+export ANTHROPIC_API_KEY="your-anthropic-key"
 uvicorn main:app --reload --port 8004
 
 # Start Celery worker (separate terminal)
