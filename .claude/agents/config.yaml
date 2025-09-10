@@ -69,8 +69,14 @@ agents:
     working_directory: infrastructure/
     specialization: Docker, Kubernetes, CI/CD
     
-  # Note: tech-lead and claude-code-optimization-expert are deprecated
-  # These roles are now handled by ag-coordinator and built-in Claude Code features
+  # Development Tools & Optimization
+  ag-claude:
+    enabled: true
+    description: Claude Code specialist - Development workflows, agent configurations, automation
+    working_directory: ./
+    specialization: Claude Code Optimization, Workflow Automation, Development Tools
+    
+  # Note: tech-lead is deprecated - role handled by ag-coordinator
 global_settings:
   audit_logging: true
   compliance:
