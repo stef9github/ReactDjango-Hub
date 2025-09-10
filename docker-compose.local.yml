@@ -1,0 +1,483 @@
+# Local Development - All Microservices Container Deployment
+# Run with: docker-compose -f docker-compose.local.yml up -d
+
+services:
+  # ===========================================
+  # DATABASES
+  # ===========================================
+  
+  # Main Backend Database
+  main-db:
+    image: postgres:17-alpine
+    container_name: main-db
+    environment:
+      POSTGRES_DB: reactdjango_hub
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - main_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d reactdjango_hub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Identity Service Database
+  identity-db:
+    image: postgres:17-alpine
+    container_name: identity-db
+    environment:
+      POSTGRES_DB: identity_service
+      POSTGRES_USER: identity_user
+      POSTGRES_PASSWORD: identity_pass
+    volumes:
+      - identity_db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U identity_user -d identity_service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Communication Service Database
+  communication-db:
+    image: postgres:17-alpine
+    container_name: communication-db
+    environment:
+      POSTGRES_DB: communication_service
+      POSTGRES_USER: comm_user
+      POSTGRES_PASSWORD: comm_pass
+    volumes:
+      - communication_db_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U comm_user -d communication_service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Content Service Database
+  content-db:
+    image: postgres:17-alpine
+    container_name: content-db
+    environment:
+      POSTGRES_DB: content_service
+      POSTGRES_USER: content_user
+      POSTGRES_PASSWORD: content_pass
+    volumes:
+      - content_db_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U content_user -d content_service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Workflow Service Database
+  workflow-db:
+    image: postgres:17-alpine
+    container_name: workflow-db
+    environment:
+      POSTGRES_DB: workflow_service
+      POSTGRES_USER: workflow_user
+      POSTGRES_PASSWORD: workflow_pass
+    volumes:
+      - workflow_db_data:/var/lib/postgresql/data
+    ports:
+      - "5436:5432"
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflow_user -d workflow_service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ===========================================
+  # REDIS INSTANCES
+  # ===========================================
+  
+  # Main Redis
+  main-redis:
+    image: redis:7-alpine
+    container_name: main-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - main_redis_data:/data
+    networks:
+      - microservices_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Identity Service Redis
+  identity-redis:
+    image: redis:7-alpine
+    container_name: identity-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - identity_redis_data:/data
+    networks:
+      - microservices_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Communication Service Redis
+  communication-redis:
+    image: redis:7-alpine
+    container_name: communication-redis
+    ports:
+      - "6381:6379"
+    volumes:
+      - communication_redis_data:/data
+    networks:
+      - microservices_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Content Service Redis
+  content-redis:
+    image: redis:7-alpine
+    container_name: content-redis
+    ports:
+      - "6382:6379"
+    volumes:
+      - content_redis_data:/data
+    networks:
+      - microservices_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Workflow Service Redis
+  workflow-redis:
+    image: redis:7-alpine
+    container_name: workflow-redis
+    ports:
+      - "6383:6379"
+    volumes:
+      - workflow_redis_data:/data
+    networks:
+      - microservices_network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ===========================================
+  # MICROSERVICES
+  # ===========================================
+  
+  # Identity Service (Port 8001)
+  identity-service:
+    build:
+      context: ./services/identity-service
+      dockerfile: Dockerfile
+    container_name: identity-service
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://identity_user:identity_pass@identity-db:5432/identity_service
+      - REDIS_URL=redis://identity-redis:6379/0
+      - SERVICE_NAME=identity-service
+      - SERVICE_PORT=8001
+      - DEBUG=true
+      - LOG_LEVEL=info
+      - SECRET_KEY=dev-secret-key
+      - JWT_SECRET_KEY=dev-jwt-secret
+    depends_on:
+      identity-db:
+        condition: service_healthy
+      identity-redis:
+        condition: service_healthy
+    volumes:
+      - ./services/identity-service:/app
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Communication Service (Port 8002)
+  communication-service:
+    build:
+      context: ./services/communication-service
+      dockerfile: Dockerfile
+    container_name: communication-service
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql://comm_user:comm_pass@communication-db:5432/communication_service
+      - REDIS_URL=redis://communication-redis:6379/0
+      - CELERY_BROKER_URL=redis://communication-redis:6379/1
+      - IDENTITY_SERVICE_URL=http://identity-service:8001
+      - SERVICE_NAME=communication-service
+      - SERVICE_PORT=8002
+      - DEBUG=true
+      - LOG_LEVEL=info
+    depends_on:
+      communication-db:
+        condition: service_healthy
+      communication-redis:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+    volumes:
+      - ./services/communication-service:/app
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Content Service (Port 8003)
+  content-service:
+    build:
+      context: ./services/content-service
+      dockerfile: Dockerfile
+    container_name: content-service
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=postgresql://content_user:content_pass@content-db:5432/content_service
+      - REDIS_URL=redis://content-redis:6379/0
+      - IDENTITY_SERVICE_URL=http://identity-service:8001
+      - SERVICE_NAME=content-service
+      - SERVICE_PORT=8003
+      - DEBUG=true
+      - LOG_LEVEL=info
+      - MINIO_URL=http://minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    depends_on:
+      content-db:
+        condition: service_healthy
+      content-redis:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - ./services/content-service:/app
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Workflow Intelligence Service (Port 8004)
+  workflow-intelligence-service:
+    build:
+      context: ./services/workflow-intelligence-service
+      dockerfile: Dockerfile
+    container_name: workflow-intelligence-service
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql://workflow_user:workflow_pass@workflow-db:5432/workflow_service
+      - REDIS_URL=redis://workflow-redis:6379/0
+      - CELERY_BROKER_URL=redis://workflow-redis:6379/1
+      - IDENTITY_SERVICE_URL=http://identity-service:8001
+      - COMMUNICATION_SERVICE_URL=http://communication-service:8002
+      - CONTENT_SERVICE_URL=http://content-service:8003
+      - SERVICE_NAME=workflow-intelligence-service
+      - SERVICE_PORT=8004
+      - DEBUG=true
+      - LOG_LEVEL=info
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    depends_on:
+      workflow-db:
+        condition: service_healthy
+      workflow-redis:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+      communication-service:
+        condition: service_healthy
+      content-service:
+        condition: service_healthy
+    volumes:
+      - ./services/workflow-intelligence-service:/app
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # Django Backend Service (Port 8000)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../infrastructure/docker/development/Dockerfile.backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@main-db:5432/reactdjango_hub
+      - REDIS_URL=redis://main-redis:6379/0
+      - IDENTITY_SERVICE_URL=http://identity-service:8001
+      - DEBUG=true
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
+    depends_on:
+      main-db:
+        condition: service_healthy
+      main-redis:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - backend_static:/app/static
+      - backend_media:/app/media
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # React Frontend Service (Port 3000)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../infrastructure/docker/development/Dockerfile.frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - VITE_IDENTITY_SERVICE_URL=http://localhost:8001
+      - VITE_ENVIRONMENT=development
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      backend:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # ===========================================
+  # SUPPORTING SERVICES
+  # ===========================================
+  
+  # MinIO (S3-compatible storage for content service)
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    networks:
+      - microservices_network
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  # Database volumes
+  main_db_data:
+  identity_db_data:
+  communication_db_data:
+  content_db_data:
+  workflow_db_data:
+  
+  # Redis volumes
+  main_redis_data:
+  identity_redis_data:
+  communication_redis_data:
+  content_redis_data:
+  workflow_redis_data:
+  
+  # Application volumes
+  backend_static:
+  backend_media:
+  minio_data:
+
+networks:
+  microservices_network:
+    driver: bridge
+    name: microservices_network

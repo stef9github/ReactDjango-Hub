@@ -41,7 +41,16 @@
       "Bash(for:*)",
       "Bash(if grep -q \"instructions_file:\" \"$file\")",
       "Bash(else echo \"❌ Missing instructions_file\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(./scripts/dev-stack.sh:*)",
+      "Bash(make:*)",
+      "Bash(.claude/claude-deployment-agent:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(netstat:*)",
+      "Bash(mv:*)",
+      "Bash(export PATH=\"/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude:$PATH\")",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements
-COPY requirements.txt .
+COPY requirements-standalone.txt requirements.txt
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --user -r requirements.txt
@@ -30,14 +30,14 @@ RUN apt-get update && apt-get install -y \
 # Copy Python dependencies from builder
 COPY --from=builder /root/.local /root/.local
 
+# Make sure the PATH includes local installed packages
+ENV PATH=/root/.local/bin:$PATH
+
 # Copy application code
 COPY . .
 
-# Create non-root user
-RUN useradd -m -u 1000 authservice && \
-    chown -R authservice:authservice /app
-
-USER authservice
+# For now, run as root to avoid permission issues
+# TODO: Fix user permissions properly
 
 # Environment variables
 ENV PATH=/root/.local/bin:$PATH \

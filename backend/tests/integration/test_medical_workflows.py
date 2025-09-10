@@ -1,6 +1,6 @@
 """
-Integration Tests for Medical Workflows
-Tests complete medical SaaS workflows with French RGPD compliance
+Integration Tests for Business Workflows
+Tests complete enterprise SaaS workflows with GDPR compliance
 """
 
 import pytest
@@ -8,163 +8,163 @@ from django.test import TransactionTestCase
 from django.contrib.auth.models import User
 from unittest.mock import patch, Mock
 from backend.tests.conftest import (
-    french_medical_user,
-    medical_workflow_context,
-    sample_patient_data,
-    surgical_procedure_data,
-    rgpd_compliant_settings
+    enterprise_user,
+    business_workflow_context,
+    sample_client_data,
+    business_process_data,
+    gdpr_compliant_settings
 )
 
 
 @pytest.mark.integration
-class TestMedicalWorkflowIntegration(TransactionTestCase):
-    """Integration tests for complete medical workflows"""
+class TestBusinessWorkflowIntegration(TransactionTestCase):
+    """Integration tests for complete business workflows"""
     
     def setUp(self):
-        """Set up test environment with French medical context"""
+        """Set up test environment with enterprise business context"""
         self.user = User.objects.create_user(
-            username='dr.martin',
-            email='dr.martin@hopital-test.fr',
+            username='manager.martin',
+            email='manager.martin@enterprise-test.com',
             password='test123'
         )
     
     @patch('apps.analytics.models.AnalyticsRecord.objects.create')
-    def test_patient_registration_workflow(self, mock_analytics, french_medical_user, sample_patient_data):
-        """Test complete patient registration with analytics tracking"""
+    def test_client_registration_workflow(self, mock_analytics, enterprise_user, sample_client_data):
+        """Test complete client registration with analytics tracking"""
         from apps.core.models import BaseModel
         
-        # Simulate patient registration
-        patient_data = sample_patient_data
+        # Simulate client registration
+        client_data = sample_client_data
         
-        # Verify French medical context
-        assert patient_data['nom'] is not None, "Patient nom (last name) required"
-        assert patient_data['prenom'] is not None, "Patient prenom (first name) required"
-        assert patient_data['numero_securite_sociale'] is not None, "French social security number required"
+        # Verify business client context
+        assert client_data['name'] is not None, "Client name required"
+        assert client_data['email'] is not None, "Client email required"
+        assert client_data['company'] is not None, "Client company required"
         
-        # Verify RGPD compliance fields
-        rgpd_required_fields = ['nom', 'prenom', 'date_naissance', 'numero_securite_sociale']
-        for field in rgpd_required_fields:
-            assert field in patient_data, f"RGPD required field {field} missing"
+        # Verify GDPR compliance fields
+        gdpr_required_fields = ['name', 'email', 'company', 'phone']
+        for field in gdpr_required_fields:
+            assert field in client_data, f"GDPR required field {field} missing"
         
         # Verify analytics tracking called
         mock_analytics.assert_called()
         
-    def test_surgical_scheduling_workflow(self, french_medical_user, surgical_procedure_data):
-        """Test surgical procedure scheduling with French terminology"""
-        procedure_data = surgical_procedure_data
+    def test_business_process_scheduling_workflow(self, enterprise_user, business_process_data):
+        """Test business process scheduling with enterprise terminology"""
+        process_data = business_process_data
         
-        # Verify French surgical terminology
-        french_procedures = ['Appendicectomie', 'Cholécystectomie', 'Craniotomie', 'Laparoscopie']
-        assert procedure_data['type_intervention'] in french_procedures, \
-            f"Procedure {procedure_data['type_intervention']} not in French terminology"
+        # Verify business process terminology
+        business_processes = ['Project Planning', 'Client Onboarding', 'Product Launch', 'Strategic Review']
+        assert process_data['process_type'] in business_processes, \
+            f"Process {process_data['process_type']} not in business terminology"
         
-        # Verify required surgical fields
+        # Verify required business process fields
         required_fields = [
-            'type_intervention', 'date_prevue', 'duree_estimee', 
-            'chirurgien_principal', 'anesthesie_type', 'salle_operation'
+            'process_type', 'scheduled_date', 'estimated_duration', 
+            'assigned_manager', 'priority_level', 'department'
         ]
         for field in required_fields:
-            assert field in procedure_data, f"Required surgical field {field} missing"
+            assert field in process_data, f"Required business field {field} missing"
         
-        # Verify French anesthesia terminology
-        french_anesthesia = ['Générale', 'Locale', 'Rachidienne']
-        assert procedure_data['anesthesie_type'] in french_anesthesia, \
-            "Anesthesia type must use French terminology"
+        # Verify business priority levels
+        priority_levels = ['High', 'Medium', 'Low']
+        assert process_data['priority_level'] in priority_levels, \
+            "Priority level must use standard business terminology"
     
-    @rgpd_compliant_settings
-    def test_rgpd_audit_trail_workflow(self, french_medical_user):
-        """Test RGPD audit trail for medical data access"""
+    @gdpr_compliant_settings
+    def test_gdpr_audit_trail_workflow(self, enterprise_user):
+        """Test GDPR audit trail for business data access"""
         from django.conf import settings
         
-        # Verify RGPD settings are active
-        assert settings.AUDITLOG_INCLUDE_ALL_MODELS, "Audit logging must be enabled for RGPD"
-        assert settings.LANGUAGE_CODE == 'fr-FR', "Primary language must be French"
-        assert settings.TIME_ZONE == 'Europe/Paris', "Timezone must be French"
+        # Verify GDPR settings are active
+        assert settings.AUDITLOG_INCLUDE_ALL_MODELS, "Audit logging must be enabled for GDPR"
+        assert settings.LANGUAGE_CODE == 'fr-fr', "Primary language configured"
+        assert settings.TIME_ZONE == 'Europe/Paris', "Timezone must be European"
         
         # Test encrypted field configuration
-        assert hasattr(settings, 'FIELD_ENCRYPTION_KEY'), "Encryption key required for RGPD"
+        assert hasattr(settings, 'FIELD_ENCRYPTION_KEY'), "Encryption key required for GDPR"
         
-        # Verify French localization
-        assert settings.USE_I18N, "Internationalization required for trilingual support"
-        assert settings.USE_L10N, "Localization required for French formats"
+        # Verify internationalization
+        assert settings.USE_I18N, "Internationalization required for multilingual support"
+        assert settings.USE_L10N, "Localization required for regional formats"
         
-    def test_multilingual_translation_workflow(self, medical_translator_simulator):
-        """Test trilingual medical translation workflow"""
+    def test_multilingual_translation_workflow(self, business_translator_simulator):
+        """Test trilingual business translation workflow"""
         
         # Test French -> German -> English translation chain
-        french_terms = ['diagnostic', 'intervention', 'patient', 'medecin']
+        business_terms = ['client', 'process', 'manager', 'enterprise']
         
-        for french_term in french_terms:
+        for business_term in business_terms:
             # French to German
-            german_translation = medical_translator_simulator.translate_term(
-                french_term, 'fr', 'de'
+            german_translation = business_translator_simulator.translate_term(
+                business_term, 'fr', 'de'
             )
             
             # French to English  
-            english_translation = medical_translator_simulator.translate_term(
-                french_term, 'fr', 'en'
+            english_translation = business_translator_simulator.translate_term(
+                business_term, 'fr', 'en'
             )
             
-            # Verify translations exist and differ from source (except 'patient')
-            if french_term != 'patient':
-                assert german_translation != french_term, \
-                    f"German translation missing for {french_term}"
-                assert english_translation != french_term, \
-                    f"English translation missing for {french_term}"
+            # Verify translations exist and differ from source (except 'client')
+            if business_term != 'client':
+                assert german_translation != business_term, \
+                    f"German translation missing for {business_term}"
+                assert english_translation != business_term, \
+                    f"English translation missing for {business_term}"
             
-            # Verify medical context preserved
-            medical_keywords = ['medic', 'patient', 'diagnos', 'interven', 'arzt', 'chirurg']
+            # Verify business context preserved
+            business_keywords = ['client', 'process', 'manager', 'enterprise', 'unternehmen', 'geschäft']
             combined_translations = f"{german_translation} {english_translation}".lower()
             
-            has_medical_context = any(keyword in combined_translations for keyword in medical_keywords)
-            assert has_medical_context, \
-                f"Medical context lost in translations for {french_term}"
+            has_business_context = any(keyword in combined_translations for keyword in business_keywords)
+            assert has_business_context, \
+                f"Business context lost in translations for {business_term}"
 
 
 @pytest.mark.integration  
 class TestAgentCodeGenerationIntegration:
-    """Integration tests for agent-generated code in medical context"""
+    """Integration tests for agent-generated code in business context"""
     
     def test_backend_frontend_code_consistency(self, backend_agent_simulator, frontend_agent_simulator):
         """Test consistency between backend and frontend generated code"""
         
         # Generate backend model
         model_spec = {
-            'name': 'Patient',
-            'fields': 'nom = EncryptedTextField(max_length=100)\n    diagnostic = EncryptedTextField()'
+            'name': 'Client',
+            'fields': 'name = EncryptedTextField(max_length=100)\n    company = EncryptedTextField()'
         }
         backend_code = backend_agent_simulator.generate_model(model_spec)
         
         # Generate corresponding frontend component
         component_spec = {
-            'name': 'PatientForm',
-            'medicalData': True
+            'name': 'ClientForm',
+            'businessData': True
         }
         frontend_code = frontend_agent_simulator.generate_component(component_spec)
         
         # Verify naming consistency
-        assert 'Patient' in backend_code, "Model name must be in backend code"
-        assert 'Patient' in frontend_code, "Model name must be referenced in frontend"
+        assert 'Client' in backend_code, "Model name must be in backend code"
+        assert 'Client' in frontend_code, "Model name must be referenced in frontend"
         
-        # Verify French medical context in both
-        french_patterns = ['nom', 'diagnostic', 'patient']
-        backend_french = any(pattern in backend_code.lower() for pattern in french_patterns)
-        frontend_french = any(pattern in frontend_code.lower() for pattern in french_patterns)
+        # Verify business context in both
+        business_patterns = ['name', 'company', 'client']
+        backend_business = any(pattern in backend_code.lower() for pattern in business_patterns)
+        frontend_business = any(pattern in frontend_code.lower() for pattern in business_patterns)
         
-        assert backend_french, "Backend code missing French medical context"
-        assert frontend_french, "Frontend code missing French medical context"
+        assert backend_business, "Backend code missing business context"
+        assert frontend_business, "Frontend code missing business context"
         
-        # Verify RGPD compliance patterns
+        # Verify GDPR compliance patterns
         assert 'EncryptedTextField' in backend_code, "Backend missing encryption"
-        assert 'medicalData' in frontend_code, "Frontend missing medical data handling"
+        assert 'businessData' in frontend_code, "Frontend missing business data handling"
     
     def test_generated_code_quality_metrics(self, backend_agent_simulator):
         """Test quality metrics for agent-generated code"""
         
         model_specs = [
-            {'name': 'Patient', 'fields': 'nom = EncryptedTextField()'},
-            {'name': 'ChirurgicalProcedure', 'fields': 'type_intervention = EncryptedTextField()'},
-            {'name': 'MedicalRecord', 'fields': 'diagnostic = EncryptedTextField()'}
+            {'name': 'Client', 'fields': 'name = EncryptedTextField()'},
+            {'name': 'BusinessProcess', 'fields': 'process_type = EncryptedTextField()'},
+            {'name': 'BusinessRecord', 'fields': 'description = EncryptedTextField()'}
         ]
         
         quality_scores = []
