@@ -131,8 +131,8 @@ kubectl apply -f services/
 kubectl apply -f ingress/
 
 # Manage deployments
-kubectl get pods -n medical-hub
-kubectl get services -n medical-hub
+kubectl get pods -n hub-namespace
+kubectl get services -n hub-namespace
 kubectl describe deployment identity-service
 kubectl logs -f deployment/identity-service
 

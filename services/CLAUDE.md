@@ -127,7 +127,7 @@ grep -r "sqlalchemy==" */requirements.txt
 📄 Content Service             - Port 8002 (Documents + Search + Audit)  
 📢 Communication Service       - Port 8003 (Notifications + Messaging)
 🔄 Workflow Intelligence       - Port 8004 (Process Automation + AI)
-🏥 Backend (Django)           - Port 8000 (Business Logic + Medical Records)
+⚙️ Backend (Django)            - Port 8000 (Business Logic + Core Data)
 ⚛️ Frontend (React)            - Port 3000/5173 (User Interface)
 ```
 

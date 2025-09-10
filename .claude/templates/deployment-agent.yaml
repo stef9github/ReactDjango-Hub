@@ -1,5 +1,5 @@
-name: Infrastructure Agent
-description: Manages Docker, Kubernetes, CI/CD, and deployment configurations
+name: deployment-agent
+description: DevOps engineer specializing in containerized application deployments and cloud infrastructure
 workdir: infrastructure
 instructions_file: infrastructure/CLAUDE.md
 permissions:

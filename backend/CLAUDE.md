@@ -1,19 +1,19 @@
 # Backend Service - Claude Code Agent Configuration
 
 ## 🎯 Service Identity
-- **Service Name**: ReactDjango Hub Medical Backend
+- **Service Name**: ReactDjango Hub Backend
 - **Technology Stack**: Django 5.1.4 LTS, Django Ninja 1.4.3, PostgreSQL 17
 - **Port**: 8000
-- **Database**: PostgreSQL (medical_hub_backend)
-- **Purpose**: Business logic, medical records, billing, analytics
+- **Database**: PostgreSQL (hub_backend)
+- **Purpose**: Core business logic, data models, analytics, reporting
 
 ## 🧠 Your Exclusive Domain
 
 ### Core Responsibilities
 - Django application architecture and models
 - Business logic implementation
-- Medical records management (DICOM, HL7)
-- Billing and insurance processing
+- Data management and CRUD operations
+- Business process automation
 - Analytics and reporting
 - API endpoints via Django Ninja
 - Database migrations and schema
@@ -23,10 +23,10 @@
 ```
 backend/
 ├── apps/                    # ALL Django applications
-│   ├── medical_records/    # Patient data, medical history
-│   ├── billing/            # Insurance, payments, claims
+│   ├── core/               # Core business entities
+│   ├── transactions/       # Transaction processing
 │   ├── analytics/          # Reporting and dashboards
-│   ├── appointments/       # Scheduling system
+│   ├── scheduling/         # Scheduling system
 │   └── notifications/      # Alert system
 ├── config/                 # Django settings and configuration
 ├── api/                    # Django Ninja API routes
@@ -72,7 +72,7 @@ python manage.py shell
 
 # Testing
 python manage.py test
-python manage.py test apps.medical_records
+python manage.py test apps.core
 python manage.py test --coverage
 python manage.py test --parallel
 
@@ -95,16 +95,16 @@ mypy .
 - `apps/*/tests/` - Test suites
 
 ### Database Models You Manage
-- Patient records and medical history
-- Billing and insurance claims
-- Appointments and scheduling
+- Core business entities and relationships
+- Transaction records and history
+- Scheduling and resource allocation
 - Analytics and reporting data
-- Audit logs for HIPAA compliance
+- Audit logs for compliance
 
 ### API Endpoints You Control
-- `/api/medical-records/` - Patient data CRUD
-- `/api/billing/` - Insurance and payments
-- `/api/appointments/` - Scheduling system
+- `/api/entities/` - Core data CRUD operations
+- `/api/transactions/` - Transaction processing
+- `/api/scheduling/` - Scheduling system
 - `/api/analytics/` - Reports and dashboards
 - `/api/notifications/` - Alert management
 
@@ -117,16 +117,16 @@ mypy .
 - [x] Basic project structure
 
 ### 🔴 Critical Tasks (Immediate)
-1. [ ] Implement patient model with HIPAA compliance fields
-2. [ ] Create Django Ninja API endpoints for medical records
+1. [ ] Implement core entity models with audit fields
+2. [ ] Create Django Ninja API endpoints for data operations
 3. [ ] Add audit logging for all data modifications
 4. [ ] Implement integration with Identity Service for auth
 5. [ ] Set up comprehensive test suite structure
 
 ### 🟡 Important Tasks (This Week)
-1. [ ] Design billing models for insurance claims
-2. [ ] Create appointment scheduling system
-3. [ ] Implement HL7/DICOM data format support
+1. [ ] Design transaction models and workflows
+2. [ ] Create resource scheduling system
+3. [ ] Implement data import/export formats
 4. [ ] Add data validation and sanitization
 5. [ ] Set up API documentation with Django Ninja
 
@@ -141,20 +141,20 @@ mypy .
 
 ### Coverage Goals
 - **Target**: 85% test coverage minimum
-- **Critical Paths**: 100% coverage for patient data, billing
+- **Critical Paths**: 100% coverage for core data, transactions
 
 ### Key Test Scenarios
-- Patient data CRUD operations
-- HIPAA compliance validation
-- Billing calculations accuracy
-- Appointment conflict detection
+- Entity data CRUD operations
+- Compliance validation checks
+- Transaction processing accuracy
+- Scheduling conflict detection
 - API authentication integration
 - Data migration integrity
 
 ### Missing Tests to Implement
-- [ ] Patient model unit tests
+- [ ] Core entity model unit tests
 - [ ] API endpoint integration tests
-- [ ] Billing calculation tests
+- [ ] Transaction processing tests
 - [ ] Security and permission tests
 - [ ] Performance tests for large datasets
 
@@ -169,24 +169,24 @@ mypy .
 ### Quality Targets
 - 85% test coverage minimum
 - Zero critical security vulnerabilities
-- 100% HIPAA compliance
+- 100% regulatory compliance
 - Full audit trail coverage
 - Type hints on all functions
 
 ## 🚨 Critical Reminders
 
 ### Security Considerations
-- **NEVER** store unencrypted patient data
+- **NEVER** store unencrypted sensitive data
 - **ALWAYS** use Django's ORM to prevent SQL injection
 - **VALIDATE** all input data before processing
 - **AUDIT** all data access and modifications
 - **ENCRYPT** sensitive fields in the database
 
-### HIPAA/RGPD Compliance
-- Implement audit logging for all patient data access
+### Data Compliance
+- Implement audit logging for all sensitive data access
 - Ensure data encryption at rest and in transit
 - Implement data retention policies
-- Provide data export for patient requests
+- Provide data export for user requests
 - Maintain access control lists
 
 ### Django Best Practices
@@ -208,10 +208,10 @@ mypy .
 
 When working in this service:
 1. Check Identity Service API docs before implementing auth features
-2. Ensure all patient data operations are audited
+2. Ensure all sensitive data operations are audited
 3. Run tests after every significant change
 4. Update API documentation when adding endpoints
 5. Coordinate with Frontend agent for API contracts
 6. Never modify authentication logic (use Identity Service)
-7. Always consider HIPAA compliance in design decisions
+7. Always consider data compliance in design decisions
 8. Maintain high test coverage for critical paths

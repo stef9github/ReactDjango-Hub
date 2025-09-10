@@ -9,8 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This project uses a **specialized agent architecture** where each agent has a specific domain and clear boundaries:
 
 #### **🎯 Service Specialists** (Business Logic Owners)
-- **`backend/CLAUDE.md`** - **Django Backend Agent**: Medical records, billing, business logic
-- **`frontend/CLAUDE.md`** - **React Frontend Agent**: UI/UX, patient portal, dashboards
+- **`backend/CLAUDE.md`** - **Django Backend Agent**: Core business logic, data models, APIs
+- **`frontend/CLAUDE.md`** - **React Frontend Agent**: UI/UX, user portal, dashboards
 - **`services/identity-service/CLAUDE.md`** - **Identity Service Agent**: Authentication, users, MFA, RBAC
 - **`services/communication-service/CLAUDE.md`** - **Communication Service Agent**: Notifications, messaging, real-time chat
 - **`services/workflow-intelligence-service/CLAUDE.md`** - **Workflow Service Agent**: Process automation, AI workflows
@@ -18,10 +18,10 @@ This project uses a **specialized agent architecture** where each agent has a sp
 
 #### **🤝 Coordination Specialists** (Integration Layer)
 - **`services/CLAUDE.md`** - **Services Coordinator Agent**: API contracts, service discovery, Kong gateway
-- **`infrastructure/CLAUDE.md`** - **Infrastructure Agent**: Docker, Kubernetes, CI/CD, cloud resources
+- **`infrastructure/CLAUDE.md`** - **Deployment Agent** (Infrastructure): Docker, Kubernetes, CI/CD, cloud resources
 
 #### **🔒 Cross-Cutting Specialists** (Quality & Security)
-- **Security Agent**: HIPAA compliance, vulnerability scanning, security audits
+- **Security Agent**: Compliance frameworks, vulnerability scanning, security audits
 - **Testing Agent**: Test coverage, quality assurance, CI testing
 
 ### **🚫 Agent Boundaries (Strict Separation)**
@@ -30,14 +30,14 @@ This project uses a **specialized agent architecture** where each agent has a sp
 |----------------|----------------|-------------------|
 | **Service Agents** | Own service code, APIs, models, tests | Other services, infrastructure, coordination |
 | **Services Coordinator** | API contracts, service discovery, Kong config | Individual service logic, infrastructure deployment |
-| **Infrastructure Agent** | Docker, K8s, CI/CD, cloud resources | Service business logic, API endpoints |
+| **Deployment Agent** | Docker, K8s, CI/CD, cloud resources | Service business logic, API endpoints |
 | **Cross-Cutting Agents** | Quality/security configs, global standards | Service implementation, infrastructure |
 
 ### **🔄 Agent Collaboration Pattern**
 
 ```mermaid
 graph TB
-    A[Infrastructure Agent] --> B[Services Coordinator]
+    A[Deployment Agent] --> B[Services Coordinator]
     B --> C[Identity Service]
     B --> D[Communication Service]
     B --> E[Content Service]  
@@ -72,8 +72,8 @@ graph TB
 - ❌ **Never directly modify another service's code**
 
 #### **Infrastructure Requests**
-- ✅ Service agents request deployment changes from **Infrastructure Agent**
-- ✅ **Infrastructure Agent** implements without changing business logic
+- ✅ Service agents request deployment changes from **Deployment Agent**
+- ✅ **Deployment Agent** implements without changing business logic
 - ❌ **Service agents cannot modify Docker/K8s configs directly**
 
 #### **Documentation Maintenance**
@@ -85,15 +85,15 @@ graph TB
 
 Each agent has a dedicated CLAUDE.md file with specific instructions:
 
-## 🏥 **PROJECT OVERVIEW**
+## 🚀 **PROJECT OVERVIEW**
 
-**ReactDjango Hub Medical** - A modern, secure, and scalable SaaS platform for medical practices with HIPAA/RGPD compliance, built on microservices architecture.
+**ReactDjango Hub** - A modern, secure, and scalable enterprise SaaS platform with compliance capabilities, built on microservices architecture.
 
 ### **🏗️ Microservices Architecture**
 | Service | Purpose | Port | Technology | Status |
 |---------|---------|------|------------|---------|
 | **`identity-service`** | Authentication, users, organizations, MFA | 8001 | FastAPI + PostgreSQL | ✅ **100% Production Ready + Enterprise Testing** |
-| **`backend` (Django)** | Business logic, medical records, billing | 8000 | Django + PostgreSQL | 🚧 Integrates with auth-service |
+| **`backend` (Django)** | Core business logic, data models, APIs | 8000 | Django + PostgreSQL | 🚧 Integrates with auth-service |
 | **`frontend`** | User interface | 3000/5173 | React + Vite + Tailwind | 🔄 Connects to both services |
 
 ### **Tech Stack**
@@ -107,8 +107,8 @@ Each agent has a dedicated CLAUDE.md file with specific instructions:
 - **Microservices Architecture**: Separate authentication and business logic services
 - **Comprehensive Authentication**: 40 endpoints with MFA, user management, organizations + enterprise testing
 - **Multi-tenant Architecture**: Organization isolation managed by auth-service
-- **Medical Records Management**: Patient data, HL7/DICOM support in Django service
-- **HIPAA/RGPD Compliance**: Full audit logging across all services
+- **Data Management**: Structured data models with versioning and audit trails
+- **Compliance Ready**: Full audit logging and data governance across all services
 - **Real-time Analytics**: Dashboard and reporting via Django service
 
 ## 🚀 **DEVELOPMENT WORKFLOW**
@@ -124,7 +124,7 @@ python main.py                    # Runs on http://localhost:8001
 # OR: docker-compose up -d         # Full containerized stack
 ```
 
-#### **🏥 Backend Service (Django)**
+#### **⚙️ Backend Service (Django)**
 ```bash
 # Business logic service - requires auth service to be running
 cd backend
@@ -251,7 +251,7 @@ ReactDjango-Hub/
 - Follow Django naming conventions for models, views, and serializers
 - Use database migrations for all schema changes
 - Implement proper authentication and authorization
-- Ensure RGPD compliance for all patient data handling
+- Ensure data privacy compliance for all sensitive data handling
 
 ### **React Frontend Patterns**
 - Use functional components with hooks
@@ -272,13 +272,13 @@ Each Claude agent has scoped commit permissions to maintain code integrity:
 **Backend Agent** (in backend-dev worktree):
 ```bash
 # Use scoped commit command (only commits backend files)
-git bcommit "feat: add patient model with RGPD compliance"
+git bcommit "feat: add user model with data compliance"
 ```
 
 **Frontend Agent** (in frontend-dev worktree):
 ```bash
 # Use scoped commit command (only commits frontend files)  
-git fcommit "feat: add patient dashboard with French UI"
+git fcommit "feat: add user dashboard with internationalization"
 ```
 
 **Setup agent git configuration:**
@@ -294,7 +294,7 @@ Each agent maintains its own documentation in addition to global project docs:
 ```
 docs/                     # Global project documentation
 ├── architecture/         # System architecture 
-├── compliance/           # RGPD/HIPAA compliance
+├── compliance/           # Data privacy and regulatory compliance
 └── deployment/           # Infrastructure deployment
 
 backend/docs/             # Backend Agent documentation
@@ -318,10 +318,10 @@ frontend/docs/            # Frontend Agent documentation
 DATABASE_URL=postgresql://user:pass@localhost/dbname
 SECRET_KEY=your-secret-key
 DEBUG=False
-ALLOWED_HOSTS=medicalhub.stephanerichard.com
+ALLOWED_HOSTS=hub.stephanerichard.com
 
 # Frontend environment
-VITE_API_URL=https://medicalhub.stephanerichard.com/api
+VITE_API_URL=https://hub.stephanerichard.com/api
 VITE_ENVIRONMENT=production
 ```
 
@@ -336,19 +336,19 @@ VITE_ENVIRONMENT=production
 
 ## ⚠️ **CRITICAL REMINDERS**
 
-1. **HIPAA Compliance**: All patient data must be handled according to HIPAA requirements
+1. **Data Compliance**: All sensitive data must be handled according to regulatory requirements
 2. **Security First**: Never commit sensitive information to version control
 3. **Test Coverage**: Maintain >80% test coverage for both backend and frontend
 4. **Documentation**: Update documentation with any architectural changes
 5. **Audit Trails**: Ensure all data modifications are logged and traceable
-6. **Multi-tenancy**: Maintain strict data isolation between medical practices
+6. **Multi-tenancy**: Maintain strict data isolation between organizations
 
 ## 📚 **DEVELOPMENT RESOURCES**
 
 ### **Django Resources**
 - Django 5.0 documentation
 - Django REST Framework guides
-- HIPAA compliance guidelines for Django
+- Data compliance best practices
 - GraphQL integration patterns
 
 ### **React Resources**
@@ -358,7 +358,7 @@ VITE_ENVIRONMENT=production
 - TypeScript best practices
 
 ### **Security Resources**
-- HIPAA compliance checklist
-- RGPD compliance guidelines
+- General compliance frameworks
+- Data privacy guidelines
 - Security audit procedures
 - Penetration testing protocols

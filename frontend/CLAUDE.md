@@ -1,11 +1,11 @@
 # Frontend Service - Claude Code Agent Configuration
 
 ## 🎯 Service Identity
-- **Service Name**: ReactDjango Hub Medical Frontend
+- **Service Name**: ReactDjango Hub Frontend
 - **Technology Stack**: React 18, Vite, TypeScript, Tailwind CSS
 - **Port**: 3000 (dev) / 5173 (Vite)
-- **Purpose**: User interface, patient portal, medical staff dashboard
-- **Design System**: Tailwind CSS with healthcare-focused theme
+- **Purpose**: User interface, user portal, admin dashboard
+- **Design System**: Tailwind CSS with enterprise theme
 
 ## 🧠 Your Exclusive Domain
 
@@ -15,7 +15,7 @@
 - State management and data flow
 - API integration with backend services
 - Frontend testing and quality assurance
-- Responsive design for medical devices
+- Responsive design for all devices
 - Accessibility compliance (WCAG 2.1 AA)
 - Performance optimization
 
@@ -25,7 +25,7 @@ frontend/
 ├── src/
 │   ├── components/         # ALL React components
 │   │   ├── common/        # Shared UI components
-│   │   ├── medical/       # Medical-specific components
+│   │   ├── business/      # Business-specific components
 │   │   ├── dashboard/     # Dashboard components
 │   │   └── auth/          # Auth UI components
 │   ├── pages/             # Route pages
@@ -55,10 +55,10 @@ frontend/
 - **GitHub Workflows** (`.github/`): No modifications
 
 ### Integration Points (Read-Only)
-- Backend API (port 8000): Medical records, billing, appointments
+- Backend API (port 8000): Business data, transactions, scheduling
 - Identity Service API (port 8001): Authentication, users, organizations
 - WebSocket connections for real-time updates
-- External medical device APIs
+- External service APIs
 
 ## 🔧 Development Commands
 
@@ -101,10 +101,10 @@ npm run format               # Prettier formatting
 - `tailwind.config.js` - Design system
 
 ### Component Structure You Manage
-- Patient dashboard components
-- Medical record viewers
-- Appointment scheduling UI
-- Billing and payment interfaces
+- User dashboard components
+- Data viewing and editing interfaces
+- Scheduling and calendar UI
+- Transaction and payment interfaces
 - Admin control panels
 - Notification system UI
 - Report generation interfaces
@@ -112,11 +112,11 @@ npm run format               # Prettier formatting
 
 ### UI Features You Control
 - `/` - Landing page
-- `/dashboard` - Main medical dashboard
-- `/patients` - Patient management
-- `/appointments` - Scheduling interface
-- `/medical-records` - Record viewing
-- `/billing` - Payment processing
+- `/dashboard` - Main user dashboard
+- `/users` - User management
+- `/scheduling` - Scheduling interface
+- `/data` - Data viewing and management
+- `/transactions` - Payment processing
 - `/reports` - Analytics dashboard
 - `/settings` - User preferences
 
@@ -130,14 +130,14 @@ npm run format               # Prettier formatting
 
 ### 🔴 Critical Tasks (Immediate)
 1. [ ] Implement authentication flow with Identity Service
-2. [ ] Create patient dashboard layout
-3. [ ] Build medical record viewing components
+2. [ ] Create user dashboard layout
+3. [ ] Build data viewing and editing components
 4. [ ] Add API integration layer for backend
 5. [ ] Implement responsive design for tablets
 
 ### 🟡 Important Tasks (This Week)
-1. [ ] Design appointment scheduling interface
-2. [ ] Create billing payment forms
+1. [ ] Design scheduling and calendar interface
+2. [ ] Create transaction and payment forms
 3. [ ] Implement real-time notifications
 4. [ ] Add data visualization for analytics
 5. [ ] Build accessibility features (WCAG)
@@ -147,17 +147,17 @@ npm run format               # Prettier formatting
 - [ ] Offline mode support
 - [ ] Advanced charting components
 - [ ] Video consultation interface
-- [ ] Multi-language support (French/English)
+- [ ] Multi-language support (internationalization)
 
 ## 🔍 Testing Requirements
 
 ### Coverage Goals
 - **Target**: 80% test coverage minimum
-- **Critical Paths**: 100% coverage for patient data display, auth flows
+- **Critical Paths**: 100% coverage for sensitive data display, auth flows
 
 ### Key Test Scenarios
 - Authentication and authorization flows
-- Patient data display accuracy
+- Data display accuracy and integrity
 - Form validation and submission
 - API error handling
 - Responsive design breakpoints
@@ -197,9 +197,9 @@ npm run format               # Prettier formatting
 - **USE** HTTPS for all API calls
 - **IMPLEMENT** Content Security Policy
 
-### Healthcare UI/UX Requirements
-- High contrast ratios for medical professionals
-- Large touch targets for tablet use
+### Enterprise UI/UX Requirements
+- High contrast ratios for accessibility
+- Large touch targets for mobile/tablet use
 - Clear error messages for critical actions
 - Confirmation dialogs for data modifications
 - Auto-save for long forms
@@ -240,6 +240,6 @@ When working in this service:
 5. Use Identity Service for all auth needs
 6. Maintain consistent design patterns
 7. Optimize bundle size and performance
-8. Consider medical staff workflow in UX decisions
-9. Test with real medical data scenarios
-10. Keep patient data display secure and compliant
+8. Consider user workflow in UX decisions
+9. Test with realistic data scenarios
+10. Keep sensitive data display secure and compliant

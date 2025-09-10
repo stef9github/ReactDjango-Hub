@@ -165,7 +165,7 @@ mypy app                      # Type checking
 - [ ] WebAuthn/FIDO2 support
 - [ ] Risk-based authentication
 - [ ] Behavioral analytics
-- [ ] Compliance reporting (SOC2, HIPAA)
+- [ ] Compliance reporting (SOC2, ISO27001)
 - [ ] Multi-region deployment support
 
 ## 🔍 Testing Requirements
@@ -220,7 +220,7 @@ mypy app                      # Type checking
 - **IMPLEMENT** rate limiting on all endpoints
 - **AUDIT** all authentication events
 
-### HIPAA/RGPD Compliance
+### Data Privacy Compliance
 - Log all access attempts (success and failure)
 - Implement data minimization principles
 - Provide user data export capabilities
