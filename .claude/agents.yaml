@@ -3,7 +3,7 @@
 
 agents:
   # Core Service Agents - One per microservice
-  backend:
+  ag-backend:
     name: "Django Backend Agent"
     icon: "🔧"
     description: "Core business logic, data models, REST APIs"
@@ -19,7 +19,7 @@ agents:
       - "python manage.py migrate"
       - "python manage.py test"
 
-  frontend:
+  ag-frontend:
     name: "React Frontend Agent"
     icon: "🎨"
     description: "User interface, components, state management"
@@ -35,7 +35,7 @@ agents:
       - "npm run build"
       - "npm test"
 
-  identity:
+  ag-identity:
     name: "Identity Service Agent"
     icon: "🔐"
     description: "Authentication, authorization, user management"
@@ -50,7 +50,7 @@ agents:
       - "python main.py"
       - "pytest tests/"
 
-  communication:
+  ag-communication:
     name: "Communication Service Agent"
     icon: "📧"
     description: "Notifications, messaging, real-time communication"
@@ -64,7 +64,7 @@ agents:
     commands:
       - "python main.py"
 
-  content:
+  ag-content:
     name: "Content Service Agent"
     icon: "📝"
     description: "Document management, file storage, search"
@@ -78,7 +78,7 @@ agents:
     commands:
       - "python main.py"
 
-  workflow:
+  ag-workflow:
     name: "Workflow Intelligence Agent"
     icon: "🧠"
     description: "Process automation, AI workflows, orchestration"
@@ -93,7 +93,7 @@ agents:
       - "python main.py"
 
   # Infrastructure & Coordination Agents
-  infrastructure:
+  ag-infrastructure:
     name: "Infrastructure Agent"
     icon: "🚀"
     description: "Docker, Kubernetes, CI/CD, cloud deployment"
@@ -109,7 +109,7 @@ agents:
       - "kubectl apply"
       - "terraform apply"
 
-  coordinator:
+  ag-coordinator:
     name: "Services Coordinator Agent"
     icon: "🎯"
     description: "API gateway, service mesh, integration"
@@ -124,7 +124,7 @@ agents:
       - "docker-compose up"
 
   # Quality & Compliance Agents
-  security:
+  ag-security:
     name: "Security & Compliance Agent"
     icon: "🔒"
     description: "Security audits, compliance, vulnerability management"
@@ -139,7 +139,7 @@ agents:
       - "bandit -r ."
       - "safety check"
 
-  review:
+  ag-reviewer:
     name: "Code Review Agent"
     icon: "👀"
     description: "Code quality, PR reviews, best practices"

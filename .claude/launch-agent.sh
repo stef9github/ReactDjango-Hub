@@ -16,22 +16,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Define available agents
-VALID_AGENTS="backend frontend identity communication content workflow infrastructure coordinator security review"
+VALID_AGENTS="ag-backend ag-frontend ag-identity ag-communication ag-content ag-workflow ag-infrastructure ag-coordinator ag-security ag-reviewer"
 
 # Function to get agent info
 get_agent_info() {
     local agent="$1"
     case "$agent" in
-        backend) echo "Django Backend|Core business logic, APIs, data models" ;;
-        frontend) echo "React Frontend|User interface, components, state management" ;;
-        identity) echo "Identity Service|Authentication, users, MFA, RBAC" ;;
-        communication) echo "Communication Service|Notifications, messaging, real-time" ;;
-        content) echo "Content Service|Document management, file storage" ;;
-        workflow) echo "Workflow Intelligence|Process automation, AI workflows" ;;
-        infrastructure) echo "Infrastructure Agent|Docker, Kubernetes, CI/CD, deployment" ;;
-        coordinator) echo "Services Coordinator|API contracts, service mesh, integration" ;;
-        security) echo "Security & Compliance|Security audits, compliance, vulnerability scanning" ;;
-        review) echo "Code Review|Code quality, PR reviews, best practices" ;;
+        ag-backend) echo "Django Backend|Core business logic, APIs, data models" ;;
+        ag-frontend) echo "React Frontend|User interface, components, state management" ;;
+        ag-identity) echo "Identity Service|Authentication, users, MFA, RBAC" ;;
+        ag-communication) echo "Communication Service|Notifications, messaging, real-time" ;;
+        ag-content) echo "Content Service|Document management, file storage" ;;
+        ag-workflow) echo "Workflow Intelligence|Process automation, AI workflows" ;;
+        ag-infrastructure) echo "Infrastructure Agent|Docker, Kubernetes, CI/CD, deployment" ;;
+        ag-coordinator) echo "Services Coordinator|API contracts, service mesh, integration" ;;
+        ag-security) echo "Security & Compliance|Security audits, compliance, vulnerability scanning" ;;
+        ag-reviewer) echo "Code Review|Code quality, PR reviews, best practices" ;;
         *) echo "Unknown|Unknown agent" ;;
     esac
 }
@@ -49,7 +49,7 @@ show_usage() {
     
     # Display agents grouped by category
     echo -e "${GREEN}Core Service Agents:${NC}"
-    for agent in backend frontend identity communication content workflow; do
+    for agent in ag-backend ag-frontend ag-identity ag-communication ag-content ag-workflow; do
         info=$(get_agent_info "$agent")
         IFS='|' read -r title desc <<< "$info"
         printf "  %-20s - %s\n" "$agent" "$desc"
@@ -57,7 +57,7 @@ show_usage() {
     echo ""
     
     echo -e "${GREEN}Infrastructure & Coordination:${NC}"
-    for agent in infrastructure coordinator; do
+    for agent in ag-infrastructure ag-coordinator; do
         info=$(get_agent_info "$agent")
         IFS='|' read -r title desc <<< "$info"
         printf "  %-20s - %s\n" "$agent" "$desc"
@@ -65,7 +65,7 @@ show_usage() {
     echo ""
     
     echo -e "${GREEN}Quality & Compliance:${NC}"
-    for agent in security review; do
+    for agent in ag-security ag-reviewer; do
         info=$(get_agent_info "$agent")
         IFS='|' read -r title desc <<< "$info"
         printf "  %-20s - %s\n" "$agent" "$desc"
@@ -129,40 +129,40 @@ show_agent_instructions() {
     
     # Show agent-specific paths
     case "$agent_name" in
-        backend)
+        ag-backend)
             echo "  📁 Working Directory: $PROJECT_ROOT/backend"
             echo "  🔧 Key Commands: python manage.py [command]"
             ;;
-        frontend)
+        ag-frontend)
             echo "  📁 Working Directory: $PROJECT_ROOT/frontend"
             echo "  🔧 Key Commands: npm run [dev|build|test]"
             ;;
-        identity)
+        ag-identity)
             echo "  📁 Working Directory: $PROJECT_ROOT/services/identity-service"
             echo "  🔧 Key Commands: python main.py"
             ;;
-        communication)
+        ag-communication)
             echo "  📁 Working Directory: $PROJECT_ROOT/services/communication-service"
             ;;
-        content)
+        ag-content)
             echo "  📁 Working Directory: $PROJECT_ROOT/services/content-service"
             ;;
-        workflow)
+        ag-workflow)
             echo "  📁 Working Directory: $PROJECT_ROOT/services/workflow-intelligence-service"
             ;;
-        infrastructure)
+        ag-infrastructure)
             echo "  📁 Working Directory: $PROJECT_ROOT/infrastructure"
             echo "  🔧 Key Commands: docker-compose, kubectl"
             ;;
-        coordinator)
+        ag-coordinator)
             echo "  📁 Working Directory: $PROJECT_ROOT/services"
             echo "  🔧 Focus: Service integration and API contracts"
             ;;
-        security)
+        ag-security)
             echo "  📁 Working Directory: $PROJECT_ROOT"
             echo "  🔧 Focus: Security audits and compliance"
             ;;
-        review)
+        ag-reviewer)
             echo "  📁 Working Directory: $PROJECT_ROOT"
             echo "  🔧 Focus: Code quality and PR reviews"
             ;;

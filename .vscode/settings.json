@@ -29,37 +29,37 @@
         // Core Service Agents (One per service)
         "Backend (Django)": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh backend"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-backend"],
             "icon": "server",
             "color": "terminal.ansiBlack"
         },
         "Frontend (React)": {
             "path": "bash", 
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh frontend"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-frontend"],
             "icon": "browser",
             "color": "terminal.ansiBlack"
         },
         "Identity Service": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh identity"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-identity"],
             "icon": "key",
             "color": "terminal.ansiBlack"
         },
         "Communication Service": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh communication"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-communication"],
             "icon": "mail",
             "color": "terminal.ansiBlack"
         },
         "Content Service": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh content"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-content"],
             "icon": "file-text",
             "color": "terminal.ansiBlack"
         },
         "Workflow Service": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh workflow"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-workflow"],
             "icon": "lightbulb",
             "color": "terminal.ansiBlack"
         },
@@ -67,13 +67,13 @@
         // Infrastructure & Coordination
         "Infrastructure": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh infrastructure"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-infrastructure"],
             "icon": "rocket",
             "color": "terminal.ansiBlack"
         },
         "Services Coordinator": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh coordinator"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-coordinator"],
             "icon": "target",
             "color": "terminal.ansiBlack"
         },
@@ -81,13 +81,13 @@
         // Quality & Compliance
         "Security & Compliance": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh security"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-security"],
             "icon": "shield",
             "color": "terminal.ansiBlack"
         },
         "Code Review": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh review"],
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-reviewer"],
             "icon": "eye",
             "color": "terminal.ansiBlack"
         }
