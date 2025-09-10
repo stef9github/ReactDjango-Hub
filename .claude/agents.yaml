@@ -1,0 +1,173 @@
+# Claude Agent Configuration
+# Simplified, domain-agnostic agent definitions for enterprise SaaS platform
+
+agents:
+  # Core Service Agents - One per microservice
+  backend:
+    name: "Django Backend Agent"
+    icon: "🔧"
+    description: "Core business logic, data models, REST APIs"
+    working_dir: "backend"
+    responsibilities:
+      - Django application development
+      - Database models and migrations
+      - REST API endpoints (Django Ninja)
+      - Business logic implementation
+      - Backend testing and quality
+    commands:
+      - "python manage.py runserver"
+      - "python manage.py migrate"
+      - "python manage.py test"
+
+  frontend:
+    name: "React Frontend Agent"
+    icon: "🎨"
+    description: "User interface, components, state management"
+    working_dir: "frontend"
+    responsibilities:
+      - React component development
+      - UI/UX implementation
+      - State management (Redux/Context)
+      - Frontend routing
+      - Component testing
+    commands:
+      - "npm run dev"
+      - "npm run build"
+      - "npm test"
+
+  identity:
+    name: "Identity Service Agent"
+    icon: "🔐"
+    description: "Authentication, authorization, user management"
+    working_dir: "services/identity-service"
+    responsibilities:
+      - Authentication endpoints
+      - User and organization management
+      - Multi-factor authentication (MFA)
+      - Role-based access control (RBAC)
+      - JWT token management
+    commands:
+      - "python main.py"
+      - "pytest tests/"
+
+  communication:
+    name: "Communication Service Agent"
+    icon: "📧"
+    description: "Notifications, messaging, real-time communication"
+    working_dir: "services/communication-service"
+    responsibilities:
+      - Email notifications
+      - SMS messaging
+      - Real-time chat/WebSocket
+      - Notification templates
+      - Message queuing
+    commands:
+      - "python main.py"
+
+  content:
+    name: "Content Service Agent"
+    icon: "📝"
+    description: "Document management, file storage, search"
+    working_dir: "services/content-service"
+    responsibilities:
+      - File upload/download
+      - Document versioning
+      - Content search and indexing
+      - Media processing
+      - Storage optimization
+    commands:
+      - "python main.py"
+
+  workflow:
+    name: "Workflow Intelligence Agent"
+    icon: "🧠"
+    description: "Process automation, AI workflows, orchestration"
+    working_dir: "services/workflow-intelligence-service"
+    responsibilities:
+      - Business process automation
+      - AI/ML workflow integration
+      - Task orchestration
+      - Event-driven workflows
+      - Process monitoring
+    commands:
+      - "python main.py"
+
+  # Infrastructure & Coordination Agents
+  infrastructure:
+    name: "Infrastructure Agent"
+    icon: "🚀"
+    description: "Docker, Kubernetes, CI/CD, cloud deployment"
+    working_dir: "infrastructure"
+    responsibilities:
+      - Docker containerization
+      - Kubernetes deployments
+      - CI/CD pipelines
+      - Cloud infrastructure (AWS/GCP/Azure)
+      - Environment configuration
+    commands:
+      - "docker-compose up"
+      - "kubectl apply"
+      - "terraform apply"
+
+  coordinator:
+    name: "Services Coordinator Agent"
+    icon: "🎯"
+    description: "API gateway, service mesh, integration"
+    working_dir: "services"
+    responsibilities:
+      - API contract management
+      - Service discovery
+      - Kong API gateway configuration
+      - Inter-service communication
+      - Service health monitoring
+    commands:
+      - "docker-compose up"
+
+  # Quality & Compliance Agents
+  security:
+    name: "Security & Compliance Agent"
+    icon: "🔒"
+    description: "Security audits, compliance, vulnerability management"
+    working_dir: "."
+    responsibilities:
+      - Security vulnerability scanning
+      - Compliance framework implementation
+      - Audit trail management
+      - Data privacy enforcement
+      - Security best practices
+    commands:
+      - "bandit -r ."
+      - "safety check"
+
+  review:
+    name: "Code Review Agent"
+    icon: "👀"
+    description: "Code quality, PR reviews, best practices"
+    working_dir: "."
+    responsibilities:
+      - Pull request reviews
+      - Code quality assessment
+      - Best practices enforcement
+      - Performance optimization
+      - Documentation quality
+    commands:
+      - "git diff"
+      - "pytest --cov"
+
+# Agent interaction rules
+rules:
+  separation_of_concerns:
+    - Each agent manages only its designated service/domain
+    - Cross-service changes require coordination through Services Coordinator
+    - Infrastructure changes go through Infrastructure Agent
+    
+  communication_patterns:
+    - Services communicate only through defined APIs
+    - No direct database access between services
+    - Use message queues for async communication
+    
+  quality_standards:
+    - All code changes require review
+    - Maintain >80% test coverage
+    - Security scanning on all deployments
+    - Documentation for all public APIs

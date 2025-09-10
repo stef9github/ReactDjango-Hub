@@ -50,7 +50,9 @@
       "Bash(netstat:*)",
       "Bash(mv:*)",
       "Bash(export PATH=\"/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude:$PATH\")",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(./cleanup-old-agents.sh:*)",
+      "Bash(./.claude/launch-agent.sh:*)"
     ],
     "deny": [],
     "ask": []

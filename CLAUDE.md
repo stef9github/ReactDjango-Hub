@@ -2,27 +2,39 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 📋 **AGENT ARCHITECTURE & ROLES**
+## 📋 **SIMPLIFIED AGENT ARCHITECTURE**
 
-### **🏗️ Agent Hierarchy**
+### **🚀 Streamlined Agent System**
 
-This project uses a **specialized agent architecture** where each agent has a specific domain and clear boundaries:
+This project uses a **simplified agent architecture** with one agent per service/domain, accessible through a unified launcher:
 
-#### **🎯 Service Specialists** (Business Logic Owners)
-- **`backend/CLAUDE.md`** - **Django Backend Agent**: Core business logic, data models, APIs
-- **`frontend/CLAUDE.md`** - **React Frontend Agent**: UI/UX, user portal, dashboards
-- **`services/identity-service/CLAUDE.md`** - **Identity Service Agent**: Authentication, users, MFA, RBAC
-- **`services/communication-service/CLAUDE.md`** - **Communication Service Agent**: Notifications, messaging, real-time chat
-- **`services/workflow-intelligence-service/CLAUDE.md`** - **Workflow Service Agent**: Process automation, AI workflows
-- **`services/content-service/CLAUDE.md`** - **Content Service Agent**: Document management, file storage, search
+```bash
+# Launch any agent with:
+./.claude/launch-agent.sh <agent-name>
 
-#### **🤝 Coordination Specialists** (Integration Layer)
-- **`services/CLAUDE.md`** - **Services Coordinator Agent**: API contracts, service discovery, Kong gateway
-- **`infrastructure/CLAUDE.md`** - **Deployment Agent** (Infrastructure): Docker, Kubernetes, CI/CD, cloud resources
+# Examples:
+./.claude/launch-agent.sh backend      # Django backend development
+./.claude/launch-agent.sh frontend     # React frontend development
+./.claude/launch-agent.sh identity     # Identity service
+```
 
-#### **🔒 Cross-Cutting Specialists** (Quality & Security)
-- **Security Agent**: Compliance frameworks, vulnerability scanning, security audits
-- **Testing Agent**: Test coverage, quality assurance, CI testing
+### **📦 Available Agents**
+
+#### **Core Service Agents** (One per microservice)
+- **`backend`** - Django Backend: Core business logic, data models, REST APIs
+- **`frontend`** - React Frontend: User interface, components, state management
+- **`identity`** - Identity Service: Authentication, users, MFA, RBAC
+- **`communication`** - Communication Service: Notifications, messaging, real-time
+- **`content`** - Content Service: Document management, file storage
+- **`workflow`** - Workflow Intelligence: Process automation, AI workflows
+
+#### **Infrastructure & Coordination**
+- **`infrastructure`** - Infrastructure: Docker, Kubernetes, CI/CD, deployment
+- **`coordinator`** - Services Coordinator: API gateway, service mesh, integration
+
+#### **Quality & Compliance**
+- **`security`** - Security & Compliance: Audits, vulnerability scanning
+- **`review`** - Code Review: Quality assessment, best practices
 
 ### **🚫 Agent Boundaries (Strict Separation)**
 
@@ -33,35 +45,22 @@ This project uses a **specialized agent architecture** where each agent has a sp
 | **Deployment Agent** | Docker, K8s, CI/CD, cloud resources | Service business logic, API endpoints |
 | **Cross-Cutting Agents** | Quality/security configs, global standards | Service implementation, infrastructure |
 
-### **🔄 Agent Collaboration Pattern**
+### **🔄 Simplified Agent Workflow**
 
 ```mermaid
-graph TB
-    A[Deployment Agent] --> B[Services Coordinator]
-    B --> C[Identity Service]
-    B --> D[Communication Service]
-    B --> E[Content Service]  
-    B --> F[Workflow Service]
-    B --> G[Backend Service]
-    B --> H[Frontend Service]
+graph LR
+    A[Infrastructure] --> B[Coordinator]
+    B --> C[Services]
+    C --> D[Backend]
+    C --> E[Frontend]
+    C --> F[Identity]
+    C --> G[Communication]
+    C --> H[Content]
+    C --> I[Workflow]
     
-    I[Security Agent] -.-> A
-    I -.-> B
-    I -.-> C
-    I -.-> D
-    I -.-> E
-    I -.-> F
-    I -.-> G
-    I -.-> H
-    
-    J[Testing Agent] -.-> A
+    J[Security/Review] -.-> A
     J -.-> B
     J -.-> C
-    J -.-> D
-    J -.-> E
-    J -.-> F
-    J -.-> G
-    J -.-> H
 ```
 
 ### **🎯 Agent Interaction Rules**
@@ -81,9 +80,9 @@ graph TB
 - ✅ Update priorities and completed tasks regularly
 - ✅ Services Coordinator maintains **cross-service integration docs**
 
-## 📄 **AGENT DOCUMENTATION FILES**
+## 📄 **AGENT CONFIGURATION**
 
-Each agent has a dedicated CLAUDE.md file with specific instructions:
+All agents are configured in `.claude/agents.yaml` with standardized definitions:
 
 ## 🚀 **PROJECT OVERVIEW**
 

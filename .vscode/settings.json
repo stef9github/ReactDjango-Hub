@@ -1,0 +1,111 @@
+{
+    // Python Development Settings
+    "python.defaultInterpreterPath": "./backend/venv/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": ["backend/"],
+    
+    // JavaScript/TypeScript Settings
+    "typescript.preferences.quoteStyle": "double",
+    "javascript.preferences.quoteStyle": "double",
+    
+    // Editor Settings
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    
+    // File Associations
+    "files.associations": {
+        "*.md": "markdown",
+        ".claude/**/*.md": "markdown"
+    },
+    
+    // Terminal Profiles - Simplified Agent List
+    "terminal.integrated.profiles.osx": {
+        // Core Service Agents (One per service)
+        "Backend (Django)": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh backend"],
+            "icon": "server",
+            "color": "terminal.ansiBlack"
+        },
+        "Frontend (React)": {
+            "path": "bash", 
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh frontend"],
+            "icon": "browser",
+            "color": "terminal.ansiBlack"
+        },
+        "Identity Service": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh identity"],
+            "icon": "key",
+            "color": "terminal.ansiBlack"
+        },
+        "Communication Service": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh communication"],
+            "icon": "mail",
+            "color": "terminal.ansiBlack"
+        },
+        "Content Service": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh content"],
+            "icon": "file-text",
+            "color": "terminal.ansiBlack"
+        },
+        "Workflow Service": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh workflow"],
+            "icon": "lightbulb",
+            "color": "terminal.ansiBlack"
+        },
+        
+        // Infrastructure & Coordination
+        "Infrastructure": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh infrastructure"],
+            "icon": "rocket",
+            "color": "terminal.ansiBlack"
+        },
+        "Services Coordinator": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh coordinator"],
+            "icon": "target",
+            "color": "terminal.ansiBlack"
+        },
+        
+        // Quality & Compliance
+        "Security & Compliance": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh security"],
+            "icon": "shield",
+            "color": "terminal.ansiBlack"
+        },
+        "Code Review": {
+            "path": "bash",
+            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh review"],
+            "icon": "eye",
+            "color": "terminal.ansiBlack"
+        }
+    },
+    
+    "terminal.integrated.defaultProfile.osx": "bash",
+    
+    // Git Settings
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.autofetch": true,
+    
+    // Explorer Settings
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.md": "${capture}.*.md",
+        ".claude": ".claude/**",
+        "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml",
+        "requirements.txt": "requirements-*.txt, Pipfile, Pipfile.lock, poetry.lock, pyproject.toml"
+    }
+}
