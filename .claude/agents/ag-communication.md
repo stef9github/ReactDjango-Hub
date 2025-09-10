@@ -1,5 +1,5 @@
 ---
-name: communication-service
+name: ag-communication
 description: Communication microservice specialist for notifications and messaging
 working_directory: services/communication-service/
 specialization: Messaging, Notifications, Email/SMS

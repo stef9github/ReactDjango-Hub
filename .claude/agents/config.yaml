@@ -1,5 +1,5 @@
 version: 1.0.0
-project: ReactDjango-Hub Medical
+project: ReactDjango-Hub
 description: Agent configuration system for specialized Claude assistants
 
 # Standardized agent definitions with consistent naming

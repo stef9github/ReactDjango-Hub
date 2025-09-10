@@ -1,5 +1,5 @@
 ---
-name: identity-service-expert
+name: ag-identity
 description: FastAPI authentication specialist for identity microservice with MFA and user management
 working_directory: services/identity-service/
 specialization: FastAPI, Authentication, MFA

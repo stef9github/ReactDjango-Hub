@@ -1,5 +1,5 @@
 ---
-name: django-backend-expert
+name: ag-backend
 description: Senior Django backend developer for medical SaaS platforms with HIPAA/RGPD compliance expertise
 working_directory: backend/
 specialization: Django, REST API, Medical Compliance

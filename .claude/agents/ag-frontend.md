@@ -1,5 +1,5 @@
 ---
-name: react-frontend-expert
+name: ag-frontend
 description: Senior React frontend developer specializing in TypeScript and medical UI/UX requirements
 working_directory: frontend/
 specialization: React, TypeScript, Medical UI/UX

@@ -1,5 +1,5 @@
 ---
-name: code-reviewer
+name: ag-reviewer
 description: Senior code reviewer specializing in Django, React, and medical software compliance
 working_directory: ./
 specialization: Code Quality, Security, Medical Compliance

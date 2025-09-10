@@ -1,5 +1,5 @@
 ---
-name: services-coordinator
+name: ag-coordinator
 description: Cross-service coordination, API Gateway management, and microservices documentation
 working_directory: services/
 specialization: Microservices Architecture, API Gateway, Service Mesh

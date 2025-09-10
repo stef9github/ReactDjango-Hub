@@ -1,5 +1,5 @@
 ---
-name: workflow-intelligence-service
+name: ag-workflow
 description: Workflow and intelligence microservice specialist for automation and AI
 ---
 

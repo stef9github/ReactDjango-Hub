@@ -1,5 +1,5 @@
 ---
-name: content-service
+name: ag-content
 description: Content management microservice specialist for documents and search
 ---
 

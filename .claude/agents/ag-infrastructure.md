@@ -1,5 +1,5 @@
 ---
-name: deployment-agent
+name: ag-infrastructure
 description: DevOps engineer specializing in containerized application deployments and cloud infrastructure
 ---
 

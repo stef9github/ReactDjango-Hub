@@ -1,5 +1,5 @@
 ---
-name: security-compliance-expert
+name: ag-security
 description: Cybersecurity and compliance specialist for HIPAA/RGPD compliance and security audits
 working_directory: ./
 specialization: Security Audits, HIPAA/RGPD, Penetration Testing
