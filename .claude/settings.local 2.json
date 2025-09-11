@@ -67,11 +67,7 @@
       "Bash(./start-all-services.sh:*)",
       "Bash(pwdx:*)",
       "Bash(tree:*)",
-      "Bash(git push:*)",
-      "Bash(open:*)",
-      "WebFetch(domain:www.batiprix.com)",
-      "WebFetch(domain:www.marche-public.fr)",
-      "WebFetch(domain:www.linkedin.com)"
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
