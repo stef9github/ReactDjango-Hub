@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
 # Local apps
 'apps.core',
+'apps.business',
 'apps.analytics',
 ]
 MIDDLEWARE = [
@@ -41,6 +42,8 @@ MIDDLEWARE = [
 'django.middleware.common.CommonMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',
+'apps.core.middleware.IdentityServiceMiddleware',  # JWT validation
+'apps.core.middleware.AuditMiddleware',  # Audit fields population
 'django.contrib.messages.middleware.MessageMiddleware',
 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -129,3 +132,17 @@ if DEBUG:
 # Silk Configuration
 SILKY_PYTHON_PROFILER = True
 SILKY_PYTHON_PROFILER_BINARY = True
+
+# Identity Service Configuration
+IDENTITY_SERVICE_URL = config('IDENTITY_SERVICE_URL', default='http://localhost:8001')
+JWT_CACHE_TIMEOUT = config('JWT_CACHE_TIMEOUT', default=300, cast=int)  # 5 minutes
+JWT_SKIP_PATHS = [
+    '/admin/',
+    '/health/',
+    '/api/docs/',
+    '/api/openapi.json',
+    '/static/',
+    '/media/',
+    '/silk/',
+    '__debug__/',
+]

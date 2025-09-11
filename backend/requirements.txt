@@ -8,6 +8,8 @@ django-cors-headers==4.3.1
 # Database & Environment
 psycopg2-binary
 python-decouple==3.8             # Environment variables
+requests==2.31.0                 # HTTP client for Identity Service integration
+PyJWT==2.8.0                     # JWT token parsing and validation
 
 # Medical specific
 django-encrypted-model-fields==0.6.5
