@@ -145,10 +145,7 @@ export interface PasswordStrength {
 }
 
 // Authentication Context Types
-export interface AuthContextType {
-  // State
-  ...AuthState;
-  
+export interface AuthContextType extends AuthState {
   // Actions
   login: (credentials: LoginRequest) => Promise<TokenResponse>;
   register: (userData: RegisterRequest) => Promise<RegisterResponse>;

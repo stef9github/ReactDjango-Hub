@@ -243,21 +243,21 @@ services:
       start_period: 60s
     restart: unless-stopped
 
-  # Communication Service (Port 8002)
+  # Communication Service (Port 8003)
   communication-service:
     build:
       context: ./services/communication-service
       dockerfile: Dockerfile
     container_name: communication-service
     ports:
-      - "8002:8002"
+      - "8003:8003"
     environment:
       - DATABASE_URL=postgresql://comm_user:comm_pass@communication-db:5432/communication_service
       - REDIS_URL=redis://communication-redis:6379/0
       - CELERY_BROKER_URL=redis://communication-redis:6379/1
       - IDENTITY_SERVICE_URL=http://identity-service:8001
       - SERVICE_NAME=communication-service
-      - SERVICE_PORT=8002
+      - SERVICE_PORT=8003
       - DEBUG=true
       - LOG_LEVEL=info
     depends_on:
@@ -272,27 +272,27 @@ services:
     networks:
       - microservices_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
     restart: unless-stopped
 
-  # Content Service (Port 8003)
+  # Content Service (Port 8002)
   content-service:
     build:
       context: ./services/content-service
       dockerfile: Dockerfile
     container_name: content-service
     ports:
-      - "8003:8003"
+      - "8002:8002"
     environment:
       - DATABASE_URL=postgresql://content_user:content_pass@content-db:5432/content_service
       - REDIS_URL=redis://content-redis:6379/0
       - IDENTITY_SERVICE_URL=http://identity-service:8001
       - SERVICE_NAME=content-service
-      - SERVICE_PORT=8003
+      - SERVICE_PORT=8002
       - DEBUG=true
       - LOG_LEVEL=info
       - MINIO_URL=http://minio:9000
@@ -312,7 +312,7 @@ services:
     networks:
       - microservices_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -332,8 +332,8 @@ services:
       - REDIS_URL=redis://workflow-redis:6379/0
       - CELERY_BROKER_URL=redis://workflow-redis:6379/1
       - IDENTITY_SERVICE_URL=http://identity-service:8001
-      - COMMUNICATION_SERVICE_URL=http://communication-service:8002
-      - CONTENT_SERVICE_URL=http://content-service:8003
+      - COMMUNICATION_SERVICE_URL=http://communication-service:8003
+      - CONTENT_SERVICE_URL=http://content-service:8002
       - SERVICE_NAME=workflow-intelligence-service
       - SERVICE_PORT=8004
       - DEBUG=true
@@ -455,6 +455,44 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    restart: unless-stopped
+
+  # ===========================================
+  # API GATEWAY
+  # ===========================================
+  
+  # Kong API Gateway
+  kong:
+    image: kong:3.4
+    container_name: kong-gateway
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8444"
+    ports:
+      - "8080:8000"   # Kong proxy port (main API gateway) - MOVED to 8080 to avoid Django conflict
+      - "8443:8443"   # Kong SSL proxy port
+      - "8445:8444"   # Kong admin API port (remapped to avoid conflict)
+    volumes:
+      - ./services/api-gateway/kong.yml:/kong/kong.yml:ro
+    depends_on:
+      - identity-service
+      - content-service
+      - communication-service
+      - workflow-intelligence-service
+      - backend
+    networks:
+      - microservices_network
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     restart: unless-stopped
 
 volumes:

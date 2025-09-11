@@ -1,0 +1,29 @@
+{
+  "patient": {
+    "singular": "Patient",
+    "plural": "Patients",
+    "add": "Ajouter un patient",
+    "edit": "Modifier le patient",
+    "profile": "Profil patient"
+  },
+  "appointment": {
+    "singular": "Rendez-vous",
+    "plural": "Rendez-vous",
+    "schedule": "Planifier un rendez-vous",
+    "reschedule": "Reprogrammer",
+    "cancel": "Annuler le rendez-vous"
+  },
+  "medical": {
+    "record": "Dossier médical",
+    "prescription": "Ordonnance",
+    "diagnosis": "Diagnostic",
+    "treatment": "Traitement",
+    "consultation": "Consultation"
+  },
+  "compliance": {
+    "hipaa": "Conformité HIPAA",
+    "rgpd": "Conformité RGPD",
+    "audit": "Piste d'audit",
+    "consent": "Consentement patient"
+  }
+}

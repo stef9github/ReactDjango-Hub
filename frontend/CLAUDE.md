@@ -179,7 +179,7 @@ docker-compose -f docker-compose.local.yml logs frontend
 
 ### **4. Environment Variables (Already Configured)**
 ```bash
-VITE_API_URL=http://localhost:8000
+VITE_API_URL=http://localhost:8080
 VITE_IDENTITY_SERVICE_URL=http://localhost:8001
 VITE_ENVIRONMENT=development
 CHOKIDAR_USEPOLLING=true
@@ -190,7 +190,7 @@ CHOKIDAR_USEPOLLING=true
 // Configure API client to connect to containerized services:
 
 // Backend Django API
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
 // Identity Service
 const IDENTITY_API_URL = import.meta.env.VITE_IDENTITY_SERVICE_URL || 'http://localhost:8001'

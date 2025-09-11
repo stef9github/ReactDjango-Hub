@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "ReactDjango Hub",
+    "description": "Plateforme SaaS pour les professionnels de santé"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "patients": "Patients",
+    "appointments": "Rendez-vous",
+    "documents": "Documents",
+    "settings": "Paramètres",
+    "logout": "Déconnexion"
+  },
+  "actions": {
+    "create": "Créer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "search": "Rechercher",
+    "filter": "Filtrer"
+  },
+  "status": {
+    "loading": "Chargement...",
+    "saving": "Enregistrement...",
+    "saved": "Enregistré",
+    "error": "Erreur",
+    "success": "Succès",
+    "pending": "En attente",
+    "completed": "Terminé"
+  },
+  "validation": {
+    "required": "Ce champ est obligatoire",
+    "email": "Adresse email invalide",
+    "password": "Le mot de passe doit contenir au moins 8 caractères",
+    "phoneNumber": "Numéro de téléphone invalide"
+  }
+}

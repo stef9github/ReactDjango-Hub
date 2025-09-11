@@ -103,8 +103,8 @@ frontend/
 
 ### Environment Variables
 ```bash
-VITE_API_URL=http://localhost:8000/api
-VITE_GRAPHQL_URL=http://localhost:8000/graphql
+VITE_API_URL=http://localhost:8080/api
+VITE_GRAPHQL_URL=http://localhost:8080/graphql
 VITE_ENVIRONMENT=development
 VITE_TENANT_MODE=multi
 ```

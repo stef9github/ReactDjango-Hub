@@ -37,7 +37,7 @@ MIDDLEWARE = [
 'corsheaders.middleware.CorsMiddleware',
 'django.contrib.sessions.middleware.SessionMiddleware',
 'django.middleware.locale.LocaleMiddleware',
-'silk.middleware.SilkMiddleware',
+'silk.middleware.SilkyMiddleware',
 'django.middleware.common.CommonMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware',
 'django.contrib.auth.middleware.AuthenticationMiddleware',

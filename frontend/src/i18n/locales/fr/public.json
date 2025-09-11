@@ -1,0 +1,23 @@
+{
+  "procurement": {
+    "tender": "Appel d'offres",
+    "contract": "Contrat",
+    "supplier": "Fournisseur",
+    "bid": "Offre",
+    "award": "Attribution"
+  },
+  "public": {
+    "administration": "Administration publique",
+    "citizen": "Citoyen",
+    "service": "Service public",
+    "transparency": "Transparence",
+    "compliance": "Conformité réglementaire"
+  },
+  "workflow": {
+    "approval": "Approbation",
+    "review": "Révision",
+    "validation": "Validation",
+    "publication": "Publication",
+    "notification": "Notification"
+  }
+}

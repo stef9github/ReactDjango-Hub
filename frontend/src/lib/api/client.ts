@@ -19,12 +19,14 @@ import type {
   ApiClientConfig,
 } from '@/types/auth';
 
-// Default API configuration
+// Default API configuration - Kong Gateway Integration
 const DEFAULT_CONFIG: ApiClientConfig = {
-  baseURL: import.meta.env.VITE_AUTH_API_URL || 'http://localhost:8001',
+  // Kong API Gateway as single entry point (port 8080)
+  baseURL: import.meta.env.VITE_KONG_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080',
   timeout: 10000, // 10 seconds
   headers: {
     'Content-Type': 'application/json',
+    'X-Kong-Request-ID': '', // Kong request tracing
   },
 };
 
@@ -243,7 +245,7 @@ export class ApiClient implements AuthApiClient {
     }
 
     this.isRefreshingToken = true;
-    this.refreshTokenPromise = this.makeRequest<TokenResponse>('POST', '/auth/refresh', {
+    this.refreshTokenPromise = this.makeRequest<TokenResponse>('POST', '/api/v1/auth/refresh', {
       refresh_token: refreshToken,
     });
 
@@ -289,13 +291,13 @@ export class ApiClient implements AuthApiClient {
     }
   }
 
-  // Authentication endpoints
+  // Authentication endpoints (via Kong Gateway)
   async register(data: RegisterRequest): Promise<RegisterResponse> {
-    return this.makeRequest<RegisterResponse>('POST', '/auth/register', data);
+    return this.makeRequest<RegisterResponse>('POST', '/api/v1/auth/register', data);
   }
 
   async login(data: LoginRequest): Promise<TokenResponse> {
-    const response = await this.makeRequest<TokenResponse>('POST', '/auth/login', data);
+    const response = await this.makeRequest<TokenResponse>('POST', '/api/v1/auth/login', data);
     
     // Store tokens after successful login
     this.tokenStorage.setTokens(response.access_token, response.refresh_token);
@@ -304,36 +306,36 @@ export class ApiClient implements AuthApiClient {
   }
 
   async verifyEmail(token: string): Promise<MessageResponse> {
-    return this.makeRequest<MessageResponse>('POST', '/auth/verify-email', { token });
+    return this.makeRequest<MessageResponse>('POST', '/api/v1/auth/verify-email', { token });
   }
 
   async resendVerification(email: string): Promise<MessageResponse> {
-    return this.makeRequest<MessageResponse>('POST', '/auth/resend-verification', { email });
+    return this.makeRequest<MessageResponse>('POST', '/api/v1/auth/resend-verification', { email });
   }
 
   async forgotPassword(email: string): Promise<MessageResponse> {
-    return this.makeRequest<MessageResponse>('POST', '/auth/forgot-password', { email });
+    return this.makeRequest<MessageResponse>('POST', '/api/v1/auth/forgot-password', { email });
   }
 
   async resetPassword(data: { token: string; password: string; password_confirm: string }): Promise<MessageResponse> {
-    return this.makeRequest<MessageResponse>('POST', '/auth/reset-password', data);
+    return this.makeRequest<MessageResponse>('POST', '/api/v1/auth/reset-password', data);
   }
 
   async changePassword(data: { current_password: string; new_password: string; password_confirm: string }): Promise<MessageResponse> {
-    return this.makeRequest<MessageResponse>('POST', '/auth/change-password', data);
+    return this.makeRequest<MessageResponse>('POST', '/api/v1/auth/change-password', data);
   }
 
   // User endpoints
   async getCurrentUser(): Promise<User> {
-    return this.makeRequest<User>('GET', '/auth/me');
+    return this.makeRequest<User>('GET', '/api/v1/auth/me');
   }
 
   async updateProfile(data: Partial<User>): Promise<User> {
-    return this.makeRequest<User>('PATCH', '/auth/profile', data);
+    return this.makeRequest<User>('PATCH', '/api/v1/auth/profile', data);
   }
 
   async deleteAccount(): Promise<MessageResponse> {
-    const response = await this.makeRequest<MessageResponse>('DELETE', '/auth/account');
+    const response = await this.makeRequest<MessageResponse>('DELETE', '/api/v1/auth/account');
     
     // Clear tokens after account deletion
     this.tokenStorage.clearTokens();
@@ -347,7 +349,7 @@ export class ApiClient implements AuthApiClient {
   }
 
   async revokeToken(token: string): Promise<MessageResponse> {
-    const response = await this.makeRequest<MessageResponse>('POST', '/auth/revoke', { token });
+    const response = await this.makeRequest<MessageResponse>('POST', '/api/v1/auth/revoke', { token });
     
     // Clear stored tokens
     this.tokenStorage.clearTokens();
@@ -371,9 +373,9 @@ export class ApiClient implements AuthApiClient {
     }
   }
 
-  // Health check
+  // Health check (via Kong Gateway)
   async healthCheck(): Promise<{ status: string; service: string; version: string }> {
-    return this.makeRequest<{ status: string; service: string; version: string }>('GET', '/health');
+    return this.makeRequest<{ status: string; service: string; version: string }>('GET', '/api/v1/health');
   }
 
   // Service info

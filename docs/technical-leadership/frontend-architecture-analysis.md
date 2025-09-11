@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a critical technical analysis of the proposed SaaS Hub architecture specification and delivers pragmatic frontend architecture guidance based on current implementation realities.
+This document provides a critical technical analysis of the ReactDjango Hub frontend architecture, updated to reflect the current microservices deployment (4 services + Kong API Gateway) and multi-vertical platform requirements. This analysis delivers actionable frontend architecture guidance aligned with the approved incremental implementation approach.
 
 ## Critical Analysis of Existing Specification
 
@@ -15,20 +15,28 @@ This document provides a critical technical analysis of the proposed SaaS Hub ar
 
 ### What Needs Refinement 🔄
 
-1. **Over-Ambitious Scope**
-   - **Issue**: 4 microservices + Kong + monorepo is excessive for initial implementation
-   - **Reality**: We have 2 services running, no gateway deployed
-   - **Recommendation**: Incremental approach, add complexity as needed
+1. **Service Integration Complexity** ✅ RESOLVED BY COORDINATOR
+   - **Current State**: Complete microservices orchestration implemented
+   - **Services**: 4 FastAPI services (identity:8001, content:8002, communication:8003, workflow:8004)
+   - **Databases**: 4 PostgreSQL 17 instances (ports 5433-5436)
+   - **Caching**: 4 Redis instances (ports 6380-6383)
+   - **Orchestration**: Unified docker-compose.yml with health checks and dependency management
 
 2. **Monorepo Complexity**
    - **Issue**: Nx/Turborepo/pnpm workspaces add significant overhead
    - **Reality**: Small team doesn't need this complexity yet
    - **Recommendation**: Start with simple structure, migrate when team > 5
 
-3. **Kong Gateway Assumption**
-   - **Issue**: Assumes Kong is deployed and configured
-   - **Reality**: No gateway currently exists
-   - **Recommendation**: Implement direct service calls first, add gateway later
+3. **Kong Gateway Integration** ✅ FULLY CONFIGURED
+   - **Status**: Kong configuration complete with all routes and plugins
+   - **Gateway Port**: 8000 (proxy), 8445 (admin)
+   - **Route Mappings**:
+     - `/api/v1/auth` → Identity Service (8001)
+     - `/api/v1/users` → Identity Service (8001)
+     - `/api/v1/documents` → Content Service (8002)
+     - `/api/v1/messages` → Communication Service (8003)
+     - `/api/v1/workflows` → Workflow Service (8004)
+   - **Features**: JWT validation, rate limiting, CORS, health checks
 
 4. **WAP/SPA Dual Architecture**
    - **Issue**: Supporting both WAP and SPA fragments effort
@@ -37,11 +45,12 @@ This document provides a critical technical analysis of the proposed SaaS Hub ar
 
 ### What's Missing 🚫
 
-1. **Error Handling Strategy**: No comprehensive error boundary architecture
-2. **Performance Budget**: No defined metrics or monitoring
-3. **Testing Strategy**: Lacks specific testing architecture
-4. **Security Patterns**: JWT storage, XSS prevention not addressed
-5. **Development Workflow**: No clear local development setup
+1. **Multi-Service State Management**: Complex state synchronization across 4 services
+2. **Internationalization (i18n)**: French-first with EN, DE, IT, ES support required
+3. **Multi-Vertical Architecture**: Supporting medical and public sector verticals
+4. **Real-time Communication**: WebSocket integration with communication service
+5. **Document Management**: Integration patterns for content service
+6. **Workflow Orchestration**: UI patterns for workflow intelligence service
 
 ## Pragmatic Frontend Architecture
 
@@ -95,9 +104,13 @@ src/
 │
 ├── services/            // Service layer
 │   ├── api/            // API client setup
-│   │   ├── client.ts   // Axios/fetch wrapper
+│   │   ├── client.ts   // Axios/fetch wrapper with Kong integration
+│   │   ├── kong.ts     // Kong API Gateway client
 │   │   ├── identity.ts // Identity service client
-│   │   └── backend.ts  // Backend service client
+│   │   ├── communication.ts // Communication service client
+│   │   ├── content.ts  // Content management client
+│   │   ├── workflow.ts // Workflow intelligence client
+│   │   └── backend.ts  // Django backend client
 │   │
 │   └── auth/           // Auth token management
 │       ├── token.ts    // JWT handling
@@ -178,11 +191,25 @@ class ApiClient {
   }
   
   private getServiceUrl(service: string): string {
-    const urls = {
-      identity: import.meta.env.VITE_IDENTITY_URL || 'http://localhost:8001',
-      backend: import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000',
+    // Kong API Gateway as single entry point
+    const KONG_URL = import.meta.env.VITE_KONG_URL || 'http://localhost:8000';
+    
+    // Service route mappings (aligned with Kong configuration)
+    const serviceMap = {
+      identity: `${KONG_URL}/api/v1/auth`,
+      users: `${KONG_URL}/api/v1/users`,
+      organizations: `${KONG_URL}/api/v1/organizations`,
+      mfa: `${KONG_URL}/api/v1/mfa`,
+      documents: `${KONG_URL}/api/v1/documents`,
+      search: `${KONG_URL}/api/v1/search`,
+      notifications: `${KONG_URL}/api/v1/notifications`,
+      messages: `${KONG_URL}/api/v1/messages`,
+      workflows: `${KONG_URL}/api/v1/workflows`,
+      ai: `${KONG_URL}/api/v1/ai`,
+      backend: `${KONG_URL}/api/v1/business`,
     };
-    return urls[service] || urls.backend;
+    
+    return serviceMap[service] || KONG_URL;
   }
 }
 
@@ -521,55 +548,283 @@ export function FeatureErrorBoundary({
 }
 ```
 
+## Multi-Vertical Frontend Architecture
+
+### Vertical-Specific Requirements
+
+#### Medical Vertical (ChirurgieProX)
+```typescript
+// features/medical/
+├── surgery-planning/       // Surgical scheduling and planning
+├── patient-management/     // Patient records and data
+├── compliance/            // Medical compliance tracking
+├── imaging/              // Medical imaging integration
+└── billing/              // Medical billing specifics
+```
+
+#### Public Sector Vertical
+```typescript
+// features/public/
+├── procurement/          // Public procurement workflows
+├── citizen-services/     // Citizen-facing services
+├── compliance/          // Regulatory compliance
+├── transparency/        // Public transparency features
+└── reporting/           // Government reporting
+```
+
+### Shared Component Library
+
+```typescript
+// packages/ui-components/
+├── medical/             // Medical-specific components
+│   ├── PatientCard/
+│   ├── SurgeryScheduler/
+│   └── MedicalForms/
+├── public/              // Public sector components
+│   ├── ProcurementTable/
+│   ├── CitizenPortal/
+│   └── ComplianceTracker/
+└── shared/              // Cross-vertical components
+    ├── DataTable/
+    ├── Forms/
+    ├── Charts/
+    └── Notifications/
+```
+
+## Internationalization Architecture
+
+### i18n Implementation Strategy
+
+```typescript
+// src/i18n/config.ts
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+// Language resources organized by vertical
+import frMedical from './locales/fr/medical.json';
+import frPublic from './locales/fr/public.json';
+import frCommon from './locales/fr/common.json';
+
+export const supportedLanguages = ['fr', 'en', 'de', 'it', 'es'] as const;
+export const defaultLanguage = 'fr'; // French first
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      fr: {
+        common: frCommon,
+        medical: frMedical,
+        public: frPublic,
+      },
+      // Other languages loaded dynamically
+    },
+    lng: defaultLanguage,
+    fallbackLng: 'fr',
+    defaultNS: 'common',
+    ns: ['common', 'medical', 'public'],
+    
+    interpolation: {
+      escapeValue: false,
+      format: (value, format, lng) => {
+        // Custom formatters for dates, numbers, currency
+        if (format === 'currency') {
+          return new Intl.NumberFormat(lng, {
+            style: 'currency',
+            currency: lng === 'fr' ? 'EUR' : 'USD',
+          }).format(value);
+        }
+        return value;
+      },
+    },
+  });
+```
+
+### Multi-Service Integration Patterns
+
+```typescript
+// src/services/integration/ServiceOrchestrator.ts
+export class ServiceOrchestrator {
+  private services: Map<string, ServiceClient> = new Map();
+  
+  constructor() {
+    this.initializeServices();
+  }
+  
+  private initializeServices() {
+    // Initialize all service clients through Kong
+    this.services.set('identity', new IdentityServiceClient());
+    this.services.set('communication', new CommunicationServiceClient());
+    this.services.set('content', new ContentServiceClient());
+    this.services.set('workflow', new WorkflowServiceClient());
+  }
+  
+  // Orchestrate cross-service operations
+  async createMedicalWorkflow(data: MedicalWorkflowData) {
+    // 1. Validate user permissions via identity service
+    const permissions = await this.services.get('identity')
+      .checkPermissions(['medical.workflow.create']);
+    
+    // 2. Create workflow in workflow service
+    const workflow = await this.services.get('workflow')
+      .createWorkflow(data.workflow);
+    
+    // 3. Upload documents via content service
+    const documents = await this.services.get('content')
+      .uploadDocuments(data.documents);
+    
+    // 4. Send notifications via communication service
+    await this.services.get('communication')
+      .sendNotifications(data.notifications);
+    
+    return { workflow, documents };
+  }
+}
+```
+
+## Real-time Communication Architecture
+
+```typescript
+// src/services/realtime/WebSocketManager.ts
+import { io, Socket } from 'socket.io-client';
+
+export class WebSocketManager {
+  private sockets: Map<string, Socket> = new Map();
+  private subscriptions: Map<string, Set<Function>> = new Map();
+  
+  connect(service: 'communication' | 'workflow') {
+    const socket = io(this.getWebSocketUrl(service), {
+      auth: {
+        token: getAuthToken(),
+      },
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+    
+    socket.on('connect', () => {
+      console.log(`Connected to ${service} WebSocket`);
+    });
+    
+    socket.on('disconnect', (reason) => {
+      console.log(`Disconnected from ${service}: ${reason}`);
+      this.handleReconnection(service);
+    });
+    
+    this.sockets.set(service, socket);
+    return socket;
+  }
+  
+  subscribe(channel: string, callback: Function) {
+    if (!this.subscriptions.has(channel)) {
+      this.subscriptions.set(channel, new Set());
+    }
+    this.subscriptions.get(channel)!.add(callback);
+    
+    // Subscribe to the channel on the appropriate service
+    const service = this.getServiceForChannel(channel);
+    const socket = this.sockets.get(service);
+    
+    if (socket) {
+      socket.on(channel, (data) => {
+        this.subscriptions.get(channel)?.forEach(cb => cb(data));
+      });
+    }
+  }
+  
+  private getWebSocketUrl(service: string): string {
+    const kongWsUrl = import.meta.env.VITE_KONG_WS_URL || 'ws://localhost:8000';
+    return `${kongWsUrl}/${service}`;
+  }
+}
+```
+
 ## Implementation Priorities
 
-### Phase 1: Foundation (Week 1)
-1. **API Client Architecture** ✅
-   - Unified client with interceptors
-   - Token management
-   - Error handling
-   
-2. **State Management Setup**
-   - Zustand for client state
-   - TanStack Query for server state
-   - Proper TypeScript types
+### Phase 1: Kong Integration & Multi-Service Foundation (Current Sprint)
+1. **Kong API Gateway Integration** 🔴 CRITICAL
+   - Update API client to use Kong endpoints
+   - Configure service discovery through Kong
+   - Implement proper error handling for gateway responses
+   - Set up request/response interceptors for Kong-specific headers
 
-3. **Authentication Flow**
-   - Login/logout implementation
-   - Token refresh mechanism
-   - Protected routes
+2. **Multi-Service State Management** 🔴 CRITICAL
+   - Implement ServiceOrchestrator class
+   - Set up Zustand stores for each service domain
+   - Configure TanStack Query with service-specific cache keys
+   - Implement cross-service state synchronization
 
-### Phase 2: Core Features (Week 2-3)
-1. **User Management**
-   - CRUD operations
-   - Role management
-   - Permissions UI
+3. **Internationalization Setup** 🟡 HIGH
+   - Install and configure i18next with French as default
+   - Set up language detection and switching
+   - Create translation file structure for medical/public verticals
+   - Implement currency and date formatters for EU markets
 
-2. **Dashboard Implementation**
-   - Widget system
-   - Data aggregation
-   - Real-time updates
+### Phase 2: Service-Specific Integrations (Week 2)
+1. **Identity Service Integration** 🔴 CRITICAL
+   - Complete authentication flow with MFA support
+   - Implement organization context switching
+   - Build user management UI components
+   - Set up role-based access control in UI
 
-3. **Error Handling**
-   - Error boundaries
-   - Toast notifications
-   - Retry mechanisms
+2. **Communication Service Integration** 🟡 HIGH
+   - Implement WebSocket manager for real-time updates
+   - Build notification center component
+   - Create message composition interfaces
+   - Set up push notification handling
 
-### Phase 3: Production Readiness (Week 4)
-1. **Performance Optimization**
-   - Code splitting
-   - Lazy loading
-   - Bundle optimization
+3. **Content Service Integration** 🟡 HIGH
+   - Build document upload/download components
+   - Implement file preview functionality
+   - Create document management UI
+   - Set up versioning interface
 
-2. **Testing Suite**
-   - Unit tests with Vitest
-   - Integration tests
-   - E2E with Playwright
+4. **Workflow Service Integration** 🟢 MEDIUM
+   - Build workflow designer UI
+   - Implement workflow execution monitoring
+   - Create approval interfaces
+   - Set up workflow analytics dashboard
 
-3. **Monitoring & Analytics**
-   - Sentry integration
-   - Performance monitoring
-   - User analytics
+### Phase 3: Vertical-Specific Features (Week 3)
+1. **Medical Vertical Components** 🟡 HIGH
+   - Surgery scheduling interface
+   - Patient management dashboard
+   - Medical compliance tracking
+   - Billing integration components
+
+2. **Public Sector Components** 🟢 MEDIUM
+   - Procurement workflow UI
+   - Citizen portal components
+   - Transparency dashboard
+   - Regulatory compliance interfaces
+
+3. **Shared Component Library** 🟡 HIGH
+   - Extract and generalize common components
+   - Create component documentation with Storybook
+   - Implement design tokens system
+   - Build accessibility testing suite
+
+### Phase 4: Production Readiness (Week 4)
+1. **Performance Optimization** 🟡 HIGH
+   - Implement code splitting by route and vertical
+   - Set up lazy loading for heavy components
+   - Configure CDN for static assets
+   - Optimize bundle size with tree shaking
+
+2. **Testing & Quality** 🔴 CRITICAL
+   - Unit tests for all service integrations
+   - Integration tests for Kong API flows
+   - E2E tests for critical user journeys
+   - Accessibility testing with axe-core
+
+3. **Monitoring & Observability** 🟡 HIGH
+   - Sentry integration with source maps
+   - Performance monitoring with Web Vitals
+   - User analytics with privacy compliance
+   - Error tracking with service attribution
 
 ## Technology Decisions
 
@@ -683,8 +938,125 @@ Key takeaways:
 4. Measure everything, optimize based on data
 5. Security and performance are not optional
 
+## Task Ownership Clarification
+
+### ⚠️ IMPORTANT: Task Assignment Update
+
+Based on microservices architecture boundaries, tasks have been reassigned to appropriate agents. See `/docs/architecture/task-ownership-matrix.md` for authoritative task assignments.
+
+### Tasks by Agent Ownership
+
+#### 🌐 Frontend Agent (ag-frontend) Tasks
+
+**Fully Owned by Frontend:**
+1. **Update API Client Configuration** ✅
+   - Modify `src/services/api/client.ts` to use Kong Gateway endpoints
+   - Update environment variables to point to Kong (port 8000)
+   - Remove direct service port references (8001, etc.)
+   - **Prerequisite**: Kong routes must be configured by ag-coordinator first
+
+2. **Implement Service Orchestrator** ✅
+   - Create `src/services/integration/ServiceOrchestrator.ts`
+   - Define service client interfaces for all 4 microservices
+   - Implement cross-service operation methods
+   - **Note**: This is client-side orchestration logic, fully owned by frontend
+
+3. **Set Up Internationalization** ✅
+   - Install i18next and react-i18next packages
+   - Create locale file structure with French as primary language
+   - Implement language switcher component
+   - Manage translation keys and UI text
+
+4. **Create Multi-Service State Architecture** ✅
+   - Set up separate Zustand stores per service domain
+   - Configure TanStack Query with proper cache invalidation
+   - Implement state synchronization patterns
+
+**Shared Ownership Tasks:**
+
+5. **Authentication Flow UI** 🤝
+   - **Frontend**: Login/logout UI, MFA screens, auth state management
+   - **Identity Service**: JWT generation, validation, refresh logic
+   - **Coordinator**: Kong JWT plugin configuration
+
+6. **WebSocket Client Implementation** 🤝
+   - **Frontend**: WebSocket client manager, reconnection logic, UI updates
+   - **Communication Service**: WebSocket server implementation
+   - **Coordinator**: Kong WebSocket proxy configuration
+
+#### 🔧 Coordinator Agent (ag-coordinator) Tasks
+
+**Must Complete Before Frontend Integration:**
+1. **Kong API Gateway Configuration** 🔴
+   - Configure all service routes in Kong
+   - Set up JWT validation plugin
+   - Configure CORS, rate limiting, health checks
+   - Enable WebSocket proxy support
+   - Document endpoint mappings for frontend
+
+#### 🔐 Identity Agent (ag-identity) Tasks
+
+**Authentication Service Tasks:**
+1. **Authentication Endpoints** 🔴
+   - Implement login, logout, refresh endpoints
+   - JWT token generation and validation
+   - MFA implementation (email, SMS, TOTP)
+   - User session management
+
+#### 📡 Communication Agent (ag-communication) Tasks
+
+**Real-time Communication Tasks:**
+1. **WebSocket Server** 🟡
+   - Implement WebSocket server
+   - Handle connection management
+   - Implement message broadcasting
+   - Create notification channels
+
+### Critical Integration Points
+- **Kong API Gateway**: All API calls must go through `http://localhost:8000`
+- **Service Routes**: Use `/api/v1/{service}` prefixes via Kong
+- **WebSocket Connections**: Establish through Kong's WebSocket proxy
+- **Authentication**: JWT tokens validated by identity service, passed via Kong
+
+### Task Execution Sequence
+
+```mermaid
+graph TD
+    A[1. ag-coordinator: Configure Kong Routes] --> B[2. ag-frontend: Update API Client]
+    C[3. ag-identity: Auth Endpoints] --> D[4. ag-coordinator: JWT Plugin]
+    D --> E[5. ag-frontend: Auth UI]
+    F[6. ag-communication: WebSocket Server] --> G[7. ag-coordinator: WS Proxy]
+    G --> H[8. ag-frontend: WS Client]
+    B --> I[9. ag-frontend: Service Orchestrator]
+    I --> J[10. ag-frontend: State Management]
+    J --> K[11. ag-frontend: i18n Setup]
+```
+
+### Testing Requirements by Agent
+
+**Frontend Agent Testing:**
+- Test API client with Kong endpoints
+- Verify auth UI flow with identity service
+- Test WebSocket client connections
+- Validate i18n with French-first approach
+- Test ServiceOrchestrator patterns
+
+**Coordinator Agent Testing:**
+- Verify all Kong routes work correctly
+- Test JWT plugin validation
+- Verify WebSocket proxy functionality
+- Test rate limiting and CORS
+
+**Service Agent Testing:**
+- Each service tests its own endpoints
+- Integration testing through Kong
+- WebSocket server testing (communication)
+- Auth flow testing (identity)
+
 ---
 
 **Document maintained by**: Technical Lead Agent  
-**Last updated**: December 10, 2024  
-**Next review**: January 10, 2025
+**Last updated**: September 11, 2025  
+**Next review**: September 18, 2025  
+**Status**: UPDATED with task ownership clarifications  
+**See also**: `/docs/architecture/task-ownership-matrix.md` for authoritative task assignments

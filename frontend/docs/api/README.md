@@ -9,7 +9,7 @@ The frontend connects to **two separate services**:
 | Service | Purpose | Base URL | Documentation |
 |---------|---------|----------|---------------|
 | **Auth Service** | Authentication, users, organizations | `http://localhost:8001` | `../../services/auth-service/README.md` |
-| **Backend Service** | Business logic, medical records | `http://localhost:8000/api` | `../../backend/docs/README.md` |
+| **Backend Service** | Business logic, medical records | `http://localhost:8080/api` | `../../backend/docs/README.md` |
 
 ## 📡 **API Endpoints**
 
@@ -56,7 +56,7 @@ POST   /mfa/backup-codes/regenerate  // New backup codes
 
 #### Base URL
 ```typescript  
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000/api'
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8080/api'
 ```
 
 #### Business Logic (Requires Auth Service JWT)

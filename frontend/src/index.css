@@ -67,7 +67,7 @@
   /* Focus ring utility */
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
-    focus:ring-color: var(--colors-border-focus);
+    --tw-ring-color: var(--colors-border-focus);
   }
   
   /* Background pattern for auth pages */

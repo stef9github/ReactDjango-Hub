@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
 });
 
 const apolloClient = new ApolloClient({
-  uri: import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:8000/graphql',
+  uri: import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:8080/graphql',
   cache: new InMemoryCache(),
 });
 
