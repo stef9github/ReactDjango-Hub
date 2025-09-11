@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.pool import NullPool
-from sqlalchemy import event
+from sqlalchemy import event, text
 
 
 logger = logging.getLogger(__name__)
@@ -129,7 +129,7 @@ class DatabaseManager:
         """Check database connectivity."""
         try:
             async with self.get_session_context() as session:
-                await session.execute("SELECT 1")
+                await session.execute(text("SELECT 1"))
                 return True
         except Exception as e:
             logger.error(f"Database health check failed: {e}")

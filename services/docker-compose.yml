@@ -360,7 +360,7 @@ services:
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_ADMIN_LISTEN: "0.0.0.0:8444"
     ports:
-      - "8000:8000"   # Kong proxy port (main API gateway)
+      - "8080:8000"   # Kong proxy port (main API gateway) - MOVED to 8080 to avoid Django conflict
       - "8443:8443"   # Kong SSL proxy port
       - "8445:8444"   # Kong admin API port (remapped to avoid conflict)
     volumes:

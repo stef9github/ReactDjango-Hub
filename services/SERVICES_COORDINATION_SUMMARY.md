@@ -33,7 +33,7 @@
 ### 3. **Kong Admin Port Conflict** ✅ RESOLVED
 - **Issue**: Kong admin API conflicting with Identity Service on port 8001
 - **Impact**: Cannot access Kong management, potential service conflicts
-- **Resolution**: Moved Kong admin API to port 8445, proxy remains on 8000
+- **Resolution**: Moved Kong admin API to port 8445, proxy moved to 8080 (Django uses 8000)
 
 ---
 
@@ -52,7 +52,7 @@
 ```
 Frontend (React)
     ↓
-Kong API Gateway :8000 (Proxy) + :8445 (Admin)
+Kong API Gateway :8080 (Proxy) + :8445 (Admin)
     ├── /api/v1/auth      → Identity Service :8001
     ├── /api/v1/users     → Identity Service :8001
     ├── /api/v1/documents → Content Service :8002

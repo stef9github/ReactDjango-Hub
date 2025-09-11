@@ -15,7 +15,7 @@ services:
       - name: auth-routes
         paths:
           - /api/v1/auth
-        strip_path: false  # Keep /api/v1/auth prefix for service
+        strip_path: true   # Strip /api/v1/auth to match service endpoints (/auth/*)
         methods:
           - GET
           - POST
@@ -48,7 +48,7 @@ services:
       - name: users-routes
         paths:
           - /api/v1/users
-        strip_path: false
+        strip_path: true   # Strip /api/v1/users to match service endpoints (/users/*)
         methods:
           - GET
           - POST
@@ -64,7 +64,7 @@ services:
       - name: organizations-routes
         paths:
           - /api/v1/organizations
-        strip_path: false
+        strip_path: true   # Strip /api/v1/organizations to match service endpoints (/organizations/*)
         methods:
           - GET
           - POST
@@ -80,7 +80,7 @@ services:
       - name: mfa-routes
         paths:
           - /api/v1/mfa
-        strip_path: false
+        strip_path: true   # Strip /api/v1/mfa to match service endpoints (/mfa/*)
         methods:
           - GET
           - POST
@@ -262,7 +262,7 @@ routes:
       - name: request-termination
         config:
           status_code: 200
-          body: '{"service":"kong-gateway","status":"healthy","version":"3.4","port":8000}'
+          body: '{"service":"kong-gateway","status":"healthy","version":"3.4","port":8080}'
 
 upstreams:
   # Load balancing for identity service

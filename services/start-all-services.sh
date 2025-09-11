@@ -120,7 +120,7 @@ echo "  🔐 Identity Service:        http://localhost:8001/docs"
 echo "  📄 Content Service:         http://localhost:8002/docs"
 echo "  📢 Communication Service:   http://localhost:8003/docs"
 echo "  🔄 Workflow Service:        http://localhost:8004/docs"
-echo "  🚪 API Gateway (Kong):      http://localhost:8000"
+echo "  🚪 API Gateway (Kong):      http://localhost:8080"
 echo "  🛠️  Kong Admin API:          http://localhost:8445"
 echo ""
 

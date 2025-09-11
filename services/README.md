@@ -56,8 +56,10 @@ python main.py  # or uvicorn main:app --reload --port 8004
 ## 📡 **API Documentation & Endpoints**
 
 ### 🚪 **API Gateway (Kong) - Primary Access Point**
-- **Kong Proxy**: http://localhost:8000 (routes to all services)
+- **Kong Proxy**: http://localhost:8080 (routes to all services) 
 - **Kong Admin API**: http://localhost:8445
+
+**Note**: Kong proxy port moved from 8000 to 8080 to avoid conflict with Django backend on port 8000.
 
 ### 📖 **Service Documentation**
 When services are running, access interactive API docs:
@@ -263,11 +265,11 @@ cd services
 ```
 
 ### 🌐 **API Gateway Coordination**
-All frontend requests should route through Kong API Gateway at `http://localhost:8000`:
+All frontend requests should route through Kong API Gateway at `http://localhost:8080`:
 
 ```javascript
 // Frontend API calls should use gateway endpoints:
-const API_BASE = 'http://localhost:8000/api/v1';
+const API_BASE = 'http://localhost:8080/api/v1';
 
 // Authentication
 fetch(`${API_BASE}/auth/login`, { ... });

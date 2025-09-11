@@ -33,8 +33,9 @@ After deployment, access your services at:
 
 | Component | URL | Credentials |
 |-----------|-----|-------------|
-| **API Gateway (Kong)** | http://localhost:8000 | - |
-| **Kong Admin API** | http://localhost:8001 | - |
+| **API Gateway (Kong)** | http://localhost:8080 | - |
+| **Kong Admin API** | http://localhost:8445 | - |
+| **Django Backend** | http://localhost:8000 | - |
 | **Identity Service** | http://localhost:8011/docs | - |
 | **Grafana Dashboard** | http://localhost:3001 | admin/admin |
 | **Prometheus** | http://localhost:9090 | - |
@@ -52,7 +53,7 @@ Identity Service:         8001 (internal) / 8011 (external)
 Communication Service:    8002
 Content Service:          8003
 Workflow Intelligence:    8005
-Kong API Gateway:         8000 (proxy) / 8001 (admin)
+Kong API Gateway:         8080 (proxy) / 8445 (admin)  # Port 8000 reserved for Django
 ```
 
 ### **Infrastructure Components**

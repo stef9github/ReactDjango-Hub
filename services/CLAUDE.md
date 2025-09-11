@@ -95,7 +95,7 @@ kong reload
 
 # Check Kong health
 kong health
-curl http://localhost:8000/status
+curl http://localhost:8080/status
 
 # Import routing configuration
 kong config db_import kong.yml
@@ -122,7 +122,7 @@ grep -r "sqlalchemy==" */requirements.txt
 
 ### Service Ecosystem You Coordinate
 ```
-🚪 API Gateway (Kong)          - Port 8000 (Frontend routing + Security)
+🚪 API Gateway (Kong)          - Port 8080 (Frontend routing + Security) - MOVED from 8000 to avoid Django conflict
 🔐 Identity Service            - Port 8001 (Auth + Users + Roles)
 📄 Content Service             - Port 8002 (Documents + Search + Audit)  
 📢 Communication Service       - Port 8003 (Notifications + Messaging)

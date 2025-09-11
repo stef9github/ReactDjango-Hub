@@ -38,7 +38,7 @@
 ```
 Frontend (React :3000) 
     ↓ HTTP requests
-Kong API Gateway (:8000 proxy, :8445 admin)
+Kong API Gateway (:8080 proxy, :8445 admin)
     ├── /api/v1/auth      → Identity Service :8001        ✅ Healthy
     ├── /api/v1/documents → Content Service :8002         ✅ Healthy  
     ├── /api/v1/messages  → Communication Service :8003   ✅ Healthy

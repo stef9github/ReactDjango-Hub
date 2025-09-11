@@ -54,7 +54,7 @@ This file tracks cross-service coordination issues that require Services Coordin
 
 **Final Architecture**:
 ```
-Frontend → Kong API Gateway (8000) → Services
+Frontend → Kong API Gateway (8080) → Services
                                  ├── Identity Service (8001)
                                  ├── Content Service (8002)  
                                  ├── Communication Service (8003)
