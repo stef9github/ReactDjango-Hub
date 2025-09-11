@@ -4,7 +4,7 @@ This document provides a comprehensive overview of all available Claude Code age
 
 ## 📋 **Agent Overview**
 
-**Total Agents**: 10 specialized agents following the simplified `ag-` prefix naming convention.
+**Total Agents**: 11 specialized agents following the simplified `ag-` prefix naming convention.
 
 ## 🏗️ **Infrastructure & Coordination Agents**
 
@@ -18,7 +18,12 @@ This document provides a comprehensive overview of all available Claude Code age
 - **Scope**: `infrastructure/` directory, CI/CD, cloud infrastructure
 - **Use Cases**: Production deployments, infrastructure management, DevOps automation
 
-## 🛡️ **Quality & Compliance Agents**
+## 🛡️ **Quality & Leadership Agents**
+
+### **ag-techlead**
+- **Description**: Technical Leadership - Architecture decisions, research analysis, strategic planning
+- **Scope**: System architecture, technical strategy, research and analysis
+- **Use Cases**: Architecture decisions, technical planning, strategic guidance
 
 ### **ag-security**
 - **Description**: Security & Compliance - Security audits, vulnerability scanning
@@ -76,55 +81,86 @@ This document provides a comprehensive overview of all available Claude Code age
 ├── ag-coordinator.md                     # Services Coordinator Agent
 ├── ag-security.md                        # Security & Compliance Agent
 ├── ag-reviewer.md                        # Code Review Agent
-├── tech-lead.md                          # Technical leadership
-└── workflow-intelligence-service-agent.md # Workflow microservice
+└── ag-techlead.md                        # Technical Leadership Agent
 ```
 
 ## 🎯 **Agent Selection Guidelines**
 
 ### **For Architecture & Planning**
-- Use **tech-lead** for strategic decisions and project planning
-- Use **services-coordinator** for microservices integration and API Gateway
+- Use **ag-techlead** for strategic decisions and project planning
+- Use **ag-coordinator** for microservices integration and API Gateway
 
 ### **For Backend Development**
-- Use **django-backend-expert** for Django business logic and medical records
-- Use **identity-service-expert** for authentication and security features
+- Use **ag-backend** for Django business logic and REST APIs
+- Use **ag-identity** for authentication and security features
 - Use microservice agents for service-specific development
 
 ### **For Frontend Development** 
-- Use **react-frontend-expert** for React UI/UX and patient interfaces
+- Use **ag-frontend** for React UI/UX and user interfaces
+- **IMPORTANT**: Frontend requires services to be running first (see Agent Dependencies below)
 
 ### **For Security & Compliance**
-- Use **security-compliance-expert** for HIPAA/RGPD audits and security reviews
+- Use **ag-security** for security audits and compliance reviews
 
 ### **For DevOps & Deployment**
-- Use **deployment-agent** for infrastructure and deployment automation
+- Use **ag-infrastructure** for infrastructure and deployment automation
 
 ### **For Code Quality**
-- Use **code-reviewer** for pull request reviews and code audits
+- Use **ag-reviewer** for pull request reviews and code audits
 
-### **For Tool Optimization**
-- Use **claude-code-optimization-expert** for Claude Code setup and workflow optimization
+## 🔗 **Agent Dependencies & Coordination**
+
+### **Frontend Development Dependencies**
+The **ag-frontend** agent requires the following services to be running before starting development:
+
+1. **Microservices Infrastructure** (managed by ag-coordinator):
+   - Kong API Gateway on port 8080 (primary API endpoint)
+   - Identity Service on port 8001
+   - Content Service on port 8002
+   - Communication Service on port 8003
+   - Workflow Service on port 8004
+
+2. **Django Backend** (managed by ag-backend):
+   - Django REST API on port 8000
+
+**Startup Sequence for Frontend Development**:
+```bash
+# Step 1: Invoke ag-coordinator to start microservices
+# Step 2: Invoke ag-backend to start Django
+# Step 3: Frontend can now start development
+```
+
+### **Service Integration Patterns**
+- **ag-coordinator** manages cross-service integration and Kong API Gateway
+- **ag-backend** integrates with microservices through API clients
+- **ag-frontend** connects to services through Kong (port 8080) and Django (port 8000)
+- Individual service agents (ag-identity, ag-content, etc.) handle their own service logic
+
+### **Agent Interaction Rules**
+- Service agents communicate only through APIs (no direct code modification)
+- Infrastructure changes go through **ag-infrastructure**
+- Cross-service integration questions go to **ag-coordinator**
+- Each agent maintains its own documentation and configuration
 
 ## 🔄 **Microservices Architecture Coverage**
 
 | Service | Port | Agent | Scope |
 |---------|------|-------|--------|
-| **Identity Service** | 8001 | `identity-service-expert` / `identity-service` | Authentication, users, MFA |
-| **Content Service** | 8002 | `content-service` | Documents, search, audit |
-| **Communication Service** | 8003 | `communication-service` | Notifications, messaging |
-| **Workflow Service** | 8004 | `workflow-intelligence-service` | Automation, AI |
-| **Django Backend** | 8000 | `django-backend-expert` | Business logic, medical records |
-| **React Frontend** | 3000 | `react-frontend-expert` | UI/UX, patient interfaces |
-| **API Gateway** | - | `services-coordinator` | Service routing, load balancing |
+| **Identity Service** | 8001 | `ag-identity` | Authentication, users, MFA |
+| **Content Service** | 8002 | `ag-content` | Documents, search, audit |
+| **Communication Service** | 8003 | `ag-communication` | Notifications, messaging |
+| **Workflow Service** | 8004 | `ag-workflow` | Automation, AI |
+| **Django Backend** | 8000 | `ag-backend` | Business logic, medical records |
+| **React Frontend** | 3000 | `ag-frontend` | UI/UX, patient interfaces |
+| **API Gateway/Kong** | 8080 | `ag-coordinator` | Service routing, load balancing |
 
 ## 🚀 **Usage Best Practices**
 
 1. **Agent Specialization**: Use the most specific agent for your task
-2. **Cross-Service Work**: Use `services-coordinator` for integration tasks
-3. **Security Reviews**: Always involve `security-compliance-expert` for medical data
-4. **Code Quality**: Use `code-reviewer` before merging significant changes
-5. **Architecture Decisions**: Consult `tech-lead` for major technical decisions
+2. **Cross-Service Work**: Use `ag-coordinator` for integration tasks
+3. **Security Reviews**: Always involve `ag-security` for sensitive data
+4. **Code Quality**: Use `ag-reviewer` before merging significant changes
+5. **Architecture Decisions**: Consult `ag-techlead` for major technical decisions
 
 ## 🔧 **Agent Configuration**
 
@@ -141,5 +177,5 @@ Agents are available through Claude Code's agent selection interface and can be 
 ---
 
 **Last Updated**: September 2025  
-**Total Agents**: 14  
-**Project**: ReactDjango-Hub Medical SaaS Platform
+**Total Agents**: 11  
+**Project**: ReactDjango-Hub Enterprise SaaS Platform
