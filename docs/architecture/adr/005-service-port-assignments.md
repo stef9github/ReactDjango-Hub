@@ -3,6 +3,9 @@
 ## Status
 Accepted
 
+## Date
+September 10, 2025
+
 ## Context
 A critical port conflict was discovered in our microservices architecture where both Kong API Gateway and the Django Backend service were configured to use port 8000. This created a runtime conflict preventing both services from operating simultaneously.
 

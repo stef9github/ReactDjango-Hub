@@ -7,11 +7,10 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from simple_models import Base
 
-# Get database URL from environment
-DATABASE_URL = os.getenv(
-    'DATABASE_URL',
-    'postgresql+asyncpg://stephanerichard@localhost:5432/auth_service'
-)
+# Get database URL from settings configuration
+from config import settings
+
+DATABASE_URL = settings.get_database_url()
 
 # Create async engine
 engine = create_async_engine(

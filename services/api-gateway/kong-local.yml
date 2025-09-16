@@ -1,0 +1,323 @@
+# Kong API Gateway Configuration for Local Development (No Docker)
+# This configuration points to localhost services instead of Docker service names
+_format_version: "3.0"
+
+services:
+  # Identity Service (localhost:8001)
+  - name: identity-service
+    url: http://localhost:8001
+    protocol: http
+    port: 8001
+    retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
+    routes:
+      - name: auth-routes
+        paths:
+          - /api/v1/auth
+        strip_path: true   # Strip /api/v1/auth to match service endpoints (/auth/*)
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 100
+              policy: local
+          - name: cors
+            config:
+              origins:
+                - "http://localhost:3000"
+                - "http://localhost:5173"
+              methods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - PATCH
+              headers:
+                - Authorization
+                - Content-Type
+              exposed_headers:
+                - X-Auth-Token
+              credentials: true
+              max_age: 3600
+      - name: users-routes
+        paths:
+          - /api/v1/users
+        strip_path: true   # Strip /api/v1/users to match service endpoints (/users/*)
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+      - name: organizations-routes
+        paths:
+          - /api/v1/organizations
+        strip_path: true   # Strip /api/v1/organizations to match service endpoints (/organizations/*)
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+      - name: mfa-routes
+        paths:
+          - /api/v1/mfa
+        strip_path: true   # Strip /api/v1/mfa to match service endpoints (/mfa/*)
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+
+  # Communication Service (localhost:8003)
+  - name: communication-service
+    url: http://localhost:8003
+    protocol: http
+    port: 8003
+    retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
+    routes:
+      - name: notifications-routes
+        paths:
+          - /api/v1/notifications
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+          - name: rate-limiting
+            config:
+              minute: 60
+              policy: local
+      - name: messages-routes
+        paths:
+          - /api/v1/messages
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+
+  # Content Service (localhost:8002)
+  - name: content-service
+    url: http://localhost:8002
+    protocol: http
+    port: 8002
+    retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
+    routes:
+      - name: documents-routes
+        paths:
+          - /api/v1/documents
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+          - name: request-size-limiting
+            config:
+              allowed_payload_size: 10
+              size_unit: megabytes
+      - name: search-routes
+        paths:
+          - /api/v1/search
+        strip_path: false
+        methods:
+          - GET
+          - POST
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+
+  # Workflow Intelligence Service (localhost:8004)
+  - name: workflow-service
+    url: http://localhost:8004
+    protocol: http
+    port: 8004
+    retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
+    routes:
+      - name: workflows-routes
+        paths:
+          - /api/v1/workflows
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+          - name: rate-limiting
+            config:
+              minute: 30
+              policy: local
+      - name: ai-routes
+        paths:
+          - /api/v1/ai
+        strip_path: false
+        methods:
+          - GET
+          - POST
+        plugins:
+          - name: jwt
+            config:
+              secret_is_base64: false
+              claims_to_verify:
+                - exp
+
+plugins:
+  # Global plugins (simplified for local development)
+  - name: prometheus
+    config:
+      status_code_metrics: true
+      latency_metrics: true
+      bandwidth_metrics: true
+      upstream_health_metrics: true
+
+# Health Check Routes (Global)
+routes:
+  - name: kong-health-check
+    paths:
+      - /health
+    strip_path: true
+    methods:
+      - GET
+    plugins:
+      - name: request-termination
+        config:
+          status_code: 200
+          body: '{"service":"kong-gateway","status":"healthy","version":"3.4","port":8080,"mode":"local-development"}'
+
+upstreams:
+  # Load balancing for identity service (localhost)
+  - name: identity-service-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: localhost:8001
+        weight: 100
+      
+  # Load balancing for communication service (localhost)
+  - name: communication-service-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: localhost:8003
+        weight: 100
+        
+  # Load balancing for content service (localhost)
+  - name: content-service-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: localhost:8002
+        weight: 100
+        
+  # Load balancing for workflow service (localhost)
+  - name: workflow-service-upstream
+    algorithm: round-robin
+    healthchecks:
+      active:
+        type: http
+        http_path: /health
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 5
+          http_failures: 3
+    targets:
+      - target: localhost:8004
+        weight: 100

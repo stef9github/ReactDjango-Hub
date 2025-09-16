@@ -1,0 +1,247 @@
+# Cloud Build configuration for automated deployment to Cloud Run
+# This file orchestrates the build and deployment of all microservices
+
+steps:
+  # =========================================
+  # Build and Deploy Identity Service
+  # =========================================
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-identity-service'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/identity-service:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/identity-service:latest'
+      - '-f'
+      - 'services/identity-service/Dockerfile'
+      - 'services/identity-service'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-identity-service'
+    args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/identity-service']
+    waitFor: ['build-identity-service']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-identity-service'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'identity-service'
+      - '--image=gcr.io/$PROJECT_ID/identity-service:$SHORT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=1'
+      - '--max-instances=10'
+      - '--cpu=1'
+      - '--memory=1Gi'
+      - '--set-env-vars=SERVICE_NAME=identity-service,SERVICE_PORT=8001'
+      - '--set-secrets=DATABASE_URL=identity-db-url:latest,JWT_SECRET_KEY=jwt-secret:latest'
+    waitFor: ['push-identity-service']
+
+  # =========================================
+  # Build and Deploy Backend Service (Django)
+  # =========================================
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-backend-service'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/backend-service:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/backend-service:latest'
+      - '-f'
+      - 'backend/Dockerfile'
+      - 'backend'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-backend-service'
+    args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/backend-service']
+    waitFor: ['build-backend-service']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-backend-service'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'backend-service'
+      - '--image=gcr.io/$PROJECT_ID/backend-service:$SHORT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=1'
+      - '--max-instances=20'
+      - '--cpu=2'
+      - '--memory=2Gi'
+      - '--set-env-vars=SERVICE_NAME=backend-service,DEBUG=False'
+      - '--set-secrets=DATABASE_URL=backend-db-url:latest,SECRET_KEY=django-secret:latest'
+    waitFor: ['push-backend-service']
+
+  # =========================================
+  # Build and Deploy Frontend Service (React)
+  # =========================================
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-frontend'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/frontend:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/frontend:latest'
+      - '-f'
+      - 'frontend/Dockerfile'
+      - 'frontend'
+      - '--build-arg'
+      - 'VITE_API_URL=https://api.medicalhub.com'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-frontend'
+    args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/frontend']
+    waitFor: ['build-frontend']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-frontend'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'frontend'
+      - '--image=gcr.io/$PROJECT_ID/frontend:$SHORT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=1'
+      - '--max-instances=100'
+      - '--cpu=0.5'
+      - '--memory=512Mi'
+      - '--port=80'
+    waitFor: ['push-frontend']
+
+  # =========================================
+  # Build and Deploy Communication Service
+  # =========================================
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-communication-service'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/communication-service:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/communication-service:latest'
+      - '-f'
+      - 'services/communication-service/Dockerfile'
+      - 'services/communication-service'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-communication-service'
+    args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/communication-service']
+    waitFor: ['build-communication-service']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-communication-service'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'communication-service'
+      - '--image=gcr.io/$PROJECT_ID/communication-service:$SHORT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=0'
+      - '--max-instances=5'
+      - '--cpu=1'
+      - '--memory=512Mi'
+      - '--set-env-vars=SERVICE_NAME=communication-service,SERVICE_PORT=8002'
+      - '--set-secrets=DATABASE_URL=comm-db-url:latest,SMTP_PASSWORD=smtp-password:latest'
+    waitFor: ['push-communication-service']
+
+  # =========================================
+  # Build and Deploy Content Service
+  # =========================================
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-content-service'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/content-service:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/content-service:latest'
+      - '-f'
+      - 'services/content-service/Dockerfile'
+      - 'services/content-service'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-content-service'
+    args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/content-service']
+    waitFor: ['build-content-service']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-content-service'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'content-service'
+      - '--image=gcr.io/$PROJECT_ID/content-service:$SHORT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=0'
+      - '--max-instances=5'
+      - '--cpu=1'
+      - '--memory=1Gi'
+      - '--set-env-vars=SERVICE_NAME=content-service,SERVICE_PORT=8003'
+      - '--set-secrets=DATABASE_URL=content-db-url:latest,GCS_BUCKET=content-bucket:latest'
+    waitFor: ['push-content-service']
+
+  # =========================================
+  # Build and Deploy Workflow Service
+  # =========================================
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-workflow-service'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/workflow-service:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/workflow-service:latest'
+      - '-f'
+      - 'services/workflow-intelligence-service/Dockerfile'
+      - 'services/workflow-intelligence-service'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-workflow-service'
+    args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/workflow-service']
+    waitFor: ['build-workflow-service']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-workflow-service'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'workflow-service'
+      - '--image=gcr.io/$PROJECT_ID/workflow-service:$SHORT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=0'
+      - '--max-instances=3'
+      - '--cpu=2'
+      - '--memory=2Gi'
+      - '--timeout=300'
+      - '--set-env-vars=SERVICE_NAME=workflow-service,SERVICE_PORT=8005'
+      - '--set-secrets=DATABASE_URL=workflow-db-url:latest,OPENAI_API_KEY=openai-key:latest'
+    waitFor: ['push-workflow-service']
+
+# Build configuration
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+  dynamic_substitutions: true
+
+# Substitutions
+substitutions:
+  _REGION: us-central1
+  _SERVICE_ACCOUNT: cloud-run-sa@${PROJECT_ID}.iam.gserviceaccount.com
+
+# Timeout for the entire build
+timeout: '1800s'

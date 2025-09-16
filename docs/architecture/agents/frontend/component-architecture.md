@@ -1202,5 +1202,5 @@ export function Dialog({ isOpen, onClose, title, children }: DialogProps) {
 
 **Document maintained by**: Technical Lead Agent  
 **For**: Frontend Agent  
-**Last updated**: December 10, 2024  
-**Next review**: January 10, 2025
+**Last updated**: September 10, 2025  
+**Next review**: October 10, 2025

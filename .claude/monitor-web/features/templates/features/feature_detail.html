@@ -1,0 +1,523 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ object.title }} - Feature Details{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feature-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .priority-badge {
+        font-size: 1.2rem;
+        padding: 8px 16px;
+        border-radius: 20px;
+    }
+    
+    .progress-container {
+        background: rgba(255,255,255,0.2);
+        border-radius: 10px;
+        padding: 10px;
+    }
+    
+    .task-card {
+        border-left: 3px solid #007bff;
+        transition: all 0.3s ease;
+    }
+    
+    .task-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .task-card.completed {
+        border-left-color: #28a745;
+        opacity: 0.8;
+    }
+    
+    .task-card.in-progress {
+        border-left-color: #ffc107;
+    }
+    
+    .task-card.failed {
+        border-left-color: #dc3545;
+    }
+    
+    .comment-box {
+        border-left: 3px solid #e9ecef;
+        padding-left: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .comment-box.internal {
+        border-left-color: #ffc107;
+        background: #fff9e6;
+    }
+    
+    .history-item {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 15px;
+    }
+    
+    .history-item::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #007bff;
+    }
+    
+    .history-item::after {
+        content: '';
+        position: absolute;
+        left: 14px;
+        top: 20px;
+        width: 2px;
+        height: calc(100% + 5px);
+        background: #e9ecef;
+    }
+    
+    .history-item:last-child::after {
+        display: none;
+    }
+    
+    .attachment-card {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .rich-text-content {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        min-height: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Feature Header -->
+    <div class="feature-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-3">{{ object.title }}</h1>
+                <p class="lead mb-3">{{ object.description }}</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="badge priority-badge bg-{{ object.get_priority_color|slice:'1:' }}">
+                        {{ object.get_priority_display }}
+                    </span>
+                    <span class="badge priority-badge bg-light text-dark">
+                        {{ object.get_status_display }}
+                    </span>
+                    {% if object.category %}
+                    <span class="badge priority-badge bg-info">
+                        {{ object.category.name }}
+                    </span>
+                    {% endif %}
+                    <span class="badge priority-badge bg-secondary">
+                        {{ object.estimated_effort }} Story Points
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="progress-container">
+                    <h5 class="mb-2">Progress: {{ object.progress_percentage }}%</h5>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" 
+                             style="width: {{ object.progress_percentage }}%"
+                             aria-valuenow="{{ object.progress_percentage }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            {{ object.progress_percentage }}%
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{% url 'features:edit' object.id %}" class="btn btn-light">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    {% if object.status == 'BACKLOG' or object.status == 'PLANNED' %}
+                    <a href="{% url 'features:plan' object.id %}" class="btn btn-warning">
+                        <i class="bi bi-clipboard-check"></i> Plan
+                    </a>
+                    {% endif %}
+                    {% if object.status == 'PLANNED' %}
+                    <button onclick="implementFeature({{ object.id }})" class="btn btn-success">
+                        <i class="bi bi-play-circle"></i> Implement
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <!-- Detailed Description -->
+            {% if object.detailed_description %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Detailed Description</h5>
+                </div>
+                <div class="card-body">
+                    <div class="rich-text-content">
+                        {{ object.detailed_description|safe }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Acceptance Criteria -->
+            {% if object.acceptance_criteria %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Acceptance Criteria</h5>
+                </div>
+                <div class="card-body">
+                    <pre>{{ object.acceptance_criteria }}</pre>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Implementation Notes -->
+            {% if object.implementation_notes %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Implementation Notes</h5>
+                </div>
+                <div class="card-body">
+                    <pre>{{ object.implementation_notes }}</pre>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Tasks -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Tasks ({{ tasks|length }})</h5>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                        <i class="bi bi-plus"></i> Add Task
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% for task in tasks %}
+                    <div class="task-card card mb-2 {{ task.status|lower }}">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h6 class="mb-1">{{ task.title }}</h6>
+                                    <p class="text-muted mb-0 small">{{ task.description }}</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-info">{{ task.assigned_agent }}</span>
+                                    <span class="badge bg-secondary">{{ task.get_status_display }}</span>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    {% if task.status == 'PENDING' %}
+                                    <button class="btn btn-sm btn-success" onclick="startTask({{ task.id }})">
+                                        <i class="bi bi-play"></i> Start
+                                    </button>
+                                    {% elif task.status == 'IN_PROGRESS' %}
+                                    <button class="btn btn-sm btn-primary" onclick="completeTask({{ task.id }})">
+                                        <i class="bi bi-check"></i> Complete
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if task.output %}
+                            <div class="mt-2">
+                                <small class="text-muted">Output:</small>
+                                <pre class="small">{{ task.output }}</pre>
+                            </div>
+                            {% endif %}
+                            {% if task.error_message %}
+                            <div class="mt-2">
+                                <small class="text-danger">Error:</small>
+                                <pre class="small text-danger">{{ task.error_message }}</pre>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No tasks created yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Comments -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Comments & Discussion</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'features:add_comment' object.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ comment_form.content }}
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ comment_form.is_internal }}
+                                <label class="form-check-label" for="{{ comment_form.is_internal.id_for_label }}">
+                                    {{ comment_form.is_internal.label }}
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-chat-dots"></i> Add Comment
+                        </button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <div class="comments-list">
+                        {% for comment in comments %}
+                        <div class="comment-box {% if comment.is_internal %}internal{% endif %}">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>{{ comment.user.username }}</strong>
+                                <small class="text-muted">
+                                    {{ comment.created_at|date:"M d, Y g:i A" }}
+                                    {% if comment.is_internal %}
+                                    <span class="badge bg-warning">Internal</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <p>{{ comment.content|linebreaks }}</p>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No comments yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Metadata -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Details</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Created:</dt>
+                        <dd class="col-sm-7">{{ object.created_at|date:"M d, Y" }}</dd>
+                        
+                        <dt class="col-sm-5">Updated:</dt>
+                        <dd class="col-sm-7">{{ object.updated_at|date:"M d, Y" }}</dd>
+                        
+                        {% if object.created_by %}
+                        <dt class="col-sm-5">Created by:</dt>
+                        <dd class="col-sm-7">{{ object.created_by.username }}</dd>
+                        {% endif %}
+                        
+                        {% if object.assigned_to %}
+                        <dt class="col-sm-5">Assigned to:</dt>
+                        <dd class="col-sm-7">{{ object.assigned_to.username }}</dd>
+                        {% endif %}
+                        
+                        {% if object.due_date %}
+                        <dt class="col-sm-5">Due date:</dt>
+                        <dd class="col-sm-7">{{ object.due_date|date:"M d, Y" }}</dd>
+                        {% endif %}
+                        
+                        {% if object.implementation_started_at %}
+                        <dt class="col-sm-5">Started:</dt>
+                        <dd class="col-sm-7">{{ object.implementation_started_at|date:"M d, Y" }}</dd>
+                        {% endif %}
+                        
+                        {% if object.implementation_completed_at %}
+                        <dt class="col-sm-5">Completed:</dt>
+                        <dd class="col-sm-7">{{ object.implementation_completed_at|date:"M d, Y" }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+            
+            <!-- Assigned Agents -->
+            {% if object.assigned_agents %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Assigned Agents</h5>
+                </div>
+                <div class="card-body">
+                    {% for agent in object.assigned_agents %}
+                    <span class="badge bg-info me-2 mb-2">{{ agent }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Tags -->
+            {% if object.tags %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Tags</h5>
+                </div>
+                <div class="card-body">
+                    {% for tag in object.tags %}
+                    <span class="badge bg-secondary me-2 mb-2">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Attachments -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Attachments</h5>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <i class="bi bi-upload"></i> Upload
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% for attachment in attachments %}
+                    <div class="attachment-card">
+                        <div>
+                            <i class="bi bi-file-earmark"></i>
+                            <a href="{{ attachment.file.url }}" target="_blank">{{ attachment.name }}</a>
+                            <small class="text-muted d-block">
+                                {{ attachment.file_size|filesizeformat }}
+                            </small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted mb-0">No attachments.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- History -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent History</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in history %}
+                    <div class="history-item">
+                        <strong>{{ item.action|title }}</strong>
+                        {% if item.field_name %}
+                        - {{ item.field_name }}
+                        {% endif %}
+                        <br>
+                        <small class="text-muted">
+                            by {{ item.user.username }} 
+                            on {{ item.timestamp|date:"M d, g:i A" }}
+                        </small>
+                        {% if item.comment %}
+                        <br>
+                        <small>{{ item.comment }}</small>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="text-muted mb-0">No history yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Task Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTaskForm">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" id="taskTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Assigned Agent</label>
+                        <select class="form-select" id="taskAgent">
+                            <option value="backend">Backend Agent</option>
+                            <option value="frontend">Frontend Agent</option>
+                            <option value="infrastructure">Infrastructure Agent</option>
+                            <option value="security">Security Agent</option>
+                            <option value="testing">Testing Agent</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addTask()">Add Task</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function implementFeature(featureId) {
+    if (!confirm('Start implementation of this feature?')) {
+        return;
+    }
+    
+    fetch(`/features/${featureId}/implement/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+
+function startTask(taskId) {
+    // Implementation for starting a task
+    console.log('Starting task:', taskId);
+}
+
+function completeTask(taskId) {
+    // Implementation for completing a task
+    console.log('Completing task:', taskId);
+}
+
+function addTask() {
+    // Implementation for adding a task
+    const title = document.getElementById('taskTitle').value;
+    const description = document.getElementById('taskDescription').value;
+    const agent = document.getElementById('taskAgent').value;
+    
+    console.log('Adding task:', {title, description, agent});
+    
+    // Close modal and reload
+    bootstrap.Modal.getInstance(document.getElementById('addTaskModal')).hide();
+}
+</script>
+{% endblock %}

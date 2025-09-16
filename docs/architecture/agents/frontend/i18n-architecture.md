@@ -931,5 +931,5 @@ describe('LoginForm i18n', () => {
 
 **Document maintained by**: Technical Lead Agent  
 **For**: Frontend Agent, All Service Agents  
-**Last updated**: December 10, 2024  
-**Next review**: January 10, 2025
+**Last updated**: September 10, 2025  
+**Next review**: October 10, 2025

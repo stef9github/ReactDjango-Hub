@@ -22,17 +22,31 @@ class DatabaseConfig:
         self.session_maker = sessionmaker(bind=self.engine)
     
     def _get_database_url(self) -> str:
-        """Get database URL from environment variables"""
+        """Get database URL from environment variables with local development defaults"""
         database_url = os.getenv("DATABASE_URL")
+        use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
+        
         if not database_url:
-            # Fallback to component parts
-            host = os.getenv("DATABASE_HOST", "localhost")
-            port = os.getenv("DATABASE_PORT", "5435")
-            user = os.getenv("DATABASE_USER", "comm_user")
-            password = os.getenv("DATABASE_PASSWORD", "comm_pass")
-            database = os.getenv("DATABASE_NAME", "communication_service")
+            if use_docker:
+                # Docker environment - use Docker service names and ports
+                host = os.getenv("DATABASE_HOST", "communication-db")
+                port = os.getenv("DATABASE_PORT", "5432")
+                user = os.getenv("DATABASE_USER", "communication_user")
+                password = os.getenv("DATABASE_PASSWORD", "communication_pass")
+                database = os.getenv("DATABASE_NAME", "communication_service")
+            else:
+                # Local development - use localhost and default PostgreSQL setup
+                host = os.getenv("DATABASE_HOST", "localhost")
+                port = os.getenv("DATABASE_PORT", "5432")
+                user = os.getenv("DATABASE_USER", "stephanerichard")
+                password = os.getenv("DATABASE_PASSWORD", "")
+                database = os.getenv("DATABASE_NAME", "communication_service")
             
-            database_url = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+            # Build URL with or without password
+            if password:
+                database_url = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+            else:
+                database_url = f"postgresql://{user}@{host}:{port}/{database}"
         
         logger.info(f"Database URL configured: {database_url.split('@')[0]}@...")
         return database_url

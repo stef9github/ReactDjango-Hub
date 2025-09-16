@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Logs - Agent Monitor{% endblock %}
+{% block page_title %}System Logs{% endblock %}
+
+{% block page_actions %}
+<button class="btn btn-outline-secondary" onclick="clearFilters()">
+    <i class="bi bi-x-circle"></i> Clear Filters
+</button>
+<button class="btn btn-primary" onclick="startLogStream()">
+    <i class="bi bi-broadcast"></i> Live Stream
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-2">
+                <label class="form-label">Level</label>
+                <select name="level" class="form-select">
+                    <option value="">All</option>
+                    <option value="debug" {% if current_filters.level == 'debug' %}selected{% endif %}>Debug</option>
+                    <option value="info" {% if current_filters.level == 'info' %}selected{% endif %}>Info</option>
+                    <option value="warning" {% if current_filters.level == 'warning' %}selected{% endif %}>Warning</option>
+                    <option value="error" {% if current_filters.level == 'error' %}selected{% endif %}>Error</option>
+                    <option value="critical" {% if current_filters.level == 'critical' %}selected{% endif %}>Critical</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Source</label>
+                <select name="source" class="form-select">
+                    <option value="">All</option>
+                    {% for source in sources %}
+                        <option value="{{ source }}" {% if current_filters.source == source %}selected{% endif %}>
+                            {{ source }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Agent</label>
+                <select name="agent" class="form-select">
+                    <option value="">All</option>
+                    {% for agent in agents %}
+                        <option value="{{ agent.pk }}" {% if current_filters.agent == agent.pk|stringformat:"s" %}selected{% endif %}>
+                            {{ agent.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Time Range</label>
+                <select name="hours" class="form-select">
+                    <option value="">All Time</option>
+                    <option value="1" {% if current_filters.hours == '1' %}selected{% endif %}>Last Hour</option>
+                    <option value="6" {% if current_filters.hours == '6' %}selected{% endif %}>Last 6 Hours</option>
+                    <option value="24" {% if current_filters.hours == '24' %}selected{% endif %}>Last 24 Hours</option>
+                    <option value="168" {% if current_filters.hours == '168' %}selected{% endif %}>Last Week</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" 
+                       placeholder="Search in messages..." 
+                       value="{{ current_filters.search }}">
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Log Statistics -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4>{{ stats.total|intcomma }}</h4>
+                <small>Total Logs</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-danger">{{ stats.errors|intcomma }}</h4>
+                <small>Errors</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-warning">{{ stats.warnings|intcomma }}</h4>
+                <small>Warnings</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-info">{{ stats.last_hour|intcomma }}</h4>
+                <small>Last Hour</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+            <table class="table table-sm table-hover" id="logTable">
+                <thead class="sticky-top bg-white">
+                    <tr>
+                        <th width="150">Timestamp</th>
+                        <th width="80">Level</th>
+                        <th width="120">Source</th>
+                        <th width="100">Agent</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody id="logTableBody">
+                    {% for log in logs %}
+                    <tr class="log-entry log-{{ log.level }}">
+                        <td>{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            <span class="badge bg-{{ log.level }}">
+                                {{ log.level|upper }}
+                            </span>
+                        </td>
+                        <td>{{ log.source }}</td>
+                        <td>
+                            {% if log.agent %}
+                                <a href="{% url 'agents:detail' log.agent.pk %}">
+                                    {{ log.agent.name }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="log-message">{{ log.message }}</span>
+                            {% if log.context %}
+                                <button class="btn btn-sm btn-link" onclick="showContext({{ log.id }})">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                                <div id="context-{{ log.id }}" style="display: none;">
+                                    <pre>{{ log.context|safe }}</pre>
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="mt-3">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let logStreamInterval = null;
+let lastLogId = {{ logs.0.id|default:0 }};
+
+function startLogStream() {
+    if (logStreamInterval) {
+        stopLogStream();
+        return;
+    }
+    
+    $('#logStreamBtn').html('<i class="bi bi-stop-circle"></i> Stop Stream');
+    
+    logStreamInterval = setInterval(function() {
+        ajaxRequest(`/logs/api/stream/?last_id=${lastLogId}`)
+            .done(function(data) {
+                if (data.logs.length > 0) {
+                    const tbody = $('#logTableBody');
+                    
+                    data.logs.forEach(function(log) {
+                        const row = $('<tr>').addClass(`log-entry log-${log.level}`);
+                        row.append($('<td>').text(new Date(log.timestamp).toLocaleString()));
+                        row.append($('<td>').html(`<span class="badge bg-${log.level}">${log.level.toUpperCase()}</span>`));
+                        row.append($('<td>').text(log.source));
+                        row.append($('<td>').text(log.agent || '-'));
+                        row.append($('<td>').text(log.message));
+                        
+                        tbody.prepend(row);
+                        
+                        // Keep only last 100 entries
+                        if (tbody.children().length > 100) {
+                            tbody.children().last().remove();
+                        }
+                    });
+                    
+                    lastLogId = data.last_id;
+                }
+            });
+    }, 2000);
+}
+
+function stopLogStream() {
+    if (logStreamInterval) {
+        clearInterval(logStreamInterval);
+        logStreamInterval = null;
+        $('#logStreamBtn').html('<i class="bi bi-broadcast"></i> Live Stream');
+    }
+}
+
+function showContext(logId) {
+    const contextDiv = $(`#context-${logId}`);
+    contextDiv.toggle();
+}
+
+function clearFilters() {
+    window.location.href = '{% url "logs:list" %}';
+}
+
+// Stop streaming when leaving page
+$(window).on('beforeunload', function() {
+    stopLogStream();
+});
+</script>
+{% endblock %}

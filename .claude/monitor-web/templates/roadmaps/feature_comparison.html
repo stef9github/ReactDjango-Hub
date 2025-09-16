@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Feature Comparison Analysis{% endblock %}
+
+{% block extra_css %}
+<style>
+    .comparison-table {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .feature-row {
+        border-bottom: 1px solid #dee2e6;
+        padding: 12px;
+    }
+    .feature-row:hover {
+        background: #f8f9fa;
+    }
+    .similarity-badge {
+        font-weight: bold;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+    .similarity-high {
+        background: #d4edda;
+        color: #155724;
+    }
+    .similarity-medium {
+        background: #fff3cd;
+        color: #856404;
+    }
+    .similarity-low {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    .platform-suggestion {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 10px 0;
+    }
+    .feature-details {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Feature Comparison Analysis</h2>
+                <div>
+                    <a href="{% url 'roadmap_dashboard' %}" class="btn btn-secondary">
+                        Back to Dashboard
+                    </a>
+                    <button class="btn btn-primary" onclick="analyzeAllFeatures()">
+                        Re-analyze Features
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Candidates -->
+    {% if platform_candidates %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4>Platform Feature Candidates</h4>
+            <div class="alert alert-info">
+                Found {{ platform_candidates|length }} potential platform features based on similarity analysis
+            </div>
+            
+            {% for candidate in platform_candidates %}
+            <div class="platform-suggestion">
+                <div class="row">
+                    <div class="col-md-5">
+                        <h6>Surgical Feature</h6>
+                        <strong>{{ candidate.surgical.title }}</strong>
+                        <p class="feature-details">{{ candidate.surgical.description }}</p>
+                        <div>
+                            <span class="badge bg-primary">{{ candidate.surgical.quarter }} {{ candidate.surgical.year }}</span>
+                            <span class="badge bg-secondary">{{ candidate.surgical.effort_days }} days</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
+                        <div>
+                            <span class="similarity-badge similarity-{{ candidate.similarity|floatformat:0|slice:':1'|default:'7'|add:'0'|slice:':1'|default:'high' }}">
+                                {{ candidate.similarity|floatformat:0 }}% Match
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <h6>Procurement Feature</h6>
+                        <strong>{{ candidate.procurement.title }}</strong>
+                        <p class="feature-details">{{ candidate.procurement.description }}</p>
+                        <div>
+                            <span class="badge bg-primary">{{ candidate.procurement.quarter }} {{ candidate.procurement.year }}</span>
+                            <span class="badge bg-secondary">{{ candidate.procurement.effort_days }} days</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Suggested Platform Feature</h6>
+                        <div class="alert alert-success mb-2">
+                            <strong>{{ candidate.suggested_platform_feature.title }}</strong>
+                            <p class="mb-0">{{ candidate.suggested_platform_feature.description }}</p>
+                        </div>
+                        <button class="btn btn-success" onclick="createPlatformFeature('{{ candidate.suggested_platform_feature.title|escapejs }}', '{{ candidate.suggested_platform_feature.description|escapejs }}')">
+                            Create Platform Feature
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- All Features Side by Side -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Surgical Features ({{ surgical_features|length }})</h4>
+            <div class="comparison-table">
+                {% for feature in surgical_features %}
+                <div class="feature-row">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">{{ feature.title }}</h6>
+                            <p class="mb-1 feature-details">{{ feature.description|truncatewords:30 }}</p>
+                            <div>
+                                <span class="badge {% if feature.category == 'platform' %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ feature.get_category_display }}
+                                </span>
+                                <span class="badge bg-info">{{ feature.get_priority_display }}</span>
+                                <span class="badge bg-secondary">{{ feature.quarter }} {{ feature.year }}</span>
+                                {% if feature.platform_score > 0 %}
+                                <span class="badge bg-primary">Platform Score: {{ feature.platform_score|floatformat:1 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            {% if feature.effort_days %}
+                                <small class="text-muted">{{ feature.effort_days }} days</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted p-3">No features available</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Procurement Features ({{ procurement_features|length }})</h4>
+            <div class="comparison-table">
+                {% for feature in procurement_features %}
+                <div class="feature-row">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">{{ feature.title }}</h6>
+                            <p class="mb-1 feature-details">{{ feature.description|truncatewords:30 }}</p>
+                            <div>
+                                <span class="badge {% if feature.category == 'platform' %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ feature.get_category_display }}
+                                </span>
+                                <span class="badge bg-info">{{ feature.get_priority_display }}</span>
+                                <span class="badge bg-secondary">{{ feature.quarter }} {{ feature.year }}</span>
+                                {% if feature.platform_score > 0 %}
+                                <span class="badge bg-primary">Platform Score: {{ feature.platform_score|floatformat:1 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            {% if feature.effort_days %}
+                                <small class="text-muted">{{ feature.effort_days }} days</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted p-3">No features available</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function analyzeAllFeatures() {
+    fetch('/roadmaps/analyze-overlaps/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+
+function createPlatformFeature(title, description) {
+    const data = {
+        title: title,
+        description: description,
+        priority: 'high',
+        quarter: 'Q1',
+        year: 2025,
+        platform_priority: 1,
+        business_value: 8,
+        technical_complexity: 5,
+        products_benefited: ['surgical', 'procurement'],
+        estimated_savings_hours: 100
+    };
+    
+    fetch('/roadmaps/create-platform-feature/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Platform feature created successfully!');
+            location.reload();
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

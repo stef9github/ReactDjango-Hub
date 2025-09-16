@@ -1,5 +1,5 @@
 """
-Application configuration
+Application configuration - Enhanced for local development
 """
 
 import os
@@ -7,13 +7,19 @@ from pydantic_settings import BaseSettings
 from typing import Optional
 
 class Settings(BaseSettings):
-    """Application settings"""
+    """Application settings with local development defaults"""
     
-    # Database
-    database_url: str = "postgresql+asyncpg://stephanerichard@localhost:5432/auth_service"
+    # Database - Default to local PostgreSQL
+    database_url: str = os.getenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://stephanerichard@localhost:5432/auth_service"
+    )
     
-    # Redis
-    redis_url: str = "redis://localhost:6379/0"
+    # Redis - Default to local Redis  
+    redis_url: str = os.getenv(
+        "REDIS_URL",
+        "redis://localhost:6379/0"
+    )
     
     # JWT Configuration
     jwt_secret_key: str = "development-secret-key-not-for-production"
@@ -56,6 +62,27 @@ class Settings(BaseSettings):
     # Test Mode
     test_mode: bool = False
     skip_email_verification: bool = False  # For testing without SMTP
+    
+    # Environment Detection
+    use_docker: bool = os.getenv("USE_DOCKER", "false").lower() == "true"
+    
+    def get_database_url(self) -> str:
+        """Get database URL based on environment"""
+        if self.use_docker:
+            # Docker environment - use service names
+            return "postgresql+asyncpg://identity_user:identity_pass@identity-db:5432/identity_service"
+        else:
+            # Local development - use localhost
+            return self.database_url
+    
+    def get_redis_url(self) -> str:
+        """Get Redis URL based on environment"""
+        if self.use_docker:
+            # Docker environment - use service names
+            return "redis://identity-redis:6379/0"
+        else:
+            # Local development - use localhost
+            return self.redis_url
 
     class Config:
         env_file = ".env.local"

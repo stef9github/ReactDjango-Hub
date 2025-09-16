@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Git Commits - Monitor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Git Commit History</h1>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" onclick="refreshCommits()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Agent</label>
+                    <select name="agent" class="form-select">
+                        <option value="">All Agents</option>
+                        {% for agent in agents %}
+                            <option value="{{ agent.name }}" {% if request.GET.agent == agent.name %}selected{% endif %}>
+                                {{ agent.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Date Range</label>
+                    <select name="days" class="form-select">
+                        <option value="1" {% if request.GET.days == '1' %}selected{% endif %}>Last 24 hours</option>
+                        <option value="7" {% if request.GET.days == '7' or not request.GET.days %}selected{% endif %}>Last 7 days</option>
+                        <option value="30" {% if request.GET.days == '30' %}selected{% endif %}>Last 30 days</option>
+                        <option value="90" {% if request.GET.days == '90' %}selected{% endif %}>Last 90 days</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="search" class="form-control" placeholder="Search commit messages..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Commit Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Commits</h5>
+                    <h2 class="text-primary">{{ total_commits }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Commits</h5>
+                    <h2 class="text-success">{{ today_commits }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Active Agents</h5>
+                    <h2 class="text-info">{{ active_agents }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Files Changed</h5>
+                    <h2 class="text-warning">{{ total_files_changed }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Commits List -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Commits</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Hash</th>
+                            <th>Message</th>
+                            <th>Agent</th>
+                            <th>Author</th>
+                            <th>Files</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commit in commits %}
+                        <tr>
+                            <td>
+                                <code>{{ commit.hash|slice:":8" }}</code>
+                            </td>
+                            <td>
+                                <strong>{{ commit.message|truncatewords:10 }}</strong>
+                                {% if commit.description %}
+                                    <br><small class="text-muted">{{ commit.description|truncatewords:15 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ commit.agent|default:"manual" }}</span>
+                            </td>
+                            <td>{{ commit.author }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ commit.files_changed }} files</span>
+                            </td>
+                            <td>
+                                <small>{{ commit.timestamp|date:"Y-m-d H:i" }}</small>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewCommit('{{ commit.hash }}')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
+                                <p class="text-muted mt-2">No commits found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if is_paginated %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function refreshCommits() {
+    window.location.reload();
+}
+
+function viewCommit(hash) {
+    // In a real implementation, this would show commit details
+    alert('View commit: ' + hash);
+}
+</script>
+{% endblock %}

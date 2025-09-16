@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Workflow Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .workflow-table {
+        background: white;
+        border-radius: 8px;
+    }
+    .state-badge {
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .state-draft { background: #e3f2fd; color: #1565c0; }
+    .state-pm_review { background: #f3e5f5; color: #6a1b9a; }
+    .state-tech_review { background: #fff3e0; color: #e65100; }
+    .state-documentation { background: #f1f8e9; color: #558b2f; }
+    .state-user_approval { background: #fce4ec; color: #c2185b; }
+    .state-approved { background: #c8e6c9; color: #2e7d32; }
+    .state-rejected { background: #ffcdd2; color: #c62828; }
+    
+    .workflow-actions {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .timeline {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 15px 0;
+    }
+    
+    .timeline-item {
+        flex: 1;
+        text-align: center;
+        padding: 8px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        position: relative;
+    }
+    
+    .timeline-item.completed {
+        background: #d4edda;
+    }
+    
+    .timeline-item.active {
+        background: #cfe2ff;
+        border: 2px solid #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Feature Approval Workflows</h2>
+                <a href="{% url 'roadmap_dashboard' %}" class="btn btn-secondary">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="workflow-table p-3">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Product</th>
+                            <th>Current State</th>
+                            <th>Assigned To</th>
+                            <th>Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for workflow in workflows %}
+                        <tr>
+                            <td>
+                                <strong>{{ workflow.feature.title }}</strong>
+                                <br>
+                                <small class="text-muted">{{ workflow.feature.description|truncatewords:15 }}</small>
+                            </td>
+                            <td>
+                                {{ workflow.feature.roadmap.product_manager.get_type_display }}
+                            </td>
+                            <td>
+                                <span class="state-badge state-{{ workflow.current_state }}">
+                                    {{ workflow.get_current_state_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if workflow.assigned_pm %}
+                                    PM: {{ workflow.assigned_pm.name }}<br>
+                                {% endif %}
+                                {% if workflow.assigned_techlead %}
+                                    Tech: {{ workflow.assigned_techlead }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ workflow.updated_at|naturaltime }}
+                            </td>
+                            <td>
+                                <div class="workflow-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="viewWorkflow({{ workflow.id }})">
+                                        View
+                                    </button>
+                                    {% if workflow.current_state == 'approved' %}
+                                    <a href="{% url 'implement_feature' workflow.feature.id %}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-play-fill"></i> Implement
+                                    </a>
+                                    {% elif workflow.current_state != 'rejected' %}
+                                    <button class="btn btn-sm btn-success" onclick="advanceWorkflow({{ workflow.feature.id }})">
+                                        Advance
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No workflows found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Panel -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5><i class="bi bi-info-circle"></i> How to Use Workflow Management</h5>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Workflow States:</h6>
+                            <ol>
+                                <li><span class="state-badge state-draft">Draft</span> - Initial feature creation</li>
+                                <li><span class="state-badge state-pm_review">PM Review</span> - Product Manager review</li>
+                                <li><span class="state-badge state-tech_review">Tech Review</span> - Technical Lead review</li>
+                                <li><span class="state-badge state-documentation">Documentation</span> - Technical docs preparation</li>
+                                <li><span class="state-badge state-user_approval">User Approval</span> - Final user approval</li>
+                                <li><span class="state-badge state-approved">Approved</span> - Ready for implementation</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Actions:</h6>
+                            <ul>
+                                <li><strong>View:</strong> See detailed workflow history and information</li>
+                                <li><strong>Advance:</strong> Move feature to the next approval stage</li>
+                                <li><strong>Reject:</strong> Reject the feature (available in review stages)</li>
+                                <li><strong>Request Changes:</strong> Send back for modifications</li>
+                            </ul>
+                            <div class="alert alert-info mt-3">
+                                <i class="bi bi-lightbulb"></i> <strong>Tip:</strong> Always add notes when changing workflow states to maintain a clear audit trail.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Workflow Actions -->
+<div class="modal fade" id="workflowModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Advance Workflow</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="workflowDetails">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Notes/Comments:</label>
+                    <textarea id="workflowNotes" class="form-control" rows="3" 
+                              placeholder="Add any notes about this state change..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="rejectWorkflow()" id="rejectBtn" style="display:none;">
+                    <i class="bi bi-x-circle"></i> Reject
+                </button>
+                <button type="button" class="btn btn-warning" onclick="requestChanges()" id="changesBtn" style="display:none;">
+                    <i class="bi bi-pencil"></i> Request Changes
+                </button>
+                <button type="button" class="btn btn-success" onclick="confirmAdvance()" id="advanceBtn">
+                    <i class="bi bi-arrow-right-circle"></i> Advance to Next Stage
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="successToast" class="toast" role="alert">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Workflow state updated successfully!
+        </div>
+    </div>
+</div>
+
+<script>
+// Store current workflow data
+let currentWorkflow = null;
+const workflowStates = {
+    'draft': { next: 'pm_review', label: 'PM Review' },
+    'pm_review': { next: 'tech_review', label: 'Tech Review' },
+    'tech_review': { next: 'documentation', label: 'Documentation' },
+    'documentation': { next: 'user_approval', label: 'User Approval' },
+    'user_approval': { next: 'approved', label: 'Approved' },
+    'approved': { next: null, label: 'Completed' },
+    'rejected': { next: null, label: 'Rejected' }
+};
+
+function viewWorkflow(workflowId) {
+    // Show detailed workflow information
+    const modal = new bootstrap.Modal(document.getElementById('workflowModal'));
+    
+    // Get workflow details from the table row
+    const row = event.target.closest('tr');
+    const featureTitle = row.querySelector('strong').textContent;
+    const currentState = row.querySelector('.state-badge').textContent.trim();
+    
+    const details = `
+        <h6>Feature: ${featureTitle}</h6>
+        <p>Current State: <span class="state-badge state-${currentWorkflow?.current_state || 'draft'}">${currentState}</span></p>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> View workflow details and history
+        </div>
+    `;
+    
+    document.getElementById('workflowDetails').innerHTML = details;
+    document.getElementById('advanceBtn').style.display = 'none';
+    document.getElementById('rejectBtn').style.display = 'none';
+    document.getElementById('changesBtn').style.display = 'none';
+    
+    modal.show();
+}
+
+function advanceWorkflow(featureId) {
+    // Get workflow details from the row
+    const row = event.target.closest('tr');
+    const featureTitle = row.querySelector('strong').textContent;
+    const currentStateElement = row.querySelector('.state-badge');
+    const currentStateClass = Array.from(currentStateElement.classList).find(c => c.startsWith('state-'));
+    const currentState = currentStateClass ? currentStateClass.replace('state-', '') : 'draft';
+    const currentStateLabel = currentStateElement.textContent.trim();
+    
+    // Store current workflow info
+    currentWorkflow = {
+        featureId: featureId,
+        featureTitle: featureTitle,
+        current_state: currentState
+    };
+    
+    // Get next state
+    const nextStateInfo = workflowStates[currentState];
+    if (!nextStateInfo || !nextStateInfo.next) {
+        alert('This workflow cannot be advanced further.');
+        return;
+    }
+    
+    // Show modal with workflow details
+    const modal = new bootstrap.Modal(document.getElementById('workflowModal'));
+    
+    const details = `
+        <h6>Feature: ${featureTitle}</h6>
+        <div class="mb-3">
+            <strong>Current State:</strong> 
+            <span class="state-badge state-${currentState}">${currentStateLabel}</span>
+        </div>
+        <div class="mb-3">
+            <strong>Next State:</strong> 
+            <span class="state-badge state-${nextStateInfo.next}">${nextStateInfo.label}</span>
+        </div>
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> 
+            <strong>Action Required:</strong> Please review the feature and add notes before advancing.
+        </div>
+    `;
+    
+    document.getElementById('workflowDetails').innerHTML = details;
+    document.getElementById('workflowNotes').value = '';
+    
+    // Show appropriate buttons based on state
+    document.getElementById('advanceBtn').style.display = 'block';
+    if (currentState === 'pm_review' || currentState === 'tech_review' || currentState === 'user_approval') {
+        document.getElementById('rejectBtn').style.display = 'inline-block';
+        document.getElementById('changesBtn').style.display = 'inline-block';
+    } else {
+        document.getElementById('rejectBtn').style.display = 'none';
+        document.getElementById('changesBtn').style.display = 'none';
+    }
+    
+    modal.show();
+}
+
+function confirmAdvance() {
+    if (!currentWorkflow) return;
+    
+    const notes = document.getElementById('workflowNotes').value;
+    if (!notes.trim()) {
+        alert('Please add notes about this state change.');
+        return;
+    }
+    
+    const nextState = workflowStates[currentWorkflow.current_state].next;
+    updateWorkflowState(currentWorkflow.featureId, nextState, notes);
+}
+
+function rejectWorkflow() {
+    if (!currentWorkflow) return;
+    
+    const notes = document.getElementById('workflowNotes').value;
+    if (!notes.trim()) {
+        alert('Please provide a reason for rejection.');
+        return;
+    }
+    
+    updateWorkflowState(currentWorkflow.featureId, 'rejected', 'Rejected: ' + notes);
+}
+
+function requestChanges() {
+    if (!currentWorkflow) return;
+    
+    const notes = document.getElementById('workflowNotes').value;
+    if (!notes.trim()) {
+        alert('Please specify what changes are needed.');
+        return;
+    }
+    
+    // Move back to previous state with notes
+    const prevStates = {
+        'pm_review': 'draft',
+        'tech_review': 'pm_review',
+        'documentation': 'tech_review',
+        'user_approval': 'documentation'
+    };
+    
+    const prevState = prevStates[currentWorkflow.current_state] || 'draft';
+    updateWorkflowState(currentWorkflow.featureId, prevState, 'Changes requested: ' + notes);
+}
+
+function updateWorkflowState(featureId, newState, notes) {
+    // Show loading state
+    const modal = bootstrap.Modal.getInstance(document.getElementById('workflowModal'));
+    const buttons = document.querySelectorAll('#workflowModal .modal-footer button');
+    buttons.forEach(btn => btn.disabled = true);
+    
+    fetch(`/roadmaps/workflow/${featureId}/update/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            state: newState,
+            notes: notes
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Hide modal
+            modal.hide();
+            
+            // Show success toast
+            const toast = new bootstrap.Toast(document.getElementById('successToast'));
+            toast.show();
+            
+            // Reload page after short delay
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            alert('Error updating workflow: ' + (data.message || 'Unknown error'));
+            buttons.forEach(btn => btn.disabled = false);
+        }
+    })
+    .catch(error => {
+        alert('Error updating workflow: ' + error);
+        buttons.forEach(btn => btn.disabled = false);
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

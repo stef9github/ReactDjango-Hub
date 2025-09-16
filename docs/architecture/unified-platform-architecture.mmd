@@ -1,0 +1,216 @@
+graph TB
+    %% Title and Date
+    Title["ReactDjango Hub - Unified Multi-Vertical Platform Architecture<br/>Medical Hub + Public Hub Cohabitation<br/>Date: 2025-09-13"]
+    
+    %% External Users Layer
+    subgraph Users["External Users"]
+        MedUsers["Medical Hub Users<br/>• Healthcare Providers<br/>• Patients<br/>• Medical Staff<br/>• Insurance Partners"]
+        PubUsers["Public Hub Users<br/>• Community Members<br/>• Content Creators<br/>• Administrators<br/>• Public Service Users"]
+    end
+    
+    %% Frontend Applications Layer
+    subgraph Frontend["Frontend Applications Layer"]
+        subgraph MedicalFrontend["Medical Hub Frontend"]
+            MedReact["React Medical App<br/>• Patient Portal<br/>• Provider Dashboard<br/>• Appointment System<br/>• Medical Records UI<br/>• Billing Interface"]
+            MedMobile["Medical Mobile Apps<br/>• iOS/Android Patient<br/>• Provider Mobile<br/>• Emergency Access"]
+        end
+        
+        subgraph PublicFrontend["Public Hub Frontend"]
+            PubReact["React Public App<br/>• Community Portal<br/>• Content Management<br/>• Public Services<br/>• Forums & Social<br/>• Event Management"]
+            PubMobile["Public Mobile Apps<br/>• iOS/Android Community<br/>• Service Access<br/>• Content Browser"]
+        end
+        
+        SharedUI["Shared UI Components<br/>• Design System<br/>• Component Library<br/>• Authentication UI<br/>• Common Widgets"]
+    end
+    
+    %% API Gateway Layer
+    subgraph Gateway["API Gateway Layer - Kong"]
+        RouteEngine["Intelligent Route Engine<br/>• Vertical Detection<br/>• Load Balancing<br/>• Rate Limiting"]
+        
+        subgraph Routes["Routing Rules"]
+            MedRoutes["Medical Routes<br/>/api/medical/*<br/>/api/health/*<br/>/api/clinical/*"]
+            PubRoutes["Public Routes<br/>/api/public/*<br/>/api/community/*<br/>/api/content/*"]
+            SharedRoutes["Shared Routes<br/>/api/auth/*<br/>/api/user/*<br/>/api/org/*"]
+        end
+        
+        GatewayMiddleware["Gateway Middleware<br/>• Authentication<br/>• Authorization<br/>• Request Transformation<br/>• Response Caching<br/>• Security Policies"]
+    end
+    
+    %% Microservices Layer
+    subgraph Microservices["Microservices Layer"]
+        subgraph CoreServices["Core Platform Services"]
+            Identity["Identity Service<br/>FastAPI:8001<br/>• User Management<br/>• Organizations<br/>• MFA/2FA<br/>• RBAC<br/>• JWT Management<br/>• Session Control"]
+            
+            Communication["Communication Service<br/>FastAPI:8002<br/>• Notifications<br/>• Email/SMS<br/>• Real-time Messaging<br/>• WebSockets<br/>• Event Broadcasting"]
+            
+            Content["Content Service<br/>FastAPI:8003<br/>• Document Management<br/>• File Storage<br/>• Media Processing<br/>• Version Control<br/>• CDN Integration"]
+            
+            Workflow["Workflow Intelligence<br/>FastAPI:8004<br/>• Process Automation<br/>• AI/ML Workflows<br/>• Business Rules<br/>• Task Orchestration<br/>• Intelligent Routing"]
+        end
+        
+        subgraph ExtendedServices["Vertical-Specific Services"]
+            MedicalExt["Medical Extensions<br/>• FHIR Service<br/>• HL7 Integration<br/>• Medical Imaging<br/>• Lab Results API<br/>• Prescription Service"]
+            
+            PublicExt["Public Extensions<br/>• Forum Service<br/>• Event Management<br/>• Survey Service<br/>• Public API Gateway<br/>• Social Features"]
+        end
+    end
+    
+    %% Django Backend Layer
+    subgraph Django["Django Business Logic Layer - Port 8000"]
+        subgraph DjangoCore["Core Django Apps"]
+            CoreApps["Shared Core Apps<br/>• Users & Profiles<br/>• Organizations<br/>• Permissions<br/>• Audit Logging<br/>• Configuration"]
+        end
+        
+        subgraph DjangoMedical["Medical Vertical Apps"]
+            MedApps["Medical Apps<br/>• Patients Management<br/>• Appointments<br/>• Medical Records<br/>• Billing & Insurance<br/>• Clinical Workflows<br/>• Prescriptions<br/>• Lab Integration"]
+        end
+        
+        subgraph DjangoPublic["Public Vertical Apps"]
+            PubApps["Public Apps<br/>• Community Management<br/>• Content Publishing<br/>• Forums & Discussions<br/>• Events & Calendar<br/>• Public Services<br/>• Analytics Dashboard"]
+        end
+        
+        DjangoMiddleware["Django Middleware<br/>• Vertical Detection<br/>• Tenant Isolation<br/>• Request Context<br/>• Security Layer<br/>• Performance Monitoring"]
+    end
+    
+    %% Data Layer
+    subgraph DataLayer["Data Layer Architecture"]
+        subgraph Databases["PostgreSQL Databases"]
+            SharedDB["Shared Database<br/>• Users<br/>• Organizations<br/>• Permissions<br/>• Configuration<br/>• Audit Logs"]
+            
+            MedicalDB["Medical Database<br/>• Patient Records<br/>• Clinical Data<br/>• Appointments<br/>• Medical History<br/>• Prescriptions<br/>• Lab Results<br/>• Insurance Data"]
+            
+            PublicDB["Public Database<br/>• Community Data<br/>• Content Repository<br/>• Forum Posts<br/>• Events<br/>• Public Services<br/>• Analytics Data"]
+            
+            IdentityDB["Identity DB<br/>• Auth Tokens<br/>• Sessions<br/>• MFA Data<br/>• User Credentials"]
+            
+            ContentDB["Content DB<br/>• Documents<br/>• Media Metadata<br/>• Versions<br/>• Access Control"]
+        end
+        
+        subgraph Cache["Caching Layer"]
+            Redis["Redis Cache<br/>• Session Store<br/>• API Cache<br/>• Real-time Data<br/>• Queue Management<br/>• Pub/Sub"]
+        end
+        
+        subgraph Storage["File Storage"]
+            MedStorage["Medical Storage<br/>• Medical Images<br/>• Lab Documents<br/>• Patient Files<br/>• Encrypted Data"]
+            
+            PubStorage["Public Storage<br/>• Public Content<br/>• Media Files<br/>• User Uploads<br/>• Community Assets"]
+        end
+    end
+    
+    %% Integration Layer
+    subgraph Integrations["External Integrations"]
+        MedicalInt["Medical Integrations<br/>• EHR Systems<br/>• PACS/DICOM<br/>• Lab Systems<br/>• Pharmacy Networks<br/>• Insurance APIs<br/>• Government Health"]
+        
+        PublicInt["Public Integrations<br/>• Social Media<br/>• Payment Gateways<br/>• Analytics Services<br/>• Email Services<br/>• SMS Providers<br/>• CDN Services"]
+    end
+    
+    %% Security & Compliance Layer
+    subgraph Security["Security & Compliance Layer"]
+        SecCore["Security Core<br/>• WAF<br/>• DDoS Protection<br/>• Encryption at Rest<br/>• Encryption in Transit<br/>• Key Management"]
+        
+        MedCompliance["Medical Compliance<br/>• HIPAA Controls<br/>• PHI Protection<br/>• Audit Trails<br/>• Access Logs<br/>• Data Retention"]
+        
+        PubCompliance["Public Compliance<br/>• GDPR Controls<br/>• Privacy Protection<br/>• Cookie Management<br/>• Data Rights<br/>• Content Moderation"]
+    end
+    
+    %% Monitoring & Operations
+    subgraph Operations["Operations & Monitoring"]
+        Monitoring["Monitoring Stack<br/>• Prometheus<br/>• Grafana<br/>• ELK Stack<br/>• APM<br/>• Health Checks"]
+        
+        DevOps["DevOps Pipeline<br/>• CI/CD<br/>• GitOps<br/>• Automated Testing<br/>• Deployment<br/>• Rollback"]
+    end
+    
+    %% Connections - User Flow
+    MedUsers --> MedReact
+    MedUsers --> MedMobile
+    PubUsers --> PubReact
+    PubUsers --> PubMobile
+    
+    %% Frontend to Gateway
+    MedReact --> MedRoutes
+    MedMobile --> MedRoutes
+    PubReact --> PubRoutes
+    PubMobile --> PubRoutes
+    MedReact --> SharedUI
+    PubReact --> SharedUI
+    
+    %% Gateway Routing
+    MedRoutes --> RouteEngine
+    PubRoutes --> RouteEngine
+    SharedRoutes --> RouteEngine
+    RouteEngine --> GatewayMiddleware
+    
+    %% Gateway to Services
+    GatewayMiddleware --> Identity
+    GatewayMiddleware --> Communication
+    GatewayMiddleware --> Content
+    GatewayMiddleware --> Workflow
+    GatewayMiddleware --> MedicalExt
+    GatewayMiddleware --> PublicExt
+    GatewayMiddleware --> DjangoMiddleware
+    
+    %% Django Internal
+    DjangoMiddleware --> CoreApps
+    DjangoMiddleware --> MedApps
+    DjangoMiddleware --> PubApps
+    
+    %% Service to Data Layer
+    Identity --> IdentityDB
+    Content --> ContentDB
+    CoreApps --> SharedDB
+    MedApps --> MedicalDB
+    PubApps --> PublicDB
+    MedicalExt --> MedicalDB
+    PublicExt --> PublicDB
+    
+    %% Cache connections
+    Identity --> Redis
+    Communication --> Redis
+    Django --> Redis
+    
+    %% Storage connections
+    Content --> MedStorage
+    Content --> PubStorage
+    MedApps --> MedStorage
+    PubApps --> PubStorage
+    
+    %% External Integrations
+    MedicalExt --> MedicalInt
+    PublicExt --> PublicInt
+    Communication --> PublicInt
+    
+    %% Security Layer
+    Gateway --> SecCore
+    MedApps --> MedCompliance
+    PubApps --> PubCompliance
+    
+    %% Monitoring
+    Microservices --> Monitoring
+    Django --> Monitoring
+    Gateway --> Monitoring
+    DataLayer --> Monitoring
+    
+    %% Styling
+    classDef medical fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
+    classDef public fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
+    classDef shared fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef data fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    classDef security fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef gateway fill:#e0f2f1,stroke:#009688,stroke-width:3px
+    
+    class MedUsers,MedReact,MedMobile,MedRoutes,MedicalExt,MedApps,MedicalDB,MedStorage,MedicalInt,MedCompliance medical
+    class PubUsers,PubReact,PubMobile,PubRoutes,PublicExt,PubApps,PublicDB,PubStorage,PublicInt,PubCompliance public
+    class SharedUI,SharedRoutes,Identity,Communication,Content,Workflow,CoreApps,SharedDB,Redis shared
+    class IdentityDB,ContentDB,Databases,Cache,Storage,DataLayer data
+    class SecCore,Security,MedCompliance,PubCompliance security
+    class Gateway,RouteEngine,GatewayMiddleware,Routes gateway
+    
+    %% Legend
+    subgraph Legend["Architecture Legend"]
+        L1["🟢 Medical Hub Components"]
+        L2["🔵 Public Hub Components"]
+        L3["🟠 Shared Platform Services"]
+        L4["🟣 Data Layer"]
+        L5["🔴 Security & Compliance"]
+        L6["🟦 API Gateway"]
+    end

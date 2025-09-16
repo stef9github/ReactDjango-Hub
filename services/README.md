@@ -11,7 +11,30 @@
 
 ## 🚀 **Quick Start**
 
-### ⭐ **Centralized Service Orchestration** (RECOMMENDED)
+### ⭐ **Local Development (No Docker Required)** (RECOMMENDED)
+```bash
+cd services
+
+# Start all services locally with automatic setup
+./dev-start-local.sh             # Creates venvs, installs deps, starts services
+
+# Check service health
+curl http://localhost:8001/health # Identity Service
+curl http://localhost:8002/health # Content Service  
+curl http://localhost:8003/health # Communication Service
+curl http://localhost:8004/health # Workflow Intelligence Service
+
+# Stop all services gracefully
+./dev-stop-local.sh
+
+# Individual service development
+cd identity-service && ./dev-start.sh      # Start just identity service
+cd content-service && ./dev-start.sh       # Start just content service
+cd communication-service && ./dev-start.sh # Start just communication service
+cd workflow-intelligence-service && ./dev-start.sh # Start just workflow service
+```
+
+### 🐳 **Docker Development** (Alternative)
 ```bash
 cd services
 
@@ -34,19 +57,13 @@ cd services
 docker-compose up -d
 ```
 
-### Individual Service Development
-```bash
-# Identity Service (Auth + Users + Roles) - PRODUCTION READY
-cd services/identity-service
-python main.py  # or uvicorn main:app --reload --port 8001
+### Prerequisites for Local Development
+- **Python 3.13+** with pip
+- **PostgreSQL 17** (running on localhost:5432)  
+- **Redis** (optional, running on localhost:6379)
+- **Kong API Gateway** (optional, for API routing)
 
-# Content Service (Documents + Search) - FRAMEWORK COMPLETE
-cd services/content-service  
-python main.py  # or uvicorn main:app --reload --port 8002
-
-# Communication Service (Notifications + Messaging) - FRAMEWORK COMPLETE
-cd services/communication-service
-python main.py  # or uvicorn main:app --reload --port 8003
+📖 **For detailed local development instructions, see [LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md)**
 
 # Workflow Service (Process Automation + AI) - FRAMEWORK COMPLETE
 cd services/workflow-intelligence-service

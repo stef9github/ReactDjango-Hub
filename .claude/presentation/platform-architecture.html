@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Architecture - AI-Agent Development</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-text">AI-Agent Development</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="story.html" class="nav-link">Story</a>
+                <a href="paradigm-shift.html" class="nav-link">Paradigm</a>
+                <a href="methodology.html" class="nav-link">Methodology</a>
+                <a href="implementation.html" class="nav-link">Implementation</a>
+                <a href="platform-architecture.html" class="nav-link active">Architecture</a>
+                <a href="portfolio-impact.html" class="nav-link">Impact</a>
+                <a href="call-to-action.html" class="nav-link">Next Steps</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 75%"></div>
+    </div>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">The Unified Platform Architecture</h1>
+            <p class="page-subtitle">
+                One core platform, infinite business applications
+            </p>
+        </div>
+    </section>
+
+    <!-- Architecture Overview -->
+    <section class="architecture-overview">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Microservices Architecture</h2>
+                <p class="section-subtitle">Built for scalability, flexibility, and rapid deployment</p>
+            </div>
+
+            <div class="architecture-diagram">
+                <div class="mermaid-diagram large">
+                    <pre class="mermaid">
+graph TB
+    subgraph "Client Layer"
+        Web[React Web App]
+        Mobile[Mobile Apps]
+        API[External APIs]
+    end
+    
+    subgraph "API Gateway"
+        Gateway[Kong/Nginx<br/>API Gateway]
+    end
+    
+    subgraph "Core Services"
+        Auth[Identity Service<br/>FastAPI + JWT]
+        Backend[Business Logic<br/>Django + DRF]
+        Comm[Communication<br/>Notifications]
+        Content[Content Service<br/>Documents]
+        Workflow[Workflow Engine<br/>AI Processing]
+    end
+    
+    subgraph "Business Modules"
+        Medical[Medical Module<br/>Practice Management]
+        Procurement[Procurement Module<br/>Tender Management]
+        Future[Future Modules<br/>Extensible]
+    end
+    
+    subgraph "Data Layer"
+        PG1[(PostgreSQL<br/>Identity)]
+        PG2[(PostgreSQL<br/>Business)]
+        Redis[(Redis<br/>Cache)]
+        S3[(S3/MinIO<br/>Files)]
+    end
+    
+    Web --> Gateway
+    Mobile --> Gateway
+    API --> Gateway
+    
+    Gateway --> Auth
+    Gateway --> Backend
+    Gateway --> Comm
+    
+    Backend --> Medical
+    Backend --> Procurement
+    Backend --> Future
+    
+    Auth --> PG1
+    Backend --> PG2
+    Backend --> Redis
+    Content --> S3
+    
+    style Auth fill:#ff9999
+    style Backend fill:#99ccff
+    style Medical fill:#99ff99
+    style Procurement fill:#ffcc99
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Platform Features -->
+    <section class="core-features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Core Platform Capabilities</h2>
+                <p class="section-subtitle">Shared foundation for all business applications</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-lucide="shield"></i>
+                    </div>
+                    <h3>Identity & Access</h3>
+                    <ul class="feature-list">
+                        <li>Multi-tenant architecture</li>
+                        <li>SSO & OAuth 2.0</li>
+                        <li>Role-based access control</li>
+                        <li>Multi-factor authentication</li>
+                        <li>API key management</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-lucide="database"></i>
+                    </div>
+                    <h3>Data Management</h3>
+                    <ul class="feature-list">
+                        <li>Multi-database support</li>
+                        <li>Automatic backups</li>
+                        <li>Data versioning</li>
+                        <li>Audit trails</li>
+                        <li>GDPR compliance</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-lucide="workflow"></i>
+                    </div>
+                    <h3>Workflow Engine</h3>
+                    <ul class="feature-list">
+                        <li>Visual workflow builder</li>
+                        <li>Approval chains</li>
+                        <li>Automated triggers</li>
+                        <li>Custom business rules</li>
+                        <li>Integration hooks</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-lucide="bar-chart"></i>
+                    </div>
+                    <h3>Analytics & Reporting</h3>
+                    <ul class="feature-list">
+                        <li>Real-time dashboards</li>
+                        <li>Custom report builder</li>
+                        <li>Data export (Excel, PDF)</li>
+                        <li>Scheduled reports</li>
+                        <li>Business intelligence</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-lucide="bell"></i>
+                    </div>
+                    <h3>Communications</h3>
+                    <ul class="feature-list">
+                        <li>Email notifications</li>
+                        <li>SMS integration</li>
+                        <li>In-app messaging</li>
+                        <li>Push notifications</li>
+                        <li>WebSocket real-time</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i data-lucide="plug"></i>
+                    </div>
+                    <h3>Integrations</h3>
+                    <ul class="feature-list">
+                        <li>REST API framework</li>
+                        <li>GraphQL support</li>
+                        <li>Webhook system</li>
+                        <li>Third-party connectors</li>
+                        <li>API documentation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Module Architecture -->
+    <section class="module-architecture">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Pluggable Business Modules</h2>
+                <p class="section-subtitle">How different industries share the same platform</p>
+            </div>
+
+            <div class="module-comparison">
+                <div class="comparison-header">
+                    <div class="shared-core">
+                        <h3>Shared Core Platform</h3>
+                        <p>80% of functionality is common</p>
+                    </div>
+                </div>
+
+                <div class="modules-grid">
+                    <div class="module-details medical">
+                        <h3>Medical Practice Module</h3>
+                        <div class="module-features">
+                            <h4>Specific Features:</h4>
+                            <ul>
+                                <li>Patient records (EHR)</li>
+                                <li>Appointment scheduling</li>
+                                <li>Medical billing (CPT codes)</li>
+                                <li>Prescription management</li>
+                                <li>Lab results integration</li>
+                                <li>Insurance verification</li>
+                            </ul>
+                            <h4>Compliance:</h4>
+                            <ul>
+                                <li>HIPAA compliance</li>
+                                <li>Medical data encryption</li>
+                                <li>Consent management</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="module-details procurement">
+                        <h3>Public Procurement Module</h3>
+                        <div class="module-features">
+                            <h4>Specific Features:</h4>
+                            <ul>
+                                <li>Tender aggregation</li>
+                                <li>Bid management</li>
+                                <li>Competitor tracking</li>
+                                <li>Document generation</li>
+                                <li>Win probability scoring</li>
+                                <li>Submission tracking</li>
+                            </ul>
+                            <h4>Compliance:</h4>
+                            <ul>
+                                <li>Public sector regulations</li>
+                                <li>Audit trail requirements</li>
+                                <li>Transparency rules</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="module-details future">
+                        <h3>Future Modules</h3>
+                        <div class="module-features">
+                            <h4>Easily Add:</h4>
+                            <ul>
+                                <li>Legal practice management</li>
+                                <li>Real estate operations</li>
+                                <li>Manufacturing ERP</li>
+                                <li>Retail management</li>
+                                <li>Education platforms</li>
+                                <li>Any vertical SaaS</li>
+                            </ul>
+                            <h4>Time to Deploy:</h4>
+                            <ul>
+                                <li>2-4 weeks per module</li>
+                                <li>Reuse 80% of platform</li>
+                                <li>Focus on domain logic</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deployment Options -->
+    <section class="deployment-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Flexible Deployment Options</h2>
+                <p class="section-subtitle">From single tenant to global multi-tenant SaaS</p>
+            </div>
+
+            <div class="deployment-options">
+                <div class="deployment-card">
+                    <div class="deployment-header">
+                        <i data-lucide="server"></i>
+                        <h3>On-Premise</h3>
+                    </div>
+                    <div class="deployment-details">
+                        <p>Deploy in customer's infrastructure</p>
+                        <ul>
+                            <li>Complete data control</li>
+                            <li>Air-gapped environments</li>
+                            <li>Custom security policies</li>
+                            <li>Docker/Kubernetes ready</li>
+                        </ul>
+                        <div class="deployment-use-case">
+                            <strong>Best for:</strong> Healthcare, Government
+                        </div>
+                    </div>
+                </div>
+
+                <div class="deployment-card">
+                    <div class="deployment-header">
+                        <i data-lucide="cloud"></i>
+                        <h3>Private Cloud</h3>
+                    </div>
+                    <div class="deployment-details">
+                        <p>Dedicated cloud instances</p>
+                        <ul>
+                            <li>Single-tenant isolation</li>
+                            <li>Custom configurations</li>
+                            <li>Managed services</li>
+                            <li>AWS/Azure/GCP</li>
+                        </ul>
+                        <div class="deployment-use-case">
+                            <strong>Best for:</strong> Enterprise clients
+                        </div>
+                    </div>
+                </div>
+
+                <div class="deployment-card featured">
+                    <div class="deployment-header">
+                        <i data-lucide="globe"></i>
+                        <h3>Multi-Tenant SaaS</h3>
+                    </div>
+                    <div class="deployment-details">
+                        <p>Shared infrastructure, isolated data</p>
+                        <ul>
+                            <li>Economies of scale</li>
+                            <li>Automatic updates</li>
+                            <li>99.99% uptime SLA</li>
+                            <li>Global CDN</li>
+                        </ul>
+                        <div class="deployment-use-case">
+                            <strong>Best for:</strong> SMB market
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Stack -->
+    <section class="tech-stack">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Modern Technology Stack</h2>
+                <p class="section-subtitle">Battle-tested technologies for enterprise reliability</p>
+            </div>
+
+            <div class="stack-categories">
+                <div class="stack-category">
+                    <h3>Backend Technologies</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python">
+                            <span>Python 3.13</span>
+                        </div>
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg" alt="Django">
+                            <span>Django 5.1</span>
+                        </div>
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg" alt="FastAPI">
+                            <span>FastAPI</span>
+                        </div>
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="PostgreSQL">
+                            <span>PostgreSQL 17</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stack-category">
+                    <h3>Frontend Technologies</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React">
+                            <span>React 18</span>
+                        </div>
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TypeScript">
+                            <span>TypeScript</span>
+                        </div>
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" alt="Tailwind">
+                            <span>Tailwind CSS</span>
+                        </div>
+                        <div class="tech-item">
+                            <span class="tech-icon">⚡</span>
+                            <span>Vite</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stack-category">
+                    <h3>Infrastructure</h3>
+                    <div class="tech-items">
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker">
+                            <span>Docker</span>
+                        </div>
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg" alt="Kubernetes">
+                            <span>Kubernetes</span>
+                        </div>
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg" alt="Redis">
+                            <span>Redis</span>
+                        </div>
+                        <div class="tech-item">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="Nginx">
+                            <span>Nginx</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scalability Metrics -->
+    <section class="scalability-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Built for Scale</h2>
+                <p class="section-subtitle">Performance metrics from production deployments</p>
+            </div>
+
+            <div class="scale-metrics">
+                <div class="metric-card">
+                    <div class="metric-icon"><i data-lucide="users"></i></div>
+                    <div class="metric-value">100K+</div>
+                    <div class="metric-label">Concurrent Users</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon"><i data-lucide="zap"></i></div>
+                    <div class="metric-value">&lt;50ms</div>
+                    <div class="metric-label">API Response Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon"><i data-lucide="database"></i></div>
+                    <div class="metric-value">1M+</div>
+                    <div class="metric-label">Transactions/Day</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon"><i data-lucide="trending-up"></i></div>
+                    <div class="metric-value">99.99%</div>
+                    <div class="metric-label">Uptime SLA</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Section -->
+    <section class="next-preview">
+        <div class="container">
+            <div class="preview-content">
+                <h2>The Portfolio Opportunity</h2>
+                <p>
+                    How this methodology transforms every company in your PE portfolio
+                </p>
+                <a href="portfolio-impact.html" class="btn btn-primary">
+                    <span>Explore Portfolio Impact</span>
+                    <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p>Stéphane Richard - CTO/CPO</p>
+                    <p>AI-Agent Development Methodology</p>
+                </div>
+                <div class="footer-nav">
+                    <a href="implementation.html" class="footer-link">Previous: Implementation</a>
+                    <a href="portfolio-impact.html" class="footer-link">Next: Portfolio Impact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/presentation.js"></script>
+    <script>
+        lucide.createIcons();
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#f8fafc',
+                primaryTextColor: '#1e293b',
+                primaryBorderColor: '#1e40af',
+                lineColor: '#475569',
+                secondaryColor: '#e2e8f0',
+                tertiaryColor: '#f1f5f9',
+                background: 'white',
+                mainBkg: '#f8fafc',
+                secondBkg: '#e2e8f0',
+                tertiaryBkg: '#f1f5f9',
+                textColor: '#1e293b',
+                nodeTextColor: '#1e293b'
+            }
+        });
+    </script>
+</body>
+</html>

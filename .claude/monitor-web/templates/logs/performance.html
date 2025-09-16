@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Performance Logs - Monitor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Performance Metrics</h1>
+            <p class="text-muted">System and agent performance analytics</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" onclick="refreshMetrics()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+            <button class="btn btn-success" onclick="exportData()">
+                <i class="bi bi-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Performance Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Avg Response Time</h6>
+                    <h3 class="text-primary">{{ avg_response_time|floatformat:2 }}ms</h3>
+                    <small class="text-{{ response_trend }}">
+                        <i class="bi bi-arrow-{{ response_trend_icon }}"></i> {{ response_change }}%
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Success Rate</h6>
+                    <h3 class="text-success">{{ success_rate|floatformat:1 }}%</h3>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: {{ success_rate }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Total Operations</h6>
+                    <h3 class="text-info">{{ total_operations|default:0 }}</h3>
+                    <small class="text-muted">Last 24 hours</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Active Agents</h6>
+                    <h3 class="text-warning">{{ active_agents|default:0 }}</h3>
+                    <small class="text-muted">Currently running</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Charts -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Response Time Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="responseTimeChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Operations Per Hour</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="operationsChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agent Performance Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Agent Performance</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Operations</th>
+                            <th>Success Rate</th>
+                            <th>Avg Response</th>
+                            <th>CPU Usage</th>
+                            <th>Memory Usage</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for agent in agent_performance %}
+                        <tr>
+                            <td>
+                                <strong>{{ agent.name }}</strong>
+                            </td>
+                            <td>{{ agent.operations|default:0 }}</td>
+                            <td>
+                                <div class="progress" style="width: 100px;">
+                                    <div class="progress-bar bg-success" style="width: {{ agent.success_rate|default:0 }}%">
+                                        {{ agent.success_rate|floatformat:0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ agent.avg_response|floatformat:1 }}ms</td>
+                            <td>
+                                <span class="badge bg-{{ agent.cpu_status }}">
+                                    {{ agent.cpu_usage|floatformat:1 }}%
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ agent.memory_status }}">
+                                    {{ agent.memory_usage|floatformat:1 }}%
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ agent.status_color }}">
+                                    {{ agent.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <p class="text-muted">No performance data available</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Performance Logs -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Performance Events</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Agent</th>
+                            <th>Operation</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in performance_logs %}
+                        <tr>
+                            <td>
+                                <small>{{ log.timestamp|date:"H:i:s" }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ log.agent|default:"system" }}</span>
+                            </td>
+                            <td>{{ log.operation }}</td>
+                            <td>
+                                <span class="badge bg-{{ log.duration_status }}">
+                                    {{ log.duration|floatformat:0 }}ms
+                                </span>
+                            </td>
+                            <td>
+                                {% if log.success %}
+                                    <span class="badge bg-success">Success</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Failed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ log.details|truncatewords:10 }}</small>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                No recent performance events
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Response Time Chart
+const responseCtx = document.getElementById('responseTimeChart').getContext('2d');
+new Chart(responseCtx, {
+    type: 'line',
+    data: {
+        labels: {{ chart_labels|safe|default:"[]" }},
+        datasets: [{
+            label: 'Response Time (ms)',
+            data: {{ response_data|safe|default:"[]" }},
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Operations Chart
+const opsCtx = document.getElementById('operationsChart').getContext('2d');
+new Chart(opsCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ chart_labels|safe|default:"[]" }},
+        datasets: [{
+            label: 'Operations',
+            data: {{ operations_data|safe|default:"[]" }},
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgb(54, 162, 235)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+function refreshMetrics() {
+    window.location.reload();
+}
+
+function exportData() {
+    window.location.href = '/logs/performance/export/';
+}
+
+// Auto-refresh every 30 seconds
+setInterval(function() {
+    window.location.reload();
+}, 30000);
+</script>
+{% endblock %}

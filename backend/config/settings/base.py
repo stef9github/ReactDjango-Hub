@@ -139,7 +139,8 @@ JWT_CACHE_TIMEOUT = config('JWT_CACHE_TIMEOUT', default=300, cast=int)  # 5 minu
 JWT_SKIP_PATHS = [
     '/admin/',
     '/health/',
-    '/api/docs/',
+    '/api/health',
+    '/api/docs',
     '/api/openapi.json',
     '/static/',
     '/media/',

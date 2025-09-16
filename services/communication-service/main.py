@@ -158,7 +158,12 @@ async def health_check():
     
     # Check Redis connection
     try:
-        redis_url = os.getenv("REDIS_URL", "redis://localhost:6382/0")
+        use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
+        if use_docker:
+            redis_url = os.getenv("REDIS_URL", "redis://communication-redis:6379/0")
+        else:
+            redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+        
         redis_client = redis.from_url(redis_url)
         await redis_client.ping()
         await redis_client.close()

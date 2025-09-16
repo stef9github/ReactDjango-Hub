@@ -1,0 +1,801 @@
+INFO 2025-09-13 13:11:49,870 autoreload Watching for file changes with StatReloader
+INFO 2025-09-13 13:21:25,714 autoreload Watching for file changes with StatReloader
+WARNING 2025-09-13 13:21:50,045 log Not Found: /accounts/login/
+WARNING 2025-09-13 13:21:50,200 log Not Found: /favicon.ico
+INFO 2025-09-13 13:21:58,645 autoreload Watching for file changes with StatReloader
+INFO 2025-09-13 13:22:20,632 autoreload Watching for file changes with StatReloader
+INFO 2025-09-13 13:22:35,115 autoreload Watching for file changes with StatReloader
+ERROR 2025-09-13 13:22:46,647 log Internal Server Error: /
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 199, in render
+    len_values = len(values)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 366, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1949, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1610, in execute_sql
+    sql, params = self.as_sql()
+                  ~~~~~~~~~~~^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 766, in as_sql
+    extra_select, order_by, group_by = self.pre_sql_setup(
+                                       ~~~~~~~~~~~~~~~~~~^
+        with_col_aliases=with_col_aliases or bool(combinator),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 85, in pre_sql_setup
+    self.setup_query(with_col_aliases=with_col_aliases)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 74, in setup_query
+    self.select, self.klass_info, self.annotation_col_map = self.get_select(
+                                                            ~~~~~~~~~~~~~~~^
+        with_col_aliases=with_col_aliases,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 299, in get_select
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1396, in get_related_selections
+    raise FieldError(
+    ...<6 lines>...
+    )
+django.core.exceptions.FieldError: Invalid field name(s) given in select_related: 'latest_status'. Choices are: (none)
+WARNING 2025-09-13 13:23:58,404 log Not Found: /accounts/login/
+ERROR 2025-09-13 13:24:09,658 log Internal Server Error: /
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 199, in render
+    len_values = len(values)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 366, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1949, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1610, in execute_sql
+    sql, params = self.as_sql()
+                  ~~~~~~~~~~~^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 766, in as_sql
+    extra_select, order_by, group_by = self.pre_sql_setup(
+                                       ~~~~~~~~~~~~~~~~~~^
+        with_col_aliases=with_col_aliases or bool(combinator),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 85, in pre_sql_setup
+    self.setup_query(with_col_aliases=with_col_aliases)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 74, in setup_query
+    self.select, self.klass_info, self.annotation_col_map = self.get_select(
+                                                            ~~~~~~~~~~~~~~~^
+        with_col_aliases=with_col_aliases,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 299, in get_select
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1396, in get_related_selections
+    raise FieldError(
+    ...<6 lines>...
+    )
+django.core.exceptions.FieldError: Invalid field name(s) given in select_related: 'latest_status'. Choices are: (none)
+INFO 2025-09-13 13:24:50,429 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/dashboard/views.py changed, reloading.
+INFO 2025-09-13 13:24:50,736 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/dashboard/views.py changed, reloading.
+INFO 2025-09-13 13:24:50,957 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/dashboard/views.py changed, reloading.
+INFO 2025-09-13 13:24:51,094 autoreload Watching for file changes with StatReloader
+INFO 2025-09-13 13:24:51,225 autoreload Watching for file changes with StatReloader
+INFO 2025-09-13 13:24:51,439 autoreload Watching for file changes with StatReloader
+WARNING 2025-09-13 13:25:16,875 log Not Found: /accounts/login/
+WARNING 2025-09-13 13:25:26,900 log Not Found: /accounts/login/
+ERROR 2025-09-13 13:25:30,976 log Internal Server Error: /agents/conflicts/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/agents/views.py", line 228, in conflicts_view
+    return render(request, 'agents/conflicts.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: agents/conflicts.html
+ERROR 2025-09-13 13:25:32,164 log Internal Server Error: /logs/git/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 124, in git_commits_view
+    return render(request, 'logs/git_commits.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: logs/git_commits.html
+INFO 2025-09-13 13:25:35,011 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/monitor/settings.py changed, reloading.
+INFO 2025-09-13 13:25:35,280 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/monitor/settings.py changed, reloading.
+INFO 2025-09-13 13:25:35,407 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/monitor/settings.py changed, reloading.
+INFO 2025-09-13 13:25:35,483 autoreload Watching for file changes with StatReloader
+INFO 2025-09-13 13:25:35,756 autoreload Watching for file changes with StatReloader
+INFO 2025-09-13 13:25:35,892 autoreload Watching for file changes with StatReloader
+ERROR 2025-09-13 18:07:27,502 log Internal Server Error: /logs/git/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 124, in git_commits_view
+    return render(request, 'logs/git_commits.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: logs/git_commits.html
+ERROR 2025-09-13 18:07:43,939 log Internal Server Error: /logs/git/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 124, in git_commits_view
+    return render(request, 'logs/git_commits.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: logs/git_commits.html
+ERROR 2025-09-13 18:07:44,720 log Internal Server Error: /agents/conflicts/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/agents/views.py", line 228, in conflicts_view
+    return render(request, 'agents/conflicts.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: agents/conflicts.html
+ERROR 2025-09-13 18:07:45,522 log Internal Server Error: /logs/git/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 124, in git_commits_view
+    return render(request, 'logs/git_commits.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: logs/git_commits.html
+ERROR 2025-09-13 18:07:47,293 log Internal Server Error: /logs/performance/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 181, in performance_view
+    return render(request, 'logs/performance.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: logs/performance.html
+ERROR 2025-09-13 18:07:49,824 log Internal Server Error: /logs/workflows/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 139, in workflow_logs_view
+    duration_seconds=models.F('completed_at') - models.F('started_at')
+                     ^^^^^^
+NameError: name 'models' is not defined
+ERROR 2025-09-13 18:07:57,528 log Internal Server Error: /agents/8/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: agents/detail.html
+ERROR 2025-09-13 18:08:00,431 log Internal Server Error: /agents/1/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: agents/detail.html
+ERROR 2025-09-13 18:08:02,715 log Internal Server Error: /agents/5/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: agents/detail.html
+ERROR 2025-09-13 18:20:48,396 log Internal Server Error: /agents/conflicts/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/agents/views.py", line 228, in conflicts_view
+    return render(request, 'agents/conflicts.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: agents/conflicts.html
+ERROR 2025-09-13 20:29:07,572 log Internal Server Error: /agents/conflicts/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/agents/views.py", line 228, in conflicts_view
+    return render(request, 'agents/conflicts.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: agents/conflicts.html
+ERROR 2025-09-13 20:29:19,373 log Internal Server Error: /agents/conflicts/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/agents/views.py", line 228, in conflicts_view
+    return render(request, 'agents/conflicts.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: agents/conflicts.html
+WARNING 2025-09-13 20:29:41,608 log Not Found: /favicon.ico
+ERROR 2025-09-13 20:30:15,121 log Internal Server Error: /logs/performance/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 181, in performance_view
+    return render(request, 'logs/performance.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: logs/performance.html
+ERROR 2025-09-13 20:30:54,296 log Internal Server Error: /logs/workflows/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 139, in workflow_logs_view
+    duration_seconds=models.F('completed_at') - models.F('started_at')
+                     ^^^^^^
+NameError: name 'models' is not defined
+ERROR 2025-09-13 20:31:06,661 log Internal Server Error: /tasks/create/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: tasks/create.html
+INFO 2025-09-13 20:31:15,206 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py changed, reloading.
+INFO 2025-09-13 20:31:15,291 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py changed, reloading.
+INFO 2025-09-13 20:31:16,044 autoreload Watching for file changes with StatReloader
+INFO 2025-09-13 20:31:16,044 autoreload Watching for file changes with StatReloader
+ERROR 2025-09-13 20:31:27,132 log Internal Server Error: /tasks/create/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: tasks/create.html
+ERROR 2025-09-13 20:31:36,454 log Internal Server Error: /tasks/templates/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/tasks/views.py", line 268, in template_list
+    return render(request, 'tasks/templates.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: tasks/templates.html
+ERROR 2025-09-13 20:32:07,211 log Internal Server Error: /agents/1/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/urls/base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/urls/resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'index' not found. 'index' is not a valid view function or pattern name.
+ERROR 2025-09-13 20:32:21,271 log Internal Server Error: /agents/1/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/urls/base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/urls/resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'index' not found. 'index' is not a valid view function or pattern name.
+WARNING 2025-09-13 20:33:01,121 log Not Found: /agents/api/1/restart/
+WARNING 2025-09-13 20:33:02,482 log Not Found: /agents/api/1/restart/
+ERROR 2025-09-13 20:33:52,331 log Internal Server Error: /features/4/plan/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/features/views.py", line 453, in plan_feature
+    return render(request, 'features/feature_plan.html', {
+        'feature': feature,
+        'available_agents': ['backend', 'frontend', 'infrastructure', 'security', 'testing']
+    })
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: features/feature_plan.html
+ERROR 2025-09-13 20:34:37,750 log Internal Server Error: /logs/workflows/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/logs/views.py", line 151, in workflow_logs_view
+    return render(request, 'logs/workflows.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: logs/workflows.html
+ERROR 2025-09-14 07:23:21,028 log Internal Server Error: /features/statistics/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/features/views.py", line 540, in feature_statistics
+    return render(request, 'features/feature_statistics.html', {'stats': stats})
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: features/feature_statistics.html
+INFO 2025-09-14 07:33:49,980 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/monitor/settings.py changed, reloading.
+INFO 2025-09-14 07:33:49,983 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/monitor/settings.py changed, reloading.
+INFO 2025-09-14 07:33:50,722 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 07:33:50,722 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 07:34:01,436 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/monitor/urls.py changed, reloading.
+INFO 2025-09-14 07:34:01,438 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/monitor/urls.py changed, reloading.
+INFO 2025-09-14 07:34:01,950 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 07:34:01,950 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 07:37:50,829 autoreload Watching for file changes with StatReloader
+ERROR 2025-09-14 07:41:47,374 log Internal Server Error: /roadmaps/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py", line 54, in roadmap_dashboard
+    return render(request, 'roadmaps/dashboard.html', context)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+        (
+    ...<2 lines>...
+        )
+    )
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/template/base.py", line 682, in __init__
+    raise TemplateSyntaxError(
+    ...<2 lines>...
+    )
+django.template.exceptions.TemplateSyntaxError: Could not parse some characters: feature.category| == 'platform'||yesno:'success,warning'
+WARNING 2025-09-14 16:54:31,485 log Not Found: /favicon.ico
+WARNING 2025-09-14 17:54:31,292 log Not Found: /favicon.ico
+INFO 2025-09-14 17:57:13,110 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 17:57:13,112 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 19:21:57,815 autoreload Watching for file changes with StatReloader
+WARNING 2025-09-14 19:23:19,492 log Not Found: /agents/api/1/restart/
+INFO 2025-09-14 19:23:31,347 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 19:23:31,837 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 19:23:43,333 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 19:23:43,854 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 19:25:25,413 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 19:25:26,045 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 19:27:12,704 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 19:27:13,543 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 19:27:22,019 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/urls.py changed, reloading.
+INFO 2025-09-14 19:27:22,902 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 19:29:01,403 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 19:29:02,058 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 19:29:10,510 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/urls.py changed, reloading.
+INFO 2025-09-14 19:29:10,991 autoreload Watching for file changes with StatReloader
+WARNING 2025-09-14 19:30:24,980 log Not Found: /agents/api/1/restart/
+ERROR 2025-09-14 19:32:56,442 log Internal Server Error: /roadmaps/agent-control/
+Traceback (most recent call last):
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py", line 623, in agent_control_panel
+    agent.pending_tasks = Task.objects.filter(
+                          ~~~~~~~~~~~~~~~~~~~^
+        assigned_agent=agent,
+        ^^^^^^^^^^^^^^^^^^^^^
+        status__in=["pending", "running"]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )[:3]
+    ^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1493, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1511, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1518, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1646, in add_q
+    clause, _ = self._add_q(q_object, can_reuse)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1678, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<7 lines>...
+        update_join_types=update_join_types,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1526, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1333, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1806, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'assigned_agent' into field. Choices are: assigned_at, assigned_to, assigned_to_id, completed_at, context, created_at, dependents, depends_on, description, error_message, estimated_duration, executions, id, priority, result, started_at, status, task_type, title
+INFO 2025-09-14 19:33:25,346 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 19:33:26,159 autoreload Watching for file changes with StatReloader
+INFO 2025-09-14 19:47:48,867 autoreload /Users/stephanerichard/Documents/CODING/ReactDjango-Hub/.claude/monitor-web/roadmaps/views.py changed, reloading.
+INFO 2025-09-14 19:47:49,561 autoreload Watching for file changes with StatReloader

@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feature Statistics - Monitor{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        border-left: 4px solid #0d6efd;
+        transition: all 0.3s;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Feature Statistics</h1>
+            <p class="text-muted">Analytics and insights for feature development</p>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                <button class="btn btn-outline-primary" onclick="exportStats('csv')">
+                    <i class="bi bi-filetype-csv"></i> Export CSV
+                </button>
+                <button class="btn btn-outline-primary" onclick="exportStats('pdf')">
+                    <i class="bi bi-filetype-pdf"></i> Export PDF
+                </button>
+                <button class="btn btn-primary" onclick="refreshStats()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Total Features</h6>
+                    <h2 class="text-primary">{{ stats.total|default:0 }}</h2>
+                    <small class="text-muted">All time</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-success">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Completed</h6>
+                    <h2 class="text-success">{{ stats.completed|default:0 }}</h2>
+                    <div class="progress mt-2" style="height: 5px;">
+                        <div class="progress-bar bg-success" style="width: {{ stats.completion_rate|default:0 }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ stats.completion_rate|floatformat:1|default:0 }}% completion rate</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-warning">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">In Progress</h6>
+                    <h2 class="text-warning">{{ stats.in_progress|default:0 }}</h2>
+                    <small class="text-muted">Currently active</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-info">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Planned</h6>
+                    <h2 class="text-info">{{ stats.planned|default:0 }}</h2>
+                    <small class="text-muted">Ready to start</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Features by Status</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Features by Category</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Completion Trend (Last 30 Days)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="trendChart" height="60"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Priority Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="priorityChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Velocity Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Velocity Metrics</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-7">Avg. Completion Time:</dt>
+                        <dd class="col-5">{{ stats.avg_completion_days|floatformat:1|default:"0" }} days</dd>
+                        
+                        <dt class="col-7">Features/Week:</dt>
+                        <dd class="col-5">{{ stats.features_per_week|floatformat:1|default:"0" }}</dd>
+                        
+                        <dt class="col-7">Story Points/Sprint:</dt>
+                        <dd class="col-5">{{ stats.velocity|default:"0" }}</dd>
+                        
+                        <dt class="col-7">Current Sprint Progress:</dt>
+                        <dd class="col-5">
+                            <div class="progress">
+                                <div class="progress-bar" style="width: {{ stats.sprint_progress|default:0 }}%">
+                                    {{ stats.sprint_progress|default:0 }}%
+                                </div>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Agent Performance</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Features</th>
+                                <th>Success Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agent in agent_stats %}
+                            <tr>
+                                <td>{{ agent.name }}</td>
+                                <td>{{ agent.feature_count }}</td>
+                                <td>
+                                    <span class="badge bg-{{ agent.success_color }}">
+                                        {{ agent.success_rate|floatformat:0 }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-muted text-center">No data</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Category Performance</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Count</th>
+                                <th>Avg. Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cat in category_stats %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-{{ cat.color }}">{{ cat.name }}</span>
+                                </td>
+                                <td>{{ cat.count }}</td>
+                                <td>{{ cat.avg_days|floatformat:1 }}d</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-muted text-center">No data</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Feature Activity</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Status Change</th>
+                            <th>Progress</th>
+                            <th>Time in Status</th>
+                            <th>Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in recent_activity %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'features:detail' activity.feature.id %}">
+                                    {{ activity.feature.title|truncatewords:5 }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ activity.old_status }}</span>
+                                →
+                                <span class="badge bg-{{ activity.status_color }}">{{ activity.new_status }}</span>
+                            </td>
+                            <td>
+                                <div class="progress" style="width: 100px;">
+                                    <div class="progress-bar" style="width: {{ activity.feature.progress|default:0 }}%">
+                                        {{ activity.feature.progress|default:0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ activity.time_in_status }}</td>
+                            <td>{{ activity.updated_at|date:"M d, H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No recent activity</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Status Chart
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ status_labels|safe|default:"[]" }},
+        datasets: [{
+            data: {{ status_data|safe|default:"[]" }},
+            backgroundColor: [
+                'rgba(108, 117, 125, 0.8)',  // Backlog
+                'rgba(13, 110, 253, 0.8)',   // Planned
+                'rgba(255, 193, 7, 0.8)',    // In Progress
+                'rgba(13, 202, 240, 0.8)',   // Testing
+                'rgba(40, 167, 69, 0.8)'     // Done
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Category Chart
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+new Chart(categoryCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ category_labels|safe|default:"[]" }},
+        datasets: [{
+            label: 'Features',
+            data: {{ category_data|safe|default:"[]" }},
+            backgroundColor: 'rgba(54, 162, 235, 0.8)'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Trend Chart
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: {{ trend_labels|safe|default:"[]" }},
+        datasets: [{
+            label: 'Completed',
+            data: {{ trend_completed|safe|default:"[]" }},
+            borderColor: 'rgb(40, 167, 69)',
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            tension: 0.4
+        }, {
+            label: 'Started',
+            data: {{ trend_started|safe|default:"[]" }},
+            borderColor: 'rgb(255, 193, 7)',
+            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Priority Chart
+const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+new Chart(priorityCtx, {
+    type: 'polarArea',
+    data: {
+        labels: ['Critical', 'High', 'Medium', 'Low'],
+        datasets: [{
+            data: {{ priority_data|safe|default:"[0,0,0,0]" }},
+            backgroundColor: [
+                'rgba(220, 53, 69, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(13, 110, 253, 0.8)',
+                'rgba(40, 167, 69, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+function refreshStats() {
+    window.location.reload();
+}
+
+function exportStats(format) {
+    window.location.href = `/features/statistics/export/?format=${format}`;
+}
+</script>
+{% endblock %}

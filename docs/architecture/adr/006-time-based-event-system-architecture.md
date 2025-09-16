@@ -4,7 +4,7 @@
 Proposed
 
 ## Date
-2025-01-10
+September 10, 2025
 
 ## Context
 

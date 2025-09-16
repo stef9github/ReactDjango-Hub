@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Paradigm Shift - AI-Agent Development</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-text">AI-Agent Development</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="story.html" class="nav-link">Story</a>
+                <a href="paradigm-shift.html" class="nav-link active">Paradigm</a>
+                <a href="methodology.html" class="nav-link">Methodology</a>
+                <a href="implementation.html" class="nav-link">Implementation</a>
+                <a href="platform-architecture.html" class="nav-link">Architecture</a>
+                <a href="portfolio-impact.html" class="nav-link">Impact</a>
+                <a href="call-to-action.html" class="nav-link">Next Steps</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 37.5%"></div>
+    </div>
+
+    <!-- Page Header -->
+    <section class="page-header paradigm-header">
+        <div class="container">
+            <h1 class="page-title">The AI Revolution in Development</h1>
+            <p class="page-subtitle">
+                From solo developer to orchestrating an AI development team
+            </p>
+        </div>
+    </section>
+
+    <!-- Traditional vs AI Development -->
+    <section class="comparison-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Traditional Development Limitations</h2>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card traditional">
+                    <div class="comparison-header">
+                        <i data-lucide="users"></i>
+                        <h3>Traditional Team Development</h3>
+                    </div>
+                    <div class="comparison-content">
+                        <div class="limitation-list">
+                            <div class="limitation-item">
+                                <i data-lucide="clock"></i>
+                                <div>
+                                    <strong>Context Switching Overhead</strong>
+                                    <p>Developers lose 23 minutes per interruption</p>
+                                </div>
+                            </div>
+                            <div class="limitation-item">
+                                <i data-lucide="trending-down"></i>
+                                <div>
+                                    <strong>Knowledge Silos</strong>
+                                    <p>Each developer only knows part of the system</p>
+                                </div>
+                            </div>
+                            <div class="limitation-item">
+                                <i data-lucide="alert-triangle"></i>
+                                <div>
+                                    <strong>Communication Overhead</strong>
+                                    <p>30-50% of time spent in meetings and coordination</p>
+                                </div>
+                            </div>
+                            <div class="limitation-item">
+                                <i data-lucide="dollar-sign"></i>
+                                <div>
+                                    <strong>High Costs</strong>
+                                    <p>$150k-250k per developer annually</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-card ai-powered">
+                    <div class="comparison-header">
+                        <i data-lucide="sparkles"></i>
+                        <h3>AI-Agent Orchestration</h3>
+                    </div>
+                    <div class="comparison-content">
+                        <div class="advantage-list">
+                            <div class="advantage-item">
+                                <i data-lucide="zap"></i>
+                                <div>
+                                    <strong>Instant Context Switching</strong>
+                                    <p>Agents maintain perfect context 24/7</p>
+                                </div>
+                            </div>
+                            <div class="advantage-item">
+                                <i data-lucide="brain"></i>
+                                <div>
+                                    <strong>Complete System Knowledge</strong>
+                                    <p>Every agent understands the entire codebase</p>
+                                </div>
+                            </div>
+                            <div class="advantage-item">
+                                <i data-lucide="workflow"></i>
+                                <div>
+                                    <strong>Zero Communication Overhead</strong>
+                                    <p>Perfect coordination through shared context</p>
+                                </div>
+                            </div>
+                            <div class="advantage-item">
+                                <i data-lucide="trending-up"></i>
+                                <div>
+                                    <strong>10x Cost Efficiency</strong>
+                                    <p>One orchestrator manages entire team</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Meta-Agent Breakthrough -->
+    <section class="breakthrough-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">The Meta-Agent Breakthrough</h2>
+                <p class="section-subtitle">ag-claude: The conductor of your AI orchestra</p>
+            </div>
+
+            <div class="meta-agent-explanation">
+                <div class="meta-agent-visual">
+                    <div class="mermaid-diagram">
+                        <pre class="mermaid">
+graph TB
+    User[Developer/Orchestrator] -->|Instructions| MC[ag-claude<br/>Meta-Agent Conductor]
+    MC -->|Coordinates| BA[Backend Agent]
+    MC -->|Coordinates| FA[Frontend Agent]
+    MC -->|Coordinates| SA[Security Agent]
+    MC -->|Coordinates| TA[Tech Lead Agent]
+    
+    BA -->|Django/APIs| Code1[Backend Code]
+    FA -->|React/UI| Code2[Frontend Code]
+    SA -->|Compliance| Code3[Security Configs]
+    TA -->|Architecture| Code4[System Design]
+    
+    Code1 --> Platform[Unified Platform]
+    Code2 --> Platform
+    Code3 --> Platform
+    Code4 --> Platform
+    
+    style MC fill:#ffd700,stroke:#333,stroke-width:4px
+    style Platform fill:#90EE90,stroke:#333,stroke-width:2px
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="meta-agent-details">
+                    <h3>How ag-claude Works</h3>
+                    <div class="process-steps">
+                        <div class="process-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Understands Intent</h4>
+                                <p>Analyzes your requirements and breaks them into specialized tasks</p>
+                            </div>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Selects Agents</h4>
+                                <p>Chooses the right specialist agents for each task</p>
+                            </div>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Coordinates Execution</h4>
+                                <p>Manages dependencies and ensures proper sequencing</p>
+                            </div>
+                        </div>
+                        <div class="process-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Validates Results</h4>
+                                <p>Ensures all components work together seamlessly</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Productivity Metrics -->
+    <section class="metrics-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Real Productivity Metrics</h2>
+                <p class="section-subtitle">Measured from actual project delivery</p>
+            </div>
+
+            <div class="metrics-showcase">
+                <div class="metric-card large">
+                    <div class="metric-value">6 weeks</div>
+                    <div class="metric-label">MVP Delivery</div>
+                    <div class="metric-comparison">vs 6 months traditional</div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">1,000+</div>
+                        <div class="metric-label">Lines/Day</div>
+                        <div class="metric-comparison">vs 100 traditional</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">40</div>
+                        <div class="metric-label">API Endpoints</div>
+                        <div class="metric-comparison">Built in 3 days</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">95%</div>
+                        <div class="metric-label">Test Coverage</div>
+                        <div class="metric-comparison">Automated testing</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">24/7</div>
+                        <div class="metric-label">Development</div>
+                        <div class="metric-comparison">Never stops</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-comparison">
+                <h3>Development Timeline Comparison</h3>
+                <div class="timeline-bars">
+                    <div class="timeline-bar traditional">
+                        <div class="bar-label">Traditional Development</div>
+                        <div class="bar-visual">
+                            <div class="bar-segment planning">Planning (2 months)</div>
+                            <div class="bar-segment development">Development (6 months)</div>
+                            <div class="bar-segment testing">Testing (2 months)</div>
+                            <div class="bar-segment deployment">Deploy (2 months)</div>
+                        </div>
+                        <div class="bar-total">12 months total</div>
+                    </div>
+                    <div class="timeline-bar ai-agents">
+                        <div class="bar-label">AI-Agent Development</div>
+                        <div class="bar-visual ai">
+                            <div class="bar-segment planning">Plan (1w)</div>
+                            <div class="bar-segment development">Dev (4w)</div>
+                            <div class="bar-segment testing">Test (1w)</div>
+                        </div>
+                        <div class="bar-total">6 weeks total</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visual Comparison -->
+    <section class="visual-comparison">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">The Transformation in Action</h2>
+            </div>
+
+            <div class="transformation-grid">
+                <div class="transformation-card">
+                    <h3>Before: Traditional Solo Developer</h3>
+                    <div class="pain-points">
+                        <div class="pain-point">
+                            <i data-lucide="x-circle"></i>
+                            <span>Constantly switching between frontend and backend</span>
+                        </div>
+                        <div class="pain-point">
+                            <i data-lucide="x-circle"></i>
+                            <span>Forgetting implementation details</span>
+                        </div>
+                        <div class="pain-point">
+                            <i data-lucide="x-circle"></i>
+                            <span>Spending hours debugging integration issues</span>
+                        </div>
+                        <div class="pain-point">
+                            <i data-lucide="x-circle"></i>
+                            <span>Writing boilerplate code manually</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transformation-card success">
+                    <h3>After: AI-Agent Orchestrator</h3>
+                    <div class="success-points">
+                        <div class="success-point">
+                            <i data-lucide="check-circle"></i>
+                            <span>Agents handle their specializations perfectly</span>
+                        </div>
+                        <div class="success-point">
+                            <i data-lucide="check-circle"></i>
+                            <span>Perfect memory and context retention</span>
+                        </div>
+                        <div class="success-point">
+                            <i data-lucide="check-circle"></i>
+                            <span>Automatic integration and testing</span>
+                        </div>
+                        <div class="success-point">
+                            <i data-lucide="check-circle"></i>
+                            <span>Focus on business logic, not implementation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Section -->
+    <section class="next-preview">
+        <div class="container">
+            <div class="preview-content">
+                <h2>How Does It Actually Work?</h2>
+                <p>
+                    Deep dive into the methodology, agent boundaries, 
+                    and orchestration patterns
+                </p>
+                <a href="methodology.html" class="btn btn-primary">
+                    <span>Explore the Methodology</span>
+                    <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p>Stéphane Richard - CTO/CPO</p>
+                    <p>AI-Agent Development Methodology</p>
+                </div>
+                <div class="footer-nav">
+                    <a href="story.html" class="footer-link">Previous: Story</a>
+                    <a href="methodology.html" class="footer-link">Next: Methodology</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/presentation.js"></script>
+    <script>
+        lucide.createIcons();
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#f8fafc',
+                primaryTextColor: '#1e293b',
+                primaryBorderColor: '#1e40af',
+                lineColor: '#475569',
+                secondaryColor: '#e2e8f0',
+                tertiaryColor: '#f1f5f9',
+                background: 'white',
+                mainBkg: '#f8fafc',
+                secondBkg: '#e2e8f0',
+                tertiaryBkg: '#f1f5f9',
+                textColor: '#1e293b',
+                nodeTextColor: '#1e293b'
+            }
+        });
+    </script>
+</body>
+</html>

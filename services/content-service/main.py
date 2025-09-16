@@ -166,7 +166,12 @@ async def health_check():
 
     # Check Redis connection
     try:
-        redis_url = os.getenv("REDIS_URL", "redis://localhost:6381/0")
+        use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
+        if use_docker:
+            redis_url = os.getenv("REDIS_URL", "redis://content-redis:6379/0")
+        else:
+            redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+            
         redis_password = os.getenv("REDIS_PASSWORD")
         import redis.asyncio as redis
         

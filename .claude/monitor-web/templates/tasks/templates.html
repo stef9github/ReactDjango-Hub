@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Task Templates - Monitor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Task Templates</h1>
+            <p class="text-muted">Reusable templates for common tasks</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+                <i class="bi bi-plus-circle"></i> New Template
+            </button>
+        </div>
+    </div>
+
+    <!-- Template Cards -->
+    <div class="row">
+        {% for template in templates %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ template.name }}</h5>
+                        <span class="badge bg-{{ template.task_type|default:'secondary' }}">
+                            {{ template.get_task_type_display|default:template.task_type }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ template.description|default:"No description" }}</p>
+                    
+                    <dl class="row small">
+                        <dt class="col-sm-5">Priority:</dt>
+                        <dd class="col-sm-7">
+                            <span class="badge bg-{{ template.priority|default:'info' }}">
+                                {{ template.get_priority_display|default:"Medium" }}
+                            </span>
+                        </dd>
+                        
+                        <dt class="col-sm-5">Est. Duration:</dt>
+                        <dd class="col-sm-7">{{ template.estimated_duration|default:"Not set" }} min</dd>
+                        
+                        <dt class="col-sm-5">Used:</dt>
+                        <dd class="col-sm-7">{{ template.usage_count|default:0 }} times</dd>
+                    </dl>
+
+                    {% if template.metadata %}
+                    <details class="mt-2">
+                        <summary class="small text-muted">View metadata</summary>
+                        <pre class="small bg-light p-2 mt-1"><code>{{ template.metadata|pprint }}</code></pre>
+                    </details>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group w-100">
+                        <a href="{% url 'tasks:create' %}?template={{ template.id }}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-play"></i> Use
+                        </a>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editTemplate({{ template.id }})">
+                            <i class="bi bi-pencil"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTemplate({{ template.id }})">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-file-earmark-text text-muted" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">No Templates Yet</h4>
+                <p class="text-muted">Create your first task template to get started</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+                    <i class="bi bi-plus-circle"></i> Create Template
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Create Template Modal -->
+<div class="modal fade" id="createTemplateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Task Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'tasks:template_create' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Template Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Default Title</label>
+                        <input type="text" class="form-control" name="title">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Task Type</label>
+                            <select class="form-select" name="task_type">
+                                <option value="general">General</option>
+                                <option value="feature">Feature Development</option>
+                                <option value="bugfix">Bug Fix</option>
+                                <option value="refactor">Refactoring</option>
+                                <option value="test">Testing</option>
+                                <option value="documentation">Documentation</option>
+                                <option value="deployment">Deployment</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Default Priority</label>
+                            <select class="form-select" name="priority">
+                                <option value="5">Low</option>
+                                <option value="3" selected>Medium</option>
+                                <option value="1">High</option>
+                                <option value="0">Critical</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Estimated Duration (minutes)</label>
+                        <input type="number" class="form-control" name="estimated_duration" min="1">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Metadata (JSON)</label>
+                        <textarea class="form-control font-monospace" name="metadata" rows="3">{}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editTemplate(templateId) {
+    // In a real implementation, this would open an edit modal
+    alert('Edit template: ' + templateId);
+}
+
+function deleteTemplate(templateId) {
+    if (confirm('Are you sure you want to delete this template?')) {
+        fetch(`/tasks/api/templates/${templateId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Error deleting template');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Plan Feature - {{ feature.title }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
+<style>
+    .ql-editor {
+        min-height: 300px;
+    }
+    .agent-card {
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .agent-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .agent-card.selected {
+        border-color: #0d6efd;
+        background-color: #f0f8ff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'features:list' %}">Features</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'features:detail' feature.id %}">{{ feature.title|truncatewords:3 }}</a></li>
+                    <li class="breadcrumb-item active">Plan</li>
+                </ol>
+            </nav>
+            <h1 class="h2">Plan Feature Implementation</h1>
+            <p class="text-muted">{{ feature.title }}</p>
+        </div>
+    </div>
+
+    <form method="post" id="planForm">
+        {% csrf_token %}
+        
+        <!-- Current Status -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Feature Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">Current Status:</dt>
+                            <dd class="col-sm-9">
+                                <span class="badge bg-{{ feature.status|default:'secondary' }}">
+                                    {{ feature.get_status_display }}
+                                </span>
+                            </dd>
+                            
+                            <dt class="col-sm-3">Priority:</dt>
+                            <dd class="col-sm-9">
+                                <select name="priority" class="form-select form-select-sm d-inline-block w-auto">
+                                    <option value="critical" {% if feature.priority == 'critical' %}selected{% endif %}>🔴 Critical</option>
+                                    <option value="high" {% if feature.priority == 'high' %}selected{% endif %}>🟠 High</option>
+                                    <option value="medium" {% if feature.priority == 'medium' %}selected{% endif %}>🟡 Medium</option>
+                                    <option value="low" {% if feature.priority == 'low' %}selected{% endif %}>🟢 Low</option>
+                                </select>
+                            </dd>
+                            
+                            <dt class="col-sm-3">Category:</dt>
+                            <dd class="col-sm-9">{{ feature.category.name }}</dd>
+                            
+                            <dt class="col-sm-3">Estimated Effort:</dt>
+                            <dd class="col-sm-9">
+                                <input type="number" name="estimated_effort" class="form-control form-control-sm d-inline-block w-auto" 
+                                       value="{{ feature.estimated_effort|default:5 }}" min="1" max="13"> story points
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary" onclick="generateTasks()">
+                                <i class="bi bi-magic"></i> Auto-Generate Tasks
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="estimateEffort()">
+                                <i class="bi bi-calculator"></i> Estimate Effort
+                            </button>
+                            <button type="button" class="btn btn-outline-info" onclick="suggestAgents()">
+                                <i class="bi bi-people"></i> Suggest Agents
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Details -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Implementation Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Refined Description</label>
+                    <div id="editor" style="height: 300px;">{{ feature.description|safe }}</div>
+                    <input type="hidden" name="description" id="description">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Acceptance Criteria</label>
+                        <textarea name="acceptance_criteria" class="form-control" rows="5" 
+                                  placeholder="- User can...&#10;- System should...&#10;- Data must...">{{ feature.acceptance_criteria|default:"" }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Technical Requirements</label>
+                        <textarea name="technical_requirements" class="form-control" rows="5"
+                                  placeholder="- Database changes&#10;- API endpoints&#10;- Frontend components">{{ feature.technical_requirements|default:"" }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Assignment -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Agent Assignment</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Select agents to work on this feature:</p>
+                <div class="row" id="agentSelection">
+                    {% for agent in available_agents %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card agent-card" data-agent-id="{{ agent.id }}">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ agent.name }}</h6>
+                                <p class="card-text small">
+                                    <span class="badge bg-{{ agent.type|default:'secondary' }}">{{ agent.type }}</span>
+                                    <span class="badge bg-{{ agent.status|default:'secondary' }}">{{ agent.get_status_display }}</span>
+                                </p>
+                                <div class="form-check">
+                                    <input class="form-check-input agent-checkbox" type="checkbox" 
+                                           name="assigned_agents" value="{{ agent.id }}" 
+                                           id="agent_{{ agent.id }}"
+                                           {% if agent in feature.assigned_agents.all %}checked{% endif %}>
+                                    <label class="form-check-label small" for="agent_{{ agent.id }}">
+                                        Assign
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Breakdown -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Task Breakdown</h5>
+                <button type="button" class="btn btn-sm btn-primary" onclick="addTask()">
+                    <i class="bi bi-plus"></i> Add Task
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="taskList">
+                    {% for task in feature.featuretask_set.all %}
+                    <div class="task-item mb-2">
+                        <div class="input-group">
+                            <input type="text" name="task_titles[]" class="form-control" 
+                                   value="{{ task.title }}" placeholder="Task title">
+                            <select name="task_agents[]" class="form-select" style="max-width: 200px;">
+                                <option value="">Auto-assign</option>
+                                {% for agent in available_agents %}
+                                <option value="{{ agent.id }}" {% if agent == task.assigned_agent %}selected{% endif %}>
+                                    {{ agent.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <input type="number" name="task_estimates[]" class="form-control" 
+                                   style="max-width: 100px;" placeholder="Hours" value="{{ task.estimated_hours|default:'' }}">
+                            <button type="button" class="btn btn-outline-danger" onclick="removeTask(this)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div id="taskTemplate" class="d-none">
+                    <div class="task-item mb-2">
+                        <div class="input-group">
+                            <input type="text" name="task_titles[]" class="form-control" placeholder="Task title">
+                            <select name="task_agents[]" class="form-select" style="max-width: 200px;">
+                                <option value="">Auto-assign</option>
+                                {% for agent in available_agents %}
+                                <option value="{{ agent.id }}">{{ agent.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="number" name="task_estimates[]" class="form-control" 
+                                   style="max-width: 100px;" placeholder="Hours">
+                            <button type="button" class="btn btn-outline-danger" onclick="removeTask(this)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Timeline & Dependencies</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" name="start_date" class="form-control" 
+                               value="{{ feature.start_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Target Completion</label>
+                        <input type="date" name="target_date" class="form-control"
+                               value="{{ feature.target_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Dependencies</label>
+                        <select name="dependencies" class="form-select" multiple>
+                            {% for dep_feature in other_features %}
+                            <option value="{{ dep_feature.id }}" 
+                                    {% if dep_feature in feature.dependencies.all %}selected{% endif %}>
+                                {{ dep_feature.title }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'features:detail' feature.id %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <div>
+                <button type="submit" name="action" value="save" class="btn btn-outline-primary">
+                    <i class="bi bi-save"></i> Save Plan
+                </button>
+                <button type="submit" name="action" value="implement" class="btn btn-success">
+                    <i class="bi bi-play-fill"></i> Save & Start Implementation
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.js"></script>
+<script>
+// Initialize Quill editor
+var quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            [{ 'header': 1 }, { 'header': 2 }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            ['clean']
+        ]
+    }
+});
+
+// Update hidden field on form submit
+document.getElementById('planForm').addEventListener('submit', function() {
+    document.getElementById('description').value = quill.root.innerHTML;
+});
+
+// Agent selection
+document.querySelectorAll('.agent-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('form-check-input')) {
+            const checkbox = this.querySelector('.agent-checkbox');
+            checkbox.checked = !checkbox.checked;
+            this.classList.toggle('selected', checkbox.checked);
+        }
+    });
+    
+    // Initialize selected state
+    const checkbox = card.querySelector('.agent-checkbox');
+    if (checkbox && checkbox.checked) {
+        card.classList.add('selected');
+    }
+});
+
+// Task management
+function addTask() {
+    const template = document.getElementById('taskTemplate').innerHTML;
+    document.getElementById('taskList').insertAdjacentHTML('beforeend', template);
+}
+
+function removeTask(button) {
+    button.closest('.task-item').remove();
+}
+
+// Auto-generate tasks
+function generateTasks() {
+    // This would call an AI service to generate tasks
+    const suggestedTasks = [
+        { title: 'Design database schema', agent: 'backend', hours: 2 },
+        { title: 'Create API endpoints', agent: 'backend', hours: 4 },
+        { title: 'Build UI components', agent: 'frontend', hours: 6 },
+        { title: 'Write unit tests', agent: 'backend', hours: 3 },
+        { title: 'Update documentation', agent: 'coordinator', hours: 1 }
+    ];
+    
+    // Clear existing tasks
+    document.getElementById('taskList').innerHTML = '';
+    
+    // Add suggested tasks
+    suggestedTasks.forEach(task => {
+        addTask();
+        const lastTask = document.querySelector('#taskList .task-item:last-child');
+        lastTask.querySelector('input[name="task_titles[]"]').value = task.title;
+        lastTask.querySelector('input[name="task_estimates[]"]').value = task.hours;
+    });
+}
+
+// Estimate effort
+function estimateEffort() {
+    const tasks = document.querySelectorAll('input[name="task_estimates[]"]');
+    let total = 0;
+    tasks.forEach(task => {
+        total += parseInt(task.value) || 0;
+    });
+    
+    // Convert hours to story points (rough estimate)
+    const storyPoints = Math.ceil(total / 8);
+    document.querySelector('input[name="estimated_effort"]').value = storyPoints;
+}
+
+// Suggest agents
+function suggestAgents() {
+    // This would analyze the feature and suggest appropriate agents
+    alert('Based on the feature type, we recommend:\n- Backend Agent for API work\n- Frontend Agent for UI\n- Security Agent for review');
+}
+</script>
+{% endblock %}

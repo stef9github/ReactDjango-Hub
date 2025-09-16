@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Agents - Agent Monitor{% endblock %}
+{% block page_title %}Agent Management{% endblock %}
+
+{% block page_actions %}
+<button class="btn btn-primary" onclick="syncAgents()">
+    <i class="bi bi-arrow-repeat"></i> Sync Agents
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% for agent in agents %}
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ agent.name }}</h5>
+                <span class="badge status-{{ agent.status }}">{{ agent.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">{{ agent.description|truncatewords:15 }}</p>
+                
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <small class="text-muted">Type:</small><br>
+                        <strong>{{ agent.type }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">PID:</small><br>
+                        <strong>{{ agent.pid|default:"N/A" }}</strong>
+                    </div>
+                </div>
+                
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <small class="text-muted">CPU:</small><br>
+                        <strong>{{ agent.cpu_usage|floatformat:1 }}%</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Memory:</small><br>
+                        <strong>{{ agent.memory_usage|floatformat:0 }} MB</strong>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <small class="text-muted">Last Heartbeat:</small><br>
+                        <strong>{{ agent.last_heartbeat|naturaltime|default:"Never" }}</strong>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'agents:detail' agent.pk %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i> Details
+                    </a>
+                    <div class="btn-group btn-group-sm">
+                        {% if agent.status == 'stopped' %}
+                            <button class="btn btn-success" onclick="controlAgent({{ agent.pk }}, 'start')">
+                                <i class="bi bi-play"></i>
+                            </button>
+                        {% else %}
+                            <button class="btn btn-danger" onclick="controlAgent({{ agent.pk }}, 'stop')">
+                                <i class="bi bi-stop"></i>
+                            </button>
+                        {% endif %}
+                        <button class="btn btn-warning" onclick="controlAgent({{ agent.pk }}, 'restart')">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function controlAgent(agentId, action) {
+    const form = $('<form>', {
+        method: 'POST',
+        action: `/agents/${agentId}/${action}/`
+    });
+    
+    form.append($('<input>', {
+        type: 'hidden',
+        name: 'csrfmiddlewaretoken',
+        value: getCookie('csrftoken')
+    }));
+    
+    $('body').append(form);
+    form.submit();
+}
+
+function syncAgents() {
+    // This would sync with the agents.yaml configuration
+    alert('Syncing agents from configuration...');
+    location.reload();
+}
+
+// Auto-update agent status every 5 seconds
+setInterval(function() {
+    $('.card').each(function() {
+        const agentId = $(this).data('agent-id');
+        if (agentId) {
+            ajaxRequest(`/agents/api/${agentId}/status/`)
+                .done(function(data) {
+                    // Update status badge
+                    const badge = $(`.agent-${agentId} .badge`);
+                    badge.removeClass().addClass(`badge status-${data.status}`);
+                    badge.text(data.status);
+                    
+                    // Update metrics
+                    $(`.agent-${agentId} .cpu-usage`).text(data.cpu_usage.toFixed(1) + '%');
+                    $(`.agent-${agentId} .memory-usage`).text(data.memory_usage.toFixed(0) + ' MB');
+                });
+        }
+    });
+}, 5000);
+</script>
+{% endblock %}

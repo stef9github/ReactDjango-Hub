@@ -19,6 +19,10 @@ IDE
 .idea/
 *.swp
 .DS_Store
+
+# Django media and temp files
+backend/media/
+*.prof
 Docker
 docker-compose.override.yml
 Security

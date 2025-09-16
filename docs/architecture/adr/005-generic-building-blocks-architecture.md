@@ -192,5 +192,5 @@ class EventBus:
 
 ---
 
-*Decision Date: September 2025*
-*Review Date: December 2025*
+*Decision Date: September 9, 2025*
+*Review Date: October 9, 2025*

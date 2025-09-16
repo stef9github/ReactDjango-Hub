@@ -10,11 +10,27 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Database configuration
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    "postgresql://workflow_user:workflow_pass@localhost:5436/workflow_intelligence_service"
-)
+# Database configuration with local development defaults
+use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
+
+if use_docker:
+    # Docker environment - use Docker service names
+    DEFAULT_DATABASE_URL = "postgresql://workflow_user:workflow_pass@workflow-db:5432/workflow_intelligence_service"
+else:
+    # Local development - use localhost and default PostgreSQL setup
+    user = os.getenv("DATABASE_USER", "stephanerichard")
+    password = os.getenv("DATABASE_PASSWORD", "")
+    host = os.getenv("DATABASE_HOST", "localhost")
+    port = os.getenv("DATABASE_PORT", "5432")
+    database = os.getenv("DATABASE_NAME", "workflow_intelligence_service")
+    
+    # Build URL with or without password
+    if password:
+        DEFAULT_DATABASE_URL = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+    else:
+        DEFAULT_DATABASE_URL = f"postgresql://{user}@{host}:{port}/{database}"
+
+DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
 DATABASE_POOL_SIZE = int(os.getenv("DATABASE_POOL_SIZE", "10"))
 DATABASE_MAX_OVERFLOW = int(os.getenv("DATABASE_MAX_OVERFLOW", "20"))
 

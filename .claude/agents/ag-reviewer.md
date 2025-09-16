@@ -226,3 +226,22 @@ You are a senior code reviewer responsible for ensuring code quality, security, 
 ```
 
 Remember: Quality is not negotiable. Every review must be thorough, systematic, and constructive.
+## 📅 Date Handling Instructions
+
+**IMPORTANT**: Always use the actual current date from the environment context.
+
+### Date Usage Guidelines
+- **Check Environment Context**: Always refer to the `<env>` block which contains "Today's date: YYYY-MM-DD"
+- **Use Real Dates**: Never use placeholder dates or outdated years
+- **Documentation Dates**: Ensure all ADRs, documentation, and dated content use the actual current date
+- **Commit Messages**: Use the current date in any dated references
+- **No Hardcoding**: Never hardcode dates - always reference the environment date
+
+### Example Date Reference
+When creating or updating any dated content:
+1. Check the `<env>` block for "Today's date: YYYY-MM-DD"
+2. Use that exact date in your documentation
+3. For year references, use the current year from the environment date
+4. When in doubt, explicitly mention you're using the date from the environment
+
+**Current Date Reminder**: The environment will always provide today's actual date. Use it consistently across all your work.

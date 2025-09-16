@@ -6,100 +6,123 @@
     "python.linting.flake8Enabled": true,
     "python.formatting.provider": "black",
     "python.testing.pytestEnabled": true,
-    "python.testing.pytestArgs": ["backend/"],
-    
+    "python.testing.pytestArgs": [
+        "backend/"
+    ],
     // JavaScript/TypeScript Settings
     "typescript.preferences.quoteStyle": "double",
     "javascript.preferences.quoteStyle": "double",
-    
     // Editor Settings
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
     },
-    
     // File Associations
     "files.associations": {
         "*.md": "markdown",
         ".claude/**/*.md": "markdown"
     },
-    
     // Terminal Profiles - Simplified Agent List
     "terminal.integrated.profiles.osx": {
         // Core Service Agents (One per service)
         "Backend (Django)": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-backend"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-backend"
+            ],
             "icon": "server",
             "color": "terminal.ansiBlack"
         },
         "Frontend (React)": {
-            "path": "bash", 
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-frontend"],
+            "path": "bash",
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-frontend"
+            ],
             "icon": "browser",
             "color": "terminal.ansiBlack"
         },
         "Identity Service": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-identity"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-identity"
+            ],
             "icon": "key",
             "color": "terminal.ansiBlack"
         },
         "Communication Service": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-communication"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-communication"
+            ],
             "icon": "mail",
             "color": "terminal.ansiBlack"
         },
         "Content Service": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-content"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-content"
+            ],
             "icon": "file-text",
             "color": "terminal.ansiBlack"
         },
         "Workflow Service": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-workflow"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-workflow"
+            ],
             "icon": "lightbulb",
             "color": "terminal.ansiBlack"
         },
-        
         // Infrastructure & Coordination
         "Infrastructure": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-infrastructure"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-infrastructure"
+            ],
             "icon": "rocket",
             "color": "terminal.ansiBlack"
         },
         "Services Coordinator": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-coordinator"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-coordinator"
+            ],
             "icon": "target",
             "color": "terminal.ansiBlack"
         },
-        
         // Quality & Compliance
         "Security & Compliance": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-security"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-security"
+            ],
             "icon": "shield",
             "color": "terminal.ansiBlack"
         },
         "Code Review": {
             "path": "bash",
-            "args": ["-c", "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-reviewer"],
+            "args": [
+                "-c",
+                "cd ${workspaceFolder} && ./.claude/launch-agent.sh ag-reviewer"
+            ],
             "icon": "eye",
             "color": "terminal.ansiBlack"
         }
     },
-    
     "terminal.integrated.defaultProfile.osx": "bash",
-    
     // Git Settings
     "git.enableSmartCommit": true,
     "git.confirmSync": false,
     "git.autofetch": true,
-    
     // Explorer Settings
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
@@ -107,5 +130,6 @@
         ".claude": ".claude/**",
         "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml",
         "requirements.txt": "requirements-*.txt, Pipfile, Pipfile.lock, poetry.lock, pyproject.toml"
-    }
+    },
+    "makefile.configureOnOpen": false
 }

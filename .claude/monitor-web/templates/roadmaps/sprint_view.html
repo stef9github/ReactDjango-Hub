@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Sprint Planning - AI Development{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sprint-card {
+        border-left: 4px solid #0d6efd;
+        margin-bottom: 20px;
+    }
+    .week-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 8px 8px 0 0;
+    }
+    .feature-item {
+        padding: 10px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-radius: 5px;
+        transition: all 0.3s;
+    }
+    .feature-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .effort-badge {
+        background: #28a745;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    .ai-powered {
+        background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
+        color: #333;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2>🚀 AI-Powered Sprint Planning</h2>
+                    <p class="text-muted">Rapid development with Claude Code - Planning in weeks, not months!</p>
+                </div>
+                <div>
+                    <span class="ai-powered">⚡ AI-Accelerated Development</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sprint Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Current Week</h6>
+                    <h3>Week {{ current_week }}</h3>
+                    <small>{{ current_date|date:"M d, Y" }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Features This Sprint</h6>
+                    <h3 class="text-primary">{{ features_this_week|length }}</h3>
+                    <small>{{ total_effort_this_week }} days effort</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">AI Velocity</h6>
+                    <h3 class="text-success">10x</h3>
+                    <small>vs traditional development</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Next Sprint Start</h6>
+                    <h3>{{ next_week_date|date:"M d" }}</h3>
+                    <small>Week {{ next_week }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Sprint View -->
+    <div class="row">
+        {% for week, features in weekly_features.items %}
+        <div class="col-md-6 col-lg-4">
+            <div class="sprint-card card">
+                <div class="week-header">
+                    <h5 class="mb-0">{{ week }}</h5>
+                    <small>{{ features|length }} features • {{ features|dictsort:"effort_days"|last.effort_days|add:features|dictsort:"effort_days"|first.effort_days }} days</small>
+                </div>
+                <div class="card-body">
+                    {% for feature in features %}
+                    <div class="feature-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ feature.title }}</strong>
+                                <span class="badge bg-{{ feature.priority|default:'secondary' }} ms-2">{{ feature.priority }}</span>
+                                {% if feature.category == 'platform' %}
+                                    <span class="badge bg-info ms-1">Platform</span>
+                                {% endif %}
+                                <p class="mb-1 small text-muted">{{ feature.description|truncatewords:15 }}</p>
+                            </div>
+                            <span class="effort-badge">{{ feature.effort_days }}d</span>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                {% if feature.workflow.current_state == 'approved' %}
+                                    <span class="badge bg-success">Ready to Start</span>
+                                {% else %}
+                                    <span class="badge bg-warning">{{ feature.workflow.get_current_state_display }}</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5>No features scheduled yet</h5>
+                <p>Start by advancing features through the workflow to get them approved for implementation!</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- AI Development Benefits -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5>⚡ AI-Powered Development Benefits</h5>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <h6>🚀 10x Faster</h6>
+                            <p class="small">Features that took months now take days with Claude Code</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>🎯 Higher Quality</h6>
+                            <p class="small">AI catches bugs and suggests improvements in real-time</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>📈 Continuous Learning</h6>
+                            <p class="small">Each feature makes the next one faster to build</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>🔄 Rapid Iteration</h6>
+                            <p class="small">Test and refine features within hours, not weeks</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

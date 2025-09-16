@@ -97,7 +97,16 @@
       "Bash(psql:*)",
       "Bash(brew:*)",
       "Bash(/usr/local/opt/postgresql@17/bin/createdb:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(pandoc:*)",
+      "Bash(.claude/scripts/update-all-agents.sh:*)",
+      "Bash(.claude/scripts/auto-commit.sh:*)",
+      "Bash(git reset:*)",
+      "Bash(django-admin startproject:*)",
+      "Bash(./start-monitor.sh:*)",
+      "Bash(code:*)",
+      "Bash(git config:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []

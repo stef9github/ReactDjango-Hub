@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Product Roadmap Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .roadmap-column {
+        min-height: 500px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+    }
+    .feature-card {
+        background: white;
+        border-radius: 6px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-left: 4px solid #007bff;
+    }
+    .feature-card.platform {
+        border-left-color: #28a745;
+    }
+    .feature-card.specific {
+        border-left-color: #ffc107;
+    }
+    .priority-badge {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+    .priority-critical {
+        background: #dc3545;
+        color: white;
+    }
+    .priority-high {
+        background: #fd7e14;
+        color: white;
+    }
+    .priority-medium {
+        background: #ffc107;
+        color: black;
+    }
+    .priority-low {
+        background: #6c757d;
+        color: white;
+    }
+    .overlap-indicator {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 6px;
+        padding: 10px;
+        margin: 10px 0;
+    }
+    .workflow-card {
+        background: white;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 8px;
+        border: 1px solid #dee2e6;
+    }
+    .state-badge {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Product Roadmap Management</h2>
+                <div>
+                    <button class="btn btn-primary" onclick="generateRoadmap('surgical')">
+                        Generate Surgical Roadmap
+                    </button>
+                    <button class="btn btn-primary" onclick="generateRoadmap('procurement')">
+                        Generate Procurement Roadmap
+                    </button>
+                    <button class="btn btn-success" onclick="analyzeOverlaps()">
+                        Analyze Overlaps
+                    </button>
+                    <a href="{% url 'feature_comparison' %}" class="btn btn-info">
+                        Feature Comparison
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roadmaps Side by Side -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <h4>Surgical Practice Management</h4>
+            <div class="roadmap-column">
+                {% if surgical_roadmap %}
+                    <h6>{{ surgical_roadmap.title }}</h6>
+                    <small class="text-muted">{{ surgical_roadmap.start_date }} - {{ surgical_roadmap.end_date }}</small>
+                    <hr>
+                    {% for feature in surgical_roadmap.features.all %}
+                        <div class="feature-card {{ feature.category }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ feature.title }}</h6>
+                                    <p class="mb-2 small">{{ feature.description|truncatewords:20 }}</p>
+                                    <div>
+                                        <span class="badge {% if feature.category == 'platform' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ feature.get_category_display }}
+                                        </span>
+                                        <span class="priority-badge priority-{{ feature.priority }}">
+                                            {{ feature.get_priority_display }}
+                                        </span>
+                                        <span class="badge bg-secondary">{{ feature.quarter }} {{ feature.year }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    {% if feature.effort_days %}
+                                        <small class="text-muted">{{ feature.effort_days }} days</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No features yet</p>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No roadmap generated yet</p>
+                    <button class="btn btn-sm btn-outline-primary" onclick="generateRoadmap('surgical')">
+                        Generate Roadmap
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <h4>Public Procurement</h4>
+            <div class="roadmap-column">
+                {% if procurement_roadmap %}
+                    <h6>{{ procurement_roadmap.title }}</h6>
+                    <small class="text-muted">{{ procurement_roadmap.start_date }} - {{ procurement_roadmap.end_date }}</small>
+                    <hr>
+                    {% for feature in procurement_roadmap.features.all %}
+                        <div class="feature-card {{ feature.category }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ feature.title }}</h6>
+                                    <p class="mb-2 small">{{ feature.description|truncatewords:20 }}</p>
+                                    <div>
+                                        <span class="badge {% if feature.category == 'platform' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ feature.get_category_display }}
+                                        </span>
+                                        <span class="priority-badge priority-{{ feature.priority }}">
+                                            {{ feature.get_priority_display }}
+                                        </span>
+                                        <span class="badge bg-secondary">{{ feature.quarter }} {{ feature.year }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    {% if feature.effort_days %}
+                                        <small class="text-muted">{{ feature.effort_days }} days</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No features yet</p>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No roadmap generated yet</p>
+                    <button class="btn btn-sm btn-outline-primary" onclick="generateRoadmap('procurement')">
+                        Generate Roadmap
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <h4>Platform / Common Features</h4>
+            <div class="roadmap-column">
+                {% if platform_roadmap %}
+                    <h6>{{ platform_roadmap.title }}</h6>
+                    <small class="text-muted">{{ platform_roadmap.start_date }} - {{ platform_roadmap.end_date }}</small>
+                    <hr>
+                    {% for feature in platform_roadmap.features.all %}
+                        <div class="feature-card platform">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ feature.title }}</h6>
+                                    <p class="mb-2 small">{{ feature.description|truncatewords:20 }}</p>
+                                    <div>
+                                        <span class="badge bg-success">Platform</span>
+                                        <span class="priority-badge priority-{{ feature.priority }}">
+                                            {{ feature.get_priority_display }}
+                                        </span>
+                                        <span class="badge bg-secondary">{{ feature.quarter }} {{ feature.year }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    {% if feature.effort_days %}
+                                        <small class="text-muted">{{ feature.effort_days }} days</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No platform features yet</p>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Platform roadmap will be generated from overlapping features</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Overlaps -->
+    {% if overlaps %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4>Identified Feature Overlaps (Platform Candidates)</h4>
+            <div class="overlap-indicator">
+                {% for overlap in overlaps %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ overlap.feature1.title }}</strong> ↔ <strong>{{ overlap.feature2.title }}</strong>
+                                <span class="badge bg-info ms-2">{{ overlap.similarity_score|floatformat:0 }}% match</span>
+                            </div>
+                            <button class="btn btn-sm btn-success" onclick="createPlatformFeature({{ overlap.id }})">
+                                Create Platform Feature
+                            </button>
+                        </div>
+                        <small class="text-muted">{{ overlap.notes }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Workflow Status -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Active Workflows</h4>
+            <div class="card">
+                <div class="card-body">
+                    {% for workflow in recent_workflows %}
+                        <div class="workflow-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ workflow.feature.title }}</strong>
+                                    <span class="state-badge {% if workflow.current_state|slice:':3' == 'app' %}bg-success{% else %}bg-warning{% endif %}">
+                                        {{ workflow.get_current_state_display }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <a href="{% url 'workflow_management' %}" class="btn btn-sm btn-outline-primary">
+                                        View
+                                    </a>
+                                </div>
+                            </div>
+                            {% if workflow.assigned_techlead %}
+                                <small class="text-muted">Assigned to: {{ workflow.assigned_techlead }}</small>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No active workflows</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Platform Backlog</h4>
+            <div class="card">
+                <div class="card-body">
+                    {% for item in platform_backlog %}
+                        <div class="workflow-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>#{{ item.platform_priority }} - {{ item.feature.title }}</strong>
+                                    <div>
+                                        <small>
+                                            Value: {{ item.business_value }}/10 | 
+                                            Complexity: {{ item.technical_complexity }}/10
+                                            {% if item.estimated_savings_hours %}
+                                                | Est. Savings: {{ item.estimated_savings_hours }}h
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No items in platform backlog</p>
+                    {% endfor %}
+                    <a href="{% url 'platform_backlog' %}" class="btn btn-sm btn-outline-primary mt-2">
+                        View Full Backlog
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateRoadmap(pmType) {
+    fetch(`/roadmaps/generate/${pmType}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+
+function analyzeOverlaps() {
+    fetch('/roadmaps/analyze-overlaps/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+
+function createPlatformFeature(overlapId) {
+    // TODO: Open modal to configure platform feature details
+    alert('Platform feature creation modal would open here');
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

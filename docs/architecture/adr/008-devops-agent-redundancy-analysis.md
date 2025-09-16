@@ -3,6 +3,9 @@
 ## Status
 Proposed - Critical Analysis
 
+## Date
+September 10, 2025
+
 ## Context
 
 ADR-007 proposed creating an `ag-devops` agent as part of the agent architecture expansion. However, after thorough analysis of the existing `ag-infrastructure` agent, there appears to be significant overlap that warrants reconsideration.

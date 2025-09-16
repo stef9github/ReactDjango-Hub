@@ -4,7 +4,7 @@
 Proposed (Updated with Communication Service Integration)
 
 ## Date
-2025-01-10 (Updated 2025-01-10)
+September 10, 2025 (Updated September 10, 2025)
 
 ## Context
 

@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Implement Feature - {{ feature.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .agent-card {
+        border: 2px solid #dee2e6;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .agent-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .agent-card.selected {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+    .task-item {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'roadmap_dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'workflow_management' %}">Workflow</a></li>
+                    <li class="breadcrumb-item active">Implement Feature</li>
+                </ol>
+            </nav>
+            <h2>Implement Feature: {{ feature.title }}</h2>
+            <p class="text-muted">{{ feature.description }}</p>
+        </div>
+    </div>
+
+    <form method="post" id="implementForm">
+        {% csrf_token %}
+        
+        <!-- Feature Details -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Implementation Plan</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Technical Components -->
+                        <div class="mb-3">
+                            <label class="form-label">Technical Components</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for component in feature.technical_components %}
+                                    <span class="badge bg-primary">{{ component }}</span>
+                                {% empty %}
+                                    <span class="text-muted">No components specified</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- API Endpoints -->
+                        <div class="mb-3">
+                            <label class="form-label">API Endpoints</label>
+                            <ul class="list-unstyled">
+                                {% for endpoint in feature.api_endpoints %}
+                                    <li><code>{{ endpoint }}</code></li>
+                                {% empty %}
+                                    <li class="text-muted">No endpoints specified</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Task Breakdown -->
+                        <div class="mb-3">
+                            <label class="form-label">Task Breakdown</label>
+                            <div id="taskList">
+                                <div class="task-item">
+                                    <input type="text" name="task_titles[]" class="form-control mb-2" 
+                                           placeholder="Task title" value="Set up database models">
+                                    <textarea name="task_descriptions[]" class="form-control mb-2" rows="2"
+                                              placeholder="Task description">Create and migrate database models for {{ feature.title }}</textarea>
+                                    <select name="task_agents[]" class="form-select">
+                                        <option value="">Auto-assign</option>
+                                        {% for agent in available_agents %}
+                                            <option value="{{ agent.id }}">{{ agent.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="task-item">
+                                    <input type="text" name="task_titles[]" class="form-control mb-2" 
+                                           placeholder="Task title" value="Create API endpoints">
+                                    <textarea name="task_descriptions[]" class="form-control mb-2" rows="2"
+                                              placeholder="Task description">Implement REST API endpoints for {{ feature.title }}</textarea>
+                                    <select name="task_agents[]" class="form-select">
+                                        <option value="">Auto-assign</option>
+                                        {% for agent in available_agents %}
+                                            <option value="{{ agent.id }}">{{ agent.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="task-item">
+                                    <input type="text" name="task_titles[]" class="form-control mb-2" 
+                                           placeholder="Task title" value="Build frontend components">
+                                    <textarea name="task_descriptions[]" class="form-control mb-2" rows="2"
+                                              placeholder="Task description">Create React components for {{ feature.title }}</textarea>
+                                    <select name="task_agents[]" class="form-select">
+                                        <option value="">Auto-assign</option>
+                                        {% for agent in available_agents %}
+                                            <option value="{{ agent.id }}">{{ agent.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="task-item">
+                                    <input type="text" name="task_titles[]" class="form-control mb-2" 
+                                           placeholder="Task title" value="Write tests">
+                                    <textarea name="task_descriptions[]" class="form-control mb-2" rows="2"
+                                              placeholder="Task description">Create unit and integration tests</textarea>
+                                    <select name="task_agents[]" class="form-select">
+                                        <option value="">Auto-assign</option>
+                                        {% for agent in available_agents %}
+                                            <option value="{{ agent.id }}">{{ agent.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addTask()">
+                                <i class="bi bi-plus"></i> Add Task
+                            </button>
+                        </div>
+
+                        <!-- Implementation Notes -->
+                        <div class="mb-3">
+                            <label class="form-label">Implementation Notes</label>
+                            <textarea name="implementation_notes" class="form-control" rows="3"
+                                      placeholder="Any special instructions or considerations..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Agent Selection -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Assign Lead Agent</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for agent in available_agents %}
+                            <div class="col-12 mb-2">
+                                <div class="agent-card p-2" onclick="selectAgent({{ agent.id }}, this)">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="lead_agent" 
+                                               value="{{ agent.id }}" id="agent_{{ agent.id }}">
+                                        <label class="form-check-label w-100" for="agent_{{ agent.id }}">
+                                            <strong>{{ agent.name }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ agent.type }} - {{ agent.get_status_display }}</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Execution Options -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Execution Options</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="auto_start" id="auto_start" checked>
+                            <label class="form-check-label" for="auto_start">
+                                Start implementation immediately
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="notify_on_complete" id="notify_on_complete" checked>
+                            <label class="form-check-label" for="notify_on_complete">
+                                Notify when complete
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="auto_test" id="auto_test" checked>
+                            <label class="form-check-label" for="auto_test">
+                                Run tests automatically
+                            </label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-play-fill"></i> Start Implementation
+                            </button>
+                            <a href="{% url 'workflow_management' %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+function selectAgent(agentId, element) {
+    // Clear other selections
+    document.querySelectorAll('.agent-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Select this agent
+    element.classList.add('selected');
+    document.getElementById('agent_' + agentId).checked = true;
+}
+
+function addTask() {
+    const taskHtml = `
+        <div class="task-item">
+            <input type="text" name="task_titles[]" class="form-control mb-2" 
+                   placeholder="Task title">
+            <textarea name="task_descriptions[]" class="form-control mb-2" rows="2"
+                      placeholder="Task description"></textarea>
+            <select name="task_agents[]" class="form-select">
+                <option value="">Auto-assign</option>
+                {% for agent in available_agents %}
+                    <option value="{{ agent.id }}">{{ agent.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" class="btn btn-sm btn-danger mt-2" onclick="removeTask(this)">
+                <i class="bi bi-trash"></i> Remove
+            </button>
+        </div>
+    `;
+    document.getElementById('taskList').insertAdjacentHTML('beforeend', taskHtml);
+}
+
+function removeTask(button) {
+    button.closest('.task-item').remove();
+}
+
+// Auto-select first agent
+document.addEventListener('DOMContentLoaded', function() {
+    const firstAgent = document.querySelector('.agent-card');
+    if (firstAgent) {
+        firstAgent.click();
+    }
+});
+</script>
+{% endblock %}

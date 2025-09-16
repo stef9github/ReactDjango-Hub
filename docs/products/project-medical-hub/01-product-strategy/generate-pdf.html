@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateforme SaaS Chirurgie - Business Plan 2025-2026</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 60px;
+            background: white;
+        }
+        
+        h1 {
+            color: #1a237e;
+            border-bottom: 3px solid #3f51b5;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        h2 {
+            color: #283593;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #e8eaf6;
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            color: #3949ab;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        h4 {
+            color: #5c6bc0;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        strong {
+            color: #1a237e;
+            font-weight: 600;
+        }
+        
+        em {
+            font-style: italic;
+            color: #546e7a;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #3f51b5;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        
+        .header-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin: -40px -60px 40px -60px;
+            text-align: center;
+        }
+        
+        .header-info h1 {
+            color: white;
+            border: none;
+            margin-bottom: 10px;
+        }
+        
+        .founders {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        
+        .launch-date {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .executive-summary {
+            background: #f8f9fa;
+            padding: 25px;
+            border-left: 4px solid #3f51b5;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        
+        .roi-highlight {
+            background: #e8f5e9;
+            padding: 15px;
+            border-left: 4px solid #4caf50;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .kpi-box {
+            background: #fff3e0;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .financial-box {
+            background: #f3e5f5;
+            padding: 15px;
+            border-left: 4px solid #9c27b0;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .decision-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border: 2px solid #4caf50;
+            margin: 30px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .decision-box h3 {
+            color: #2e7d32;
+            font-size: 1.5em;
+            margin-top: 0;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid #e8eaf6;
+            margin: 40px 0;
+        }
+        
+        @media print {
+            body {
+                padding: 20px;
+                font-size: 11pt;
+            }
+            
+            .header-info {
+                margin: -20px -20px 20px -20px;
+                padding: 20px;
+            }
+            
+            h1 { page-break-after: avoid; }
+            h2 { page-break-after: avoid; }
+            h3 { page-break-after: avoid; }
+            table { page-break-inside: avoid; }
+            .executive-summary { page-break-inside: avoid; }
+            .roi-highlight { page-break-inside: avoid; }
+        }
+        
+        .footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid #e8eaf6;
+            text-align: center;
+            color: #757575;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-info">
+        <h1>Plateforme SaaS Chirurgie - Business Plan 2025-2026</h1>
+        <div class="founders">
+            <strong>Stéphane Richard</strong> (CEO) × <strong>Dr. Renaud Derkenne</strong> (Directeur Médical)
+        </div>
+        <div class="launch-date">Lancement : 1er octobre 2025</div>
+    </div>
+
+    <div class="executive-summary">
+        <h2>Résumé Exécutif</h2>
+        <h3>💰 Proposition de Valeur : "45 000€/an économisés en évitant UN recrutement"</h3>
+        
+        <div class="roi-highlight">
+            <strong>Cas réel Dr. Derkenne :</strong> Cabinet de 3 chirurgiens, croissance +30%<br>
+            • Sans notre solution : Besoin d'embaucher une 3ème secrétaire<br>
+            • Avec notre solution : Évite le recrutement, économise 45K€/an<br>
+            • <strong>ROI : 12.5x</strong> (3.6K€ de plateforme vs 45K€ économisés)
+        </div>
+        
+        <p><strong>Marché :</strong> €215M TAM | 14 300 chirurgiens actifs en France</p>
+        
+        <p><strong>Équipe unique :</strong></p>
+        <ul>
+            <li><strong>S. Richard :</strong> 15+ ans d'expérience executive Silicon Valley, Ex-SVP/GM Bibliotheca, Ex-Director Comcast (partenariats Netflix/YouTube/Amazon), Ex-CPO/CTO You:Flourish (HIPAA healthtech) & Kanopy</li>
+            <li><strong>Dr. Derkenne :</strong> Chirurgien EN EXERCICE qui continue sa pratique + Président du Comité Consultatif Chirurgical, 2 ans d'utilisation quotidienne</li>
+        </ul>
+    </div>
+
+    <h2>1. Marché & Étude de Cas Dr. Derkenne</h2>
+    
+    <h3>Opportunité €215M - Problème Critique</h3>
+    <ul>
+        <li><strong>14 300 chirurgiens</strong> × millions d'interventions/an</li>
+        <li><strong>Crise RH :</strong> 70% peinent à recruter, 45K€/an par poste administratif</li>
+        <li><strong>Majorité utilisent solutions inadaptées</strong> = perte 5-7h/semaine</li>
+    </ul>
+    
+    <h3>📊 Cas Réel : Cabinet Dr. Derkenne</h3>
+    <p><strong>Avant :</strong> 3 chirurgiens + 2 secrétaires, croissance +30% → besoin 3ème secrétaire<br>
+    <strong>Solution :</strong> Application Airtable personnelle utilisée 2+ ans<br>
+    <strong>Résultat :</strong></p>
+    <ul>
+        <li>✅ 45 000€/an économisés (salaire + charges évités)</li>
+        <li>✅ 3-8K€/an économisés (250-650€/mois par poste évité)</li>
+        <li>✅ +30% activité gérée sans embauche</li>
+        <li>✅ 5-7h/semaine temps médical libéré</li>
+    </ul>
+    
+    <p><strong>⚠️ Limitation actuelle :</strong> Solution non déployable techniquement → Opportunité SaaS</p>
+
+    <h2>2. Stratégie Produit - MVP vers SaaS Certifié</h2>
+    
+    <h3>Fonctionnalités Clés (Validées Dr. Derkenne)</h3>
+    <ul>
+        <li>📅 Planning opératoire intelligent</li>
+        <li>💰 Codification CCAM automatique (+15-20% revenus)</li>
+        <li>📊 Tableaux de bord temps réel</li>
+        <li>📱 100% mobile-responsive</li>
+        <li>🔒 Hébergement HDS-ready (OVH Healthcare)</li>
+    </ul>
+
+    <h2>3. Go-to-Market - Adoption Progressive</h2>
+    
+    <h3>Stratégie 3 Phases</h3>
+    <ol>
+        <li><strong>Beta (Jan-Fév 2026) :</strong> 3-5 chirurgiens pilotes supervision intensive</li>
+        <li><strong>Lancement (Fév-Sep 2026) :</strong> 20-30 clients payants via réseau Dr. Derkenne</li>
+        <li><strong>Scale (Q4 2026) :</strong> 300 clients, partenariats cliniques</li>
+    </ol>
+    
+    <h3>Salons Stratégiques</h3>
+    <ul>
+        <li><strong>Congrès SOFCOT 2025</strong> (10-12 novembre, Paris) - Préparation & networking</li>
+        <li><strong>SantExpo 2026</strong> (19-21 mai, Paris) - Lancement officiel</li>
+        <li><strong>AIME Paris 2026</strong> (18-19 juin, Paris) - Showcase IA médicale</li>
+    </ul>
+    
+    <div class="kpi-box">
+        <h3>KPIs Oct 2025 - Déc 2026 (15 mois)</h3>
+        <ul>
+            <li><strong>Q1 2026 :</strong> 3-5 chirurgiens beta → 20-30 payants</li>
+            <li><strong>Q2 2026 :</strong> 50-75 chirurgiens/cliniques payants</li>
+            <li><strong>Q3 2026 :</strong> 150 chirurgiens/cliniques payants</li>
+            <li><strong>Q4 2026 :</strong> 300 chirurgiens/cliniques payants</li>
+            <li><strong>2 partenariats associations médicales</strong> signés</li>
+            <li><strong>5 cliniques privées</strong> sous contrat</li>
+            <li><strong>ARR fin 2026 :</strong> €900K-1M</li>
+            <li><strong>Économies clients cumulées :</strong> €13.5M+</li>
+        </ul>
+    </div>
+
+    <h2>4. Équipe & Avantages Concurrentiels</h2>
+    
+    <h3>Duo Fondateur Unique</h3>
+    
+    <p><strong>Stéphane Richard - Co-fondateur, CEO/CPO/CTO</strong></p>
+    <ul>
+        <li>15+ ans d'expérience executive dans la tech Silicon Valley et entreprises majeures</li>
+        <li>Parcours executive : SVP/GM Bibliotheca (croissance $50M→$100M), Director Comcast (partenariats stratégiques Netflix, YouTube, Amazon Prime), CPO/CTO You:Flourish (plateforme HIPAA-compliant healthtech), CPO/CTO Kanopy (exit réussi)</li>
+        <li>Leadership produit & tech : Construction et direction d'équipes produit/ingénierie dans plusieurs entreprises, consultant Fortune 500 et VCs depuis 2016</li>
+        <li>Capacité technique hands-on : Développe le MVP avec IA moderne (Claude, GPT-4, Copilot) - combinaison unique de vision business et exécution technique</li>
+    </ul>
+    
+    <p><strong>Dr. Renaud Derkenne - Co-fondateur, Directeur Médical & Président du Comité Consultatif Chirurgical</strong></p>
+    <ul>
+        <li><strong>Chirurgien qui CONTINUE sa pratique</strong> - reste connecté aux besoins réels du terrain</li>
+        <li>Double rôle stratégique : Continue d'opérer tout en conseillant la société = crédibilité maximale</li>
+        <li>2 ans d'utilisation quotidienne de la solution dans son cabinet</li>
+        <li>Réseau de chirurgiens pilotes qualifiés dans son cercle professionnel</li>
+        <li>Rémunération 100% equity jusqu'à Series A (engagement total)</li>
+    </ul>
+
+    <h2>5. Plan Financier - Budget Marketing & Ventes €125K</h2>
+    
+    <div class="financial-box">
+        <h3>🎯 Budget Marketing & Ventes Année 1 (Réaliste)</h3>
+        
+        <h4>Allocation Budget €125K</h4>
+        <ul>
+            <li><strong>Commercial santé (salaire) :</strong> €45K</li>
+            <li><strong>Recrutement commercial :</strong> €10K</li>
+            <li><strong>Support beta (temps partiel) :</strong> €5K</li>
+            <li><strong>Salons professionnels :</strong> €25K</li>
+            <li><strong>Marketing digital :</strong> €13K</li>
+            <li><strong>Partenariats médicaux :</strong> €12K</li>
+            <li><strong>CRM & outils vente :</strong> €5K</li>
+            <li><strong>Déplacements/démos :</strong> €10K</li>
+        </ul>
+        
+        <h4>Seed : €350K</h4>
+        <p><strong>Objectif :</strong> MVP + équipe commerciale initiale</p>
+        <ul>
+            <li>Développement MVP : €60K</li>
+            <li>Marketing & ventes : €125K</li>
+            <li>Infrastructure/certifications : €50K</li>
+            <li>Opérations/SG&A : €55K</li>
+            <li>Working capital : €60K</li>
+        </ul>
+    </div>
+    
+    <h3>Projections Révisées (alignées roadmap)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>An 1 (2026)</th>
+                <th>An 2 (2027)</th>
+                <th>An 3 (2028)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Clients</strong></td>
+                <td>20-30</td>
+                <td>300-350</td>
+                <td>800-1000</td>
+            </tr>
+            <tr>
+                <td><strong>ARR</strong></td>
+                <td>€54-90K</td>
+                <td>€900K-1.26M</td>
+                <td>€2.4-3.6M</td>
+            </tr>
+            <tr>
+                <td><strong>Économies clients</strong></td>
+                <td>€900K-1.35M</td>
+                <td>€13.5-15.75M</td>
+                <td>€36-45M</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>6. Roadmap Détaillée 2025-2026</h2>
+    
+    <h3>Oct-Déc 2025 : Développement & Préparation</h3>
+    <ul>
+        <li>✅ Développement MVP par S. Richard (IA-assisté)</li>
+        <li>✅ Préparation infrastructure cloud AWS/OVH Healthcare</li>
+        <li>✅ Participation Congrès SOFCOT (10-12 nov) - networking</li>
+        <li>✅ Recrutement commercial santé (déc-jan)</li>
+        <li>✅ Seed : €350K</li>
+        <li>⚠️ Pause congés Noël (20 déc - 5 jan)</li>
+    </ul>
+    
+    <h3>Jan-Fév 2026 : Beta Tests Intensifs</h3>
+    <ul>
+        <li>📊 3-5 chirurgiens pilotes (supervision quotidienne)</li>
+        <li>📊 Support temps partiel dédié (€5K budget)</li>
+        <li>📊 Collecte feedback & itérations rapides</li>
+        <li>📊 Préparation documentation & formation</li>
+    </ul>
+    
+    <h3>Fév-Juin 2026 : Lancement Commercial</h3>
+    <ul>
+        <li>🚀 Expansion à 20-30 chirurgiens/cliniques payants</li>
+        <li>🚀 SantExpo 2026 (19-21 mai) - lancement officiel</li>
+        <li>🚀 AIME Paris 2026 (18-19 juin) - showcase IA</li>
+        <li>🚀 1 partenariat association médicale</li>
+        <li>🚀 2 cliniques privées en test</li>
+    </ul>
+    
+    <h3>Q3-Q4 2026 : Consolidation & Croissance</h3>
+    <ul>
+        <li>🚀 Q3: Expansion à 150 chirurgiens/cliniques payants</li>
+        <li>🚀 Q4: Expansion à 300 chirurgiens/cliniques payants</li>
+        <li>📈 Certification HDS propriétaire</li>
+        <li>📈 Intégrations DPI (Easily, DxCare)</li>
+        <li>📈 Préparation Series A si KPIs atteints</li>
+    </ul>
+
+    <div class="decision-box">
+        <h3>✅ GO avec Timeline Réaliste</h3>
+        
+        <p><strong>Points Clés Ajustés :</strong></p>
+        <ol>
+            <li><strong>Beta restreinte :</strong> 3-5 chirurgiens pilotes (jan-fév 2026), pas 30 d'emblée</li>
+            <li><strong>Budget marketing :</strong> €125K total incluant salaire commercial</li>
+            <li><strong>KPIs An 1 :</strong> 20-30 clients payants (objectif réaliste)</li>
+            <li><strong>Salons stratégiques :</strong> SOFCOT, SantExpo, AIME</li>
+            <li><strong>Conversion beta :</strong> 100% visé avec accompagnement intensif</li>
+        </ol>
+    </div>
+
+    <hr>
+    
+    <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 30px 0;">
+        <p style="font-weight: 600; text-align: center; margin: 0;">
+            💰 <strong>L'essentiel :</strong> Transformation du cas Dr. Derkenne (45K€/an économisés) en SaaS scalable.<br>
+            Approche prudente : beta restreinte (3-5) puis expansion progressive (20-30).<br>
+            Budget marketing réaliste de €125K. Équipe : chirurgien-créateur + executive tech.
+        </p>
+        <p style="text-align: center; font-size: 1.2em; margin-top: 15px; color: #1565c0;">
+            <strong>Lancement : 1er octobre 2025</strong>
+        </p>
+    </div>
+    
+    <div class="footer">
+        <p>Document confidentiel - Septembre 2025<br>
+        © Stéphane Richard & Dr. Renaud Derkenne - Tous droits réservés</p>
+    </div>
+</body>
+</html>

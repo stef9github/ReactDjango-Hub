@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🎯 **LOCAL-FIRST DEVELOPMENT STRATEGY**
+
+**Important**: This project follows a **local-first development strategy** (see ADR-010) to maximize development velocity with Claude Code and other AI-assisted development tools. All services run directly on the host machine without containerization during development. Containerization is reserved for future production deployment when the platform reaches maturity.
+
 ## 📋 **SIMPLIFIED AGENT ARCHITECTURE**
 
 ### **🚀 Streamlined Agent System**
@@ -30,8 +34,8 @@ This project uses a **simplified agent architecture** with one agent per service
 - **`workflow`** - Workflow Intelligence: Process automation, AI workflows
 
 #### **Infrastructure & Coordination**
-- **`infrastructure`** - Infrastructure: Docker, Kubernetes, CI/CD, deployment
-- **`coordinator`** - Services Coordinator: API gateway, service mesh, integration
+- **`infrastructure`** - Infrastructure: Future production deployment (currently deferred per ADR-010)
+- **`coordinator`** - Services Coordinator: Service integration, API contracts
 
 #### **Leadership & Quality**
 - **`techlead`** - Technical Lead: Architecture decisions, research analysis, strategic planning
@@ -43,8 +47,8 @@ This project uses a **simplified agent architecture** with one agent per service
 | **Agent Type** | **Can Modify** | **Cannot Modify** |
 |----------------|----------------|-------------------|
 | **Service Agents** | Own service code, APIs, models, tests | Other services, infrastructure, coordination |
-| **Services Coordinator** | API contracts, service discovery, Kong config | Individual service logic, infrastructure deployment |
-| **Deployment Agent** | Docker, K8s, CI/CD, cloud resources | Service business logic, API endpoints |
+| **Services Coordinator** | API contracts, service integration patterns | Individual service logic, infrastructure |
+| **Infrastructure Agent** | Setup scripts, future deployment planning | Service business logic, API endpoints |
 | **Cross-Cutting Agents** | Quality/security configs, global standards | Service implementation, infrastructure |
 
 ### **🔄 Simplified Agent Workflow**
@@ -101,7 +105,7 @@ All agents are configured in `.claude/agents.yaml` with standardized definitions
 - **Authentication Service**: Python 3.13.7 + FastAPI + SQLAlchemy + PostgreSQL 17
 - **Business Logic Service**: Python 3.13.7 + Django 5.1.4 LTS + Django Ninja 1.4.3 + PostgreSQL 17  
 - **Frontend**: React 18 + Vite + Tailwind CSS
-- **Infrastructure**: Docker + Kubernetes
+- **Development**: Local-first approach for maximum velocity
 - **Security**: JWT tokens, MFA (email/SMS/TOTP), RBAC, audit trails
 
 ### **Key Features**
@@ -120,9 +124,10 @@ All agents are configured in `.claude/agents.yaml` with standardized definitions
 ```bash
 # Identity service - handles authentication, users, organizations  
 cd services/identity-service
+python -m venv venv               # Create virtual environment (first time only)
+source venv/bin/activate          # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
 python main.py                    # Runs on http://localhost:8001
-# OR: docker-compose up -d         # Full containerized stack
 ```
 
 #### **⚙️ Backend Service (Django)**
@@ -188,30 +193,35 @@ npm test -- --coverage
 npm test -- --watch
 ```
 
-### **Build and Deployment**
+### **Local Development Setup**
 
 ```bash
-# Development environment
-make dev                    # Start all services with hot reloading
+# One-time setup: Install PostgreSQL locally
+# macOS: brew install postgresql@17
+# Ubuntu: sudo apt install postgresql-17
+# Windows: Download from postgresql.org
+
+# Create databases for each service
+createdb identity_service_db
+createdb django_backend_db
+createdb communication_service_db
+createdb content_service_db
+createdb workflow_service_db
+
+# Development commands
+make dev                    # Start all services locally
 make stop                   # Stop all services  
 make migrate               # Run database migrations
+make test                  # Run all tests
+make lint                  # Run linting checks
+```
 
-# Production environment
-make prod-up               # Start production with Nginx + SSL
-make prod-down             # Stop production
-make migrate-prod          # Run production migrations
+### **Future Production Deployment**
 
-# Docker operations
-make docker-build          # Build development images
-make docker-build-prod     # Build optimized production images
-make docker-logs           # View service logs
-make docker-health         # Check service health
-make clean                 # Clean unused Docker resources
-
-# Direct Docker manager usage
-bash docker/docker-manager.sh up development
-bash docker/docker-manager.sh build production
-bash docker/docker-manager.sh logs development backend
+```bash
+# Note: Containerization will be considered for production
+# deployment when the platform reaches maturity.
+# For now, focus on local development for maximum velocity.
 ```
 
 ## 📁 **PROJECT STRUCTURE**
@@ -237,10 +247,10 @@ ReactDjango-Hub/
 │       ├── styles/            # Styling files
 │       ├── types/             # TypeScript type definitions
 │       └── contexts/          # React contexts
-├── infrastructure/            # Infrastructure as code
-│   ├── docker/                # Docker configurations
-│   ├── kubernetes/            # Kubernetes manifests
-│   └── scripts/               # Deployment scripts
+├── infrastructure/            # Infrastructure (future use)
+│   ├── docker/                # Docker configs (production only)
+│   ├── kubernetes/            # K8s manifests (future)
+│   └── scripts/               # Setup and utility scripts
 ├── .github/                   # GitHub workflows
 └── docs/                      # Project-wide documentation
 ```

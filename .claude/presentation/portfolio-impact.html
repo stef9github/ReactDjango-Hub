@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Impact - AI-Agent Development</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-text">AI-Agent Development</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="story.html" class="nav-link">Story</a>
+                <a href="paradigm-shift.html" class="nav-link">Paradigm</a>
+                <a href="methodology.html" class="nav-link">Methodology</a>
+                <a href="implementation.html" class="nav-link">Implementation</a>
+                <a href="platform-architecture.html" class="nav-link">Architecture</a>
+                <a href="portfolio-impact.html" class="nav-link active">Impact</a>
+                <a href="call-to-action.html" class="nav-link">Next Steps</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 87.5%"></div>
+    </div>
+
+    <!-- Page Header -->
+    <section class="page-header impact-header">
+        <div class="container">
+            <h1 class="page-title">Transform Your Entire Portfolio</h1>
+            <p class="page-subtitle">
+                Multiply value across every portfolio company with AI-agent development
+            </p>
+        </div>
+    </section>
+
+    <!-- Portfolio Overview -->
+    <section class="portfolio-overview">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">The Portfolio Multiplication Effect</h2>
+                <p class="section-subtitle">One methodology, unlimited applications</p>
+            </div>
+
+            <div class="multiplication-visual">
+                <div class="central-hub">
+                    <div class="hub-core">
+                        <i data-lucide="sparkles"></i>
+                        <h3>AI-Agent Platform</h3>
+                        <p>Core Technology</p>
+                    </div>
+                    <div class="portfolio-companies">
+                        <div class="company-node healthcare">
+                            <i data-lucide="heart"></i>
+                            <span>Healthcare</span>
+                        </div>
+                        <div class="company-node fintech">
+                            <i data-lucide="credit-card"></i>
+                            <span>FinTech</span>
+                        </div>
+                        <div class="company-node logistics">
+                            <i data-lucide="truck"></i>
+                            <span>Logistics</span>
+                        </div>
+                        <div class="company-node retail">
+                            <i data-lucide="shopping-bag"></i>
+                            <span>Retail</span>
+                        </div>
+                        <div class="company-node manufacturing">
+                            <i data-lucide="factory"></i>
+                            <span>Manufacturing</span>
+                        </div>
+                        <div class="company-node education">
+                            <i data-lucide="graduation-cap"></i>
+                            <span>Education</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="impact-summary">
+                <div class="impact-stat">
+                    <div class="stat-value">30-50%</div>
+                    <div class="stat-label">Development Cost Reduction</div>
+                </div>
+                <div class="impact-stat">
+                    <div class="stat-value">10x</div>
+                    <div class="stat-label">Speed to Market</div>
+                </div>
+                <div class="impact-stat">
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">Technical Debt Reduction</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cost Savings Analysis -->
+    <section class="cost-analysis">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Portfolio-Wide Cost Savings</h2>
+                <p class="section-subtitle">Real numbers based on typical PE portfolio</p>
+            </div>
+
+            <div class="savings-calculator">
+                <div class="calculator-inputs">
+                    <h3>Typical PE Portfolio</h3>
+                    <div class="input-row">
+                        <label>Portfolio Companies:</label>
+                        <span class="value">20 companies</span>
+                    </div>
+                    <div class="input-row">
+                        <label>Avg. Tech Spend/Company:</label>
+                        <span class="value">$2M/year</span>
+                    </div>
+                    <div class="input-row">
+                        <label>Development Team Size:</label>
+                        <span class="value">8-15 developers</span>
+                    </div>
+                </div>
+
+                <div class="savings-breakdown">
+                    <h3>Annual Savings with AI-Agents</h3>
+                    <div class="savings-chart">
+                        <canvas id="savingsChart"></canvas>
+                    </div>
+                    <div class="savings-details">
+                        <div class="saving-item">
+                            <span class="category">Development Costs</span>
+                            <span class="before">$40M</span>
+                            <span class="after">$12M</span>
+                            <span class="saved">-$28M (70%)</span>
+                        </div>
+                        <div class="saving-item">
+                            <span class="category">Time to Market</span>
+                            <span class="before">12 months</span>
+                            <span class="after">6 weeks</span>
+                            <span class="saved">-10 months</span>
+                        </div>
+                        <div class="saving-item">
+                            <span class="category">Maintenance</span>
+                            <span class="before">$8M/year</span>
+                            <span class="after">$2M/year</span>
+                            <span class="saved">-$6M (75%)</span>
+                        </div>
+                        <div class="saving-item total">
+                            <span class="category">Total Portfolio Savings</span>
+                            <span class="before">$48M</span>
+                            <span class="after">$14M</span>
+                            <span class="saved">-$34M/year</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competitive Advantages -->
+    <section class="competitive-advantages">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Competitive Advantages</h2>
+                <p class="section-subtitle">How AI-agents create sustainable competitive moats</p>
+            </div>
+
+            <div class="advantages-grid">
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i data-lucide="rocket"></i>
+                    </div>
+                    <h3>First-Mover Advantage</h3>
+                    <p>Launch new features and products 10x faster than competitors</p>
+                    <div class="advantage-metric">
+                        <strong>6 weeks</strong> vs 6-12 months traditional
+                    </div>
+                </div>
+
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i data-lucide="target"></i>
+                    </div>
+                    <h3>Market Responsiveness</h3>
+                    <p>Pivot and adapt to market changes in days, not quarters</p>
+                    <div class="advantage-metric">
+                        <strong>48 hours</strong> to implement major changes
+                    </div>
+                </div>
+
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <h3>Quality & Reliability</h3>
+                    <p>Consistent code quality and automated testing across portfolio</p>
+                    <div class="advantage-metric">
+                        <strong>95%+</strong> test coverage standard
+                    </div>
+                </div>
+
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i data-lucide="trending-up"></i>
+                    </div>
+                    <h3>Scalability</h3>
+                    <p>Scale development capacity without hiring constraints</p>
+                    <div class="advantage-metric">
+                        <strong>Unlimited</strong> parallel development
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implementation Roadmap -->
+    <section class="roadmap-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Portfolio Implementation Roadmap</h2>
+                <p class="section-subtitle">Systematic rollout across all portfolio companies</p>
+            </div>
+
+            <div class="roadmap-timeline">
+                <div class="roadmap-phase">
+                    <div class="phase-header">
+                        <span class="phase-number">Phase 1</span>
+                        <span class="phase-duration">Weeks 1-4</span>
+                    </div>
+                    <h3>Pilot Program</h3>
+                    <ul class="phase-tasks">
+                        <li>Select 2-3 portfolio companies</li>
+                        <li>Identify high-impact projects</li>
+                        <li>Deploy AI-agent teams</li>
+                        <li>Measure initial results</li>
+                    </ul>
+                    <div class="phase-outcome">
+                        <strong>Outcome:</strong> Proof of concept with measurable ROI
+                    </div>
+                </div>
+
+                <div class="roadmap-phase">
+                    <div class="phase-header">
+                        <span class="phase-number">Phase 2</span>
+                        <span class="phase-duration">Weeks 5-12</span>
+                    </div>
+                    <h3>Expansion</h3>
+                    <ul class="phase-tasks">
+                        <li>Roll out to 10 companies</li>
+                        <li>Establish center of excellence</li>
+                        <li>Train internal champions</li>
+                        <li>Standardize best practices</li>
+                    </ul>
+                    <div class="phase-outcome">
+                        <strong>Outcome:</strong> 50% portfolio coverage
+                    </div>
+                </div>
+
+                <div class="roadmap-phase">
+                    <div class="phase-header">
+                        <span class="phase-number">Phase 3</span>
+                        <span class="phase-duration">Weeks 13-24</span>
+                    </div>
+                    <h3>Full Deployment</h3>
+                    <ul class="phase-tasks">
+                        <li>Complete portfolio rollout</li>
+                        <li>Cross-portfolio knowledge sharing</li>
+                        <li>Develop custom agents</li>
+                        <li>Optimize workflows</li>
+                    </ul>
+                    <div class="phase-outcome">
+                        <strong>Outcome:</strong> 100% adoption, maximum value creation
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Metrics -->
+    <section class="success-metrics">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Measurable Success Metrics</h2>
+                <p class="section-subtitle">KPIs to track portfolio transformation</p>
+            </div>
+
+            <div class="metrics-dashboard">
+                <div class="metric-category">
+                    <h3>Development Velocity</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi">
+                            <span class="kpi-label">Feature Delivery</span>
+                            <span class="kpi-value">10x faster</span>
+                        </div>
+                        <div class="kpi">
+                            <span class="kpi-label">Bug Resolution</span>
+                            <span class="kpi-value">4 hours avg</span>
+                        </div>
+                        <div class="kpi">
+                            <span class="kpi-label">Release Frequency</span>
+                            <span class="kpi-value">Daily</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-category">
+                    <h3>Financial Impact</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi">
+                            <span class="kpi-label">Dev Cost Reduction</span>
+                            <span class="kpi-value">70-85%</span>
+                        </div>
+                        <div class="kpi">
+                            <span class="kpi-label">ROI</span>
+                            <span class="kpi-value">1,200%</span>
+                        </div>
+                        <div class="kpi">
+                            <span class="kpi-label">Payback Period</span>
+                            <span class="kpi-value">8 weeks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-category">
+                    <h3>Quality Metrics</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi">
+                            <span class="kpi-label">Code Quality</span>
+                            <span class="kpi-value">A+ rating</span>
+                        </div>
+                        <div class="kpi">
+                            <span class="kpi-label">Test Coverage</span>
+                            <span class="kpi-value">95%+</span>
+                        </div>
+                        <div class="kpi">
+                            <span class="kpi-label">Security Score</span>
+                            <span class="kpi-value">100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Transformation -->
+    <section class="transformation-vision">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">The Transformed Portfolio</h2>
+                <p class="section-subtitle">Your competitive advantage in the AI era</p>
+            </div>
+
+            <div class="transformation-benefits">
+                <div class="benefit-card">
+                    <i data-lucide="zap"></i>
+                    <h3>Innovation at Scale</h3>
+                    <p>Every portfolio company becomes a technology leader in their sector</p>
+                </div>
+                <div class="benefit-card">
+                    <i data-lucide="link"></i>
+                    <h3>Cross-Portfolio Synergies</h3>
+                    <p>Share innovations and best practices across all companies instantly</p>
+                </div>
+                <div class="benefit-card">
+                    <i data-lucide="chart-line"></i>
+                    <h3>Accelerated Exit Value</h3>
+                    <p>Higher multiples due to superior technology and growth velocity</p>
+                </div>
+            </div>
+
+            <div class="value-creation">
+                <h3>Portfolio Value Creation</h3>
+                <div class="value-metrics">
+                    <div class="value-item">
+                        <span class="metric">EBITDA Impact</span>
+                        <span class="increase">+35-45%</span>
+                    </div>
+                    <div class="value-item">
+                        <span class="metric">Exit Multiple</span>
+                        <span class="increase">+2-3x</span>
+                    </div>
+                    <div class="value-item">
+                        <span class="metric">Time to Exit</span>
+                        <span class="increase">-18 months</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Section -->
+    <section class="next-preview">
+        <div class="container">
+            <div class="preview-content">
+                <h2>Ready to Transform Your Portfolio?</h2>
+                <p>
+                    Let's discuss how to implement AI-agent development 
+                    across your portfolio companies
+                </p>
+                <a href="call-to-action.html" class="btn btn-primary btn-large">
+                    <span>Get Started Today</span>
+                    <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p>Stéphane Richard - CTO/CPO</p>
+                    <p>AI-Agent Development Methodology</p>
+                </div>
+                <div class="footer-nav">
+                    <a href="platform-architecture.html" class="footer-link">Previous: Architecture</a>
+                    <a href="call-to-action.html" class="footer-link">Next: Call to Action</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/presentation.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        // Create savings chart
+        const ctx = document.getElementById('savingsChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Development', 'Maintenance', 'Infrastructure', 'Training'],
+                    datasets: [{
+                        label: 'Traditional Costs',
+                        data: [40, 8, 5, 3],
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)'
+                    }, {
+                        label: 'AI-Agent Costs',
+                        data: [12, 2, 3, 0.5],
+                        backgroundColor: 'rgba(34, 197, 94, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

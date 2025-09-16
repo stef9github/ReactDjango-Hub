@@ -40,10 +40,27 @@ class DatabaseManager:
             return
             
         database_url = os.getenv("DATABASE_URL")
-        if not database_url:
-            raise ValueError("DATABASE_URL environment variable is required")
+        use_docker = os.getenv("USE_DOCKER", "false").lower() == "true"
         
-        # Convert PostgreSQL URL to async version
+        if not database_url:
+            if use_docker:
+                # Docker environment - use Docker service names
+                database_url = "postgresql+asyncpg://content_user:content_pass@content-db:5432/content_service"
+            else:
+                # Local development - use localhost and default PostgreSQL setup
+                user = os.getenv("DATABASE_USER", "stephanerichard")
+                password = os.getenv("DATABASE_PASSWORD", "")
+                host = os.getenv("DATABASE_HOST", "localhost")
+                port = os.getenv("DATABASE_PORT", "5432")
+                database = os.getenv("DATABASE_NAME", "content_service")
+                
+                # Build URL with or without password
+                if password:
+                    database_url = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
+                else:
+                    database_url = f"postgresql+asyncpg://{user}@{host}:{port}/{database}"
+        
+        # Convert PostgreSQL URL to async version if needed
         if database_url.startswith("postgresql://"):
             database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
         elif not database_url.startswith("postgresql+asyncpg://"):

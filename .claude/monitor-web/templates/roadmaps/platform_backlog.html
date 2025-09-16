@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Platform Backlog{% endblock %}
+
+{% block extra_css %}
+<style>
+    .backlog-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-left: 4px solid #28a745;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .priority-number {
+        width: 40px;
+        height: 40px;
+        background: #28a745;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .metric-badge {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        margin-right: 8px;
+    }
+    .value-high {
+        background: #d4edda;
+        color: #155724;
+    }
+    .value-medium {
+        background: #fff3cd;
+        color: #856404;
+    }
+    .value-low {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    .complexity-bar {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .complexity-fill {
+        height: 100%;
+        transition: width 0.3s;
+    }
+    .complexity-low { background: #28a745; }
+    .complexity-medium { background: #ffc107; }
+    .complexity-high { background: #dc3545; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Platform Feature Backlog</h2>
+                <div>
+                    <a href="{% url 'roadmap_dashboard' %}" class="btn btn-secondary">
+                        Back to Dashboard
+                    </a>
+                    <button class="btn btn-primary" onclick="reprioritize()">
+                        Re-prioritize
+                    </button>
+                </div>
+            </div>
+            <p class="text-muted mt-2">
+                Common features that can be shared across multiple products, prioritized by business value and technical feasibility
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h4>Prioritized Backlog</h4>
+            {% for item in backlog %}
+            <div class="backlog-card">
+                <div class="row">
+                    <div class="col-auto">
+                        <div class="priority-number">
+                            {{ item.platform_priority }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="mb-1">{{ item.feature.title }}</h5>
+                                <p class="text-muted mb-2">{{ item.feature.description }}</p>
+                            </div>
+                            <div>
+                                <span class="badge bg-primary">{{ item.feature.quarter }} {{ item.feature.year }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="metric-badge {% if item.business_value > 7 %}value-high{% elif item.business_value > 4 %}value-medium{% else %}value-low{% endif %}">
+                                Business Value: {{ item.business_value }}/10
+                            </span>
+                            <span class="metric-badge {% if item.technical_complexity > 7 %}value-high{% elif item.technical_complexity > 4 %}value-medium{% else %}value-low{% endif %}">
+                                Complexity: {{ item.technical_complexity }}/10
+                            </span>
+                            {% if item.estimated_savings_hours %}
+                            <span class="metric-badge value-high">
+                                Est. Savings: {{ item.estimated_savings_hours }}h
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-2">
+                            <small class="text-muted">Technical Complexity</small>
+                            <div class="complexity-bar">
+                                <div class="complexity-fill {% if item.technical_complexity > 7 %}complexity-high{% elif item.technical_complexity > 4 %}complexity-medium{% else %}complexity-low{% endif %}" 
+                                     style="width: {% widthratio item.technical_complexity 1 10 %}%"></div>
+                            </div>
+                        </div>
+                        
+                        {% if item.products_benefited %}
+                        <div class="mb-2">
+                            <small class="text-muted">Products Benefited:</small>
+                            {% for product in item.products_benefited %}
+                                <span class="badge bg-secondary">{{ product }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if item.feature.technical_components %}
+                        <div class="mb-2">
+                            <small class="text-muted">Technical Components:</small>
+                            {% for component in item.feature.technical_components %}
+                                <span class="badge bg-info">{{ component }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if item.notes %}
+                        <div class="alert alert-light mb-0 mt-2">
+                            <small>{{ item.notes }}</small>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary" onclick="editPriority({{ item.id }})">
+                                Edit Priority
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="startImplementation({{ item.feature.id }})">
+                                Start Implementation
+                            </button>
+                            <button class="btn btn-sm btn-outline-info" onclick="viewDetails({{ item.feature.id }})">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info">
+                No items in the platform backlog yet. Platform features will be added as they are identified through roadmap analysis.
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="col-md-4">
+            <h4>Backlog Statistics</h4>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6>Total Items</h6>
+                    <h3>{{ backlog|length }}</h3>
+                </div>
+            </div>
+            
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6>Total Estimated Savings</h6>
+                    <h3>
+                        {% with total_savings=backlog|dictsort:"estimated_savings_hours"|last %}
+                            {{ total_savings.estimated_savings_hours|default:0 }}h
+                        {% endwith %}
+                    </h3>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h6>Priority Distribution</h6>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>High Value (8-10)</span>
+                            <span class="badge bg-success">
+                                {{ backlog|dictsortreversed:"business_value"|slice:":3"|length }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Medium Value (5-7)</span>
+                            <span class="badge bg-warning">
+                                {{ backlog|dictsort:"business_value"|slice:"3:6"|length }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Low Value (1-4)</span>
+                            <span class="badge bg-secondary">
+                                {{ backlog|dictsort:"business_value"|slice:"6:"|length }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editPriority(itemId) {
+    const newPriority = prompt('Enter new priority (1-100):');
+    if (newPriority) {
+        // In a real implementation, this would update the priority
+        alert('Priority updated to: ' + newPriority);
+        location.reload();
+    }
+}
+
+function startImplementation(featureId) {
+    if (confirm('Start implementation workflow for this feature?')) {
+        fetch(`/roadmaps/workflow/${featureId}/update/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                state: 'tech_review',
+                notes: 'Started implementation from platform backlog'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Implementation workflow started');
+                location.reload();
+            }
+        });
+    }
+}
+
+function viewDetails(featureId) {
+    // In a real implementation, this would open a modal with full feature details
+    window.location.href = '/admin/roadmaps/feature/' + featureId + '/change/';
+}
+
+function reprioritize() {
+    alert('Reprioritization algorithm would run here based on:\n- Business value\n- Technical complexity\n- Dependencies\n- Resource availability');
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

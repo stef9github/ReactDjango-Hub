@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Agent Control Center{% endblock %}
+
+{% block extra_css %}
+<style>
+    .agent-card {
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+    }
+    .agent-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .agent-running {
+        border-color: #28a745;
+        background: linear-gradient(135deg, #d4edda 0%, #ffffff 100%);
+    }
+    .agent-idle {
+        border-color: #6c757d;
+    }
+    .claude-badge {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+    }
+    .task-preview {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .invoke-button {
+        background: linear-gradient(135deg, #00C9FF 0%, #92FE9D 100%);
+        color: #333;
+        border: none;
+        font-weight: bold;
+    }
+    .invoke-button:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>🤖 Agent Control Center</h2>
+            <p class="text-muted">Invoke Claude agents directly from the dashboard</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" onclick="showPlatformFeatureModal()">
+                <i class="bi bi-plus-circle"></i> Create Platform Feature
+            </button>
+        </div>
+    </div>
+
+    <!-- Agent Grid -->
+    <div class="row">
+        {% for agent in agents %}
+        <div class="col-md-6 col-lg-4">
+            <div class="agent-card agent-{{ agent.status }}">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5>{{ agent.name }}</h5>
+                    <span class="claude-badge">Claude Agent</span>
+                </div>
+                
+                <p class="text-muted small">{{ agent.description }}</p>
+                
+                <div class="mb-3">
+                    <span class="badge bg-{{ agent.status|default:'secondary' }}">
+                        {{ agent.get_status_display }}
+                    </span>
+                    <span class="badge bg-info ms-1">{{ agent.type }}</span>
+                    {% if agent.tasks_completed > 0 %}
+                    <span class="badge bg-success ms-1">
+                        {{ agent.tasks_completed }} tasks completed
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Pending Tasks -->
+                {% if agent.pending_tasks %}
+                <div class="task-preview">
+                    <h6>Pending Tasks:</h6>
+                    {% for task in agent.pending_tasks %}
+                    <div class="small mb-1">
+                        <i class="bi bi-chevron-right"></i> {{ task.title }}
+                        <span class="badge bg-warning ms-1">{{ task.priority }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Agent Actions -->
+                <div class="mt-3 d-grid gap-2">
+                    <button class="btn invoke-button" onclick="invokeAgent('{{ agent.id }}', '{{ agent.name }}')">
+                        <i class="bi bi-lightning-fill"></i> Invoke {{ agent.name }}
+                    </button>
+                    {% if agent.pending_tasks %}
+                    <button class="btn btn-success" onclick="executeAgentTasks('{{ agent.id }}')">
+                        <i class="bi bi-play-fill"></i> Execute Tasks
+                    </button>
+                    {% endif %}
+                    <button class="btn btn-outline-secondary" onclick="viewAgentDetails('{{ agent.id }}')">
+                        <i class="bi bi-info-circle"></i> View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5>⚡ Quick Actions</h5>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-primary w-100" onclick="runAllPlatformTasks()">
+                                <i class="bi bi-collection-play"></i> Run All Platform Tasks
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-success w-100" onclick="runTestSuite()">
+                                <i class="bi bi-check2-square"></i> Run Test Suite
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-warning w-100" onclick="generateDocumentation()">
+                                <i class="bi bi-file-text"></i> Generate Docs
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-info w-100" onclick="analyzeCodebase()">
+                                <i class="bi bi-graph-up"></i> Analyze Codebase
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Platform Feature Creation Modal -->
+<div class="modal fade" id="platformFeatureModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Platform Feature</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="platformFeatureForm">
+                    <div class="mb-3">
+                        <label class="form-label">Feature Title</label>
+                        <input type="text" class="form-control" id="featureTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="featureDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="featurePriority">
+                                <option value="critical">Critical</option>
+                                <option value="high" selected>High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estimated Days</label>
+                            <input type="number" class="form-control" id="featureEffort" min="1" max="10" value="3">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label">Assign to Agents</label>
+                        <div class="row">
+                            {% for agent in agents %}
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="{{ agent.id }}" id="agent_check_{{ agent.id }}">
+                                    <label class="form-check-label" for="agent_check_{{ agent.id }}">
+                                        {{ agent.name }}
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createPlatformFeature()">
+                    <i class="bi bi-plus-circle"></i> Create Feature
+                </button>
+                <button type="button" class="btn btn-success" onclick="createAndInvoke()">
+                    <i class="bi bi-lightning-fill"></i> Create & Invoke Agents
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agent Invocation Modal -->
+<div class="modal fade" id="agentInvokeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invoke Claude Agent</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> This will launch the Claude agent in your terminal
+                </div>
+                <h6>Agent: <span id="invokeAgentName"></span></h6>
+                <p>Select the action to perform:</p>
+                <div class="list-group">
+                    <button class="list-group-item list-group-item-action" onclick="invokeWithAction('implement-features')">
+                        <strong>Implement Pending Features</strong>
+                        <br><small>Work on approved features in the queue</small>
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="invokeWithAction('fix-bugs')">
+                        <strong>Fix Bugs</strong>
+                        <br><small>Scan for and fix bugs in the codebase</small>
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="invokeWithAction('write-tests')">
+                        <strong>Write Tests</strong>
+                        <br><small>Create unit and integration tests</small>
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="invokeWithAction('refactor')">
+                        <strong>Refactor Code</strong>
+                        <br><small>Improve code quality and structure</small>
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="invokeWithAction('custom')">
+                        <strong>Custom Task</strong>
+                        <br><small>Provide custom instructions</small>
+                    </button>
+                </div>
+                <div id="customTaskInput" class="mt-3" style="display:none;">
+                    <label class="form-label">Custom Instructions:</label>
+                    <textarea class="form-control" id="customInstructions" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmInvokeBtn" onclick="confirmInvoke()">
+                    <i class="bi bi-terminal"></i> Launch Agent
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentAgentId = null;
+let currentAction = null;
+
+function showPlatformFeatureModal() {
+    const modal = new bootstrap.Modal(document.getElementById('platformFeatureModal'));
+    modal.show();
+}
+
+function createPlatformFeature() {
+    const data = {
+        title: document.getElementById('featureTitle').value,
+        description: document.getElementById('featureDescription').value,
+        priority: document.getElementById('featurePriority').value,
+        effort_days: document.getElementById('featureEffort').value,
+        assigned_agents: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value)
+    };
+    
+    fetch('/roadmaps/create-platform-feature/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('platformFeatureModal')).hide();
+            alert('Platform feature created successfully!');
+            location.reload();
+        }
+    });
+}
+
+function createAndInvoke() {
+    createPlatformFeature();
+    // After creating, invoke relevant agents
+    setTimeout(() => {
+        const checkedAgents = document.querySelectorAll('input[type="checkbox"]:checked');
+        checkedAgents.forEach(cb => {
+            invokeAgent(cb.value, cb.nextElementSibling.textContent);
+        });
+    }, 1000);
+}
+
+function invokeAgent(agentId, agentName) {
+    currentAgentId = agentId;
+    document.getElementById('invokeAgentName').textContent = agentName;
+    const modal = new bootstrap.Modal(document.getElementById('agentInvokeModal'));
+    modal.show();
+}
+
+function invokeWithAction(action) {
+    currentAction = action;
+    if (action === 'custom') {
+        document.getElementById('customTaskInput').style.display = 'block';
+    } else {
+        document.getElementById('customTaskInput').style.display = 'none';
+    }
+}
+
+function confirmInvoke() {
+    let instructions = '';
+    if (currentAction === 'custom') {
+        instructions = document.getElementById('customInstructions').value;
+    }
+    
+    // Send request to invoke agent
+    fetch(`/roadmaps/agent/${currentAgentId}/invoke/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            action: currentAction,
+            instructions: instructions
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('agentInvokeModal')).hide();
+            alert(`Agent launched! Check your terminal for output.\nCommand: ${result.command}`);
+        } else {
+            alert('Failed to invoke agent: ' + result.error);
+        }
+    });
+}
+
+function executeAgentTasks(agentId) {
+    if (confirm('Execute all pending tasks for this agent?')) {
+        fetch(`/roadmaps/agent/${agentId}/execute-tasks/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            alert(result.message);
+            location.reload();
+        });
+    }
+}
+
+function runAllPlatformTasks() {
+    if (confirm('Run all platform tasks across all agents?')) {
+        alert('Starting platform task execution. This will invoke multiple agents.');
+        // In production, this would trigger actual agent execution
+    }
+}
+
+function runTestSuite() {
+    alert('Running test suite with ag-reviewer agent...');
+}
+
+function generateDocumentation() {
+    alert('Generating documentation with ag-techlead agent...');
+}
+
+function analyzeCodebase() {
+    alert('Analyzing codebase with ag-security agent...');
+}
+
+function viewAgentDetails(agentId) {
+    window.location.href = `/agents/${agentId}/`;
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

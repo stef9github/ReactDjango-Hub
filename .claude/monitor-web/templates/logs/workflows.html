@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Workflow Logs - Monitor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Workflow Execution Logs</h1>
+            <p class="text-muted">Track workflow executions and their progress</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" onclick="refreshWorkflows()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Total Workflows</h6>
+                    <h3 class="text-primary">{{ stats.total|default:0 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Successful</h6>
+                    <h3 class="text-success">{{ stats.successful|default:0 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Failed</h6>
+                    <h3 class="text-danger">{{ stats.failed|default:0 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Avg Duration</h6>
+                    <h3 class="text-info">{{ stats.avg_duration|floatformat:1|default:"0" }}s</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All</option>
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="running" {% if request.GET.status == 'running' %}selected{% endif %}>Running</option>
+                        <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>Failed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Workflow Type</label>
+                    <select name="workflow_type" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="feature" {% if request.GET.workflow_type == 'feature' %}selected{% endif %}>Feature Development</option>
+                        <option value="bugfix" {% if request.GET.workflow_type == 'bugfix' %}selected{% endif %}>Bug Fix</option>
+                        <option value="deployment" {% if request.GET.workflow_type == 'deployment' %}selected{% endif %}>Deployment</option>
+                        <option value="security" {% if request.GET.workflow_type == 'security' %}selected{% endif %}>Security Audit</option>
+                        <option value="update" {% if request.GET.workflow_type == 'update' %}selected{% endif %}>Dependency Update</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Time Range</label>
+                    <select name="days" class="form-select">
+                        <option value="1" {% if request.GET.days == '1' %}selected{% endif %}>Last 24 hours</option>
+                        <option value="7" {% if request.GET.days == '7' or not request.GET.days %}selected{% endif %}>Last 7 days</option>
+                        <option value="30" {% if request.GET.days == '30' %}selected{% endif %}>Last 30 days</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Active Workflows -->
+    {% if active_workflows %}
+    <div class="card mb-4">
+        <div class="card-header bg-warning bg-opacity-10">
+            <h5 class="mb-0">🔄 Currently Running</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Workflow</th>
+                            <th>Type</th>
+                            <th>Started</th>
+                            <th>Duration</th>
+                            <th>Progress</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for workflow in active_workflows %}
+                        <tr>
+                            <td>
+                                <strong>{{ workflow.name }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ workflow.workflow_type }}</span>
+                            </td>
+                            <td>{{ workflow.started_at|date:"H:i:s" }}</td>
+                            <td>{{ workflow.duration }}s</td>
+                            <td>
+                                <div class="progress" style="width: 150px;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                         style="width: {{ workflow.progress|default:0 }}%">
+                                        {{ workflow.progress|default:0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" onclick="stopWorkflow({{ workflow.id }})">
+                                    <i class="bi bi-stop-circle"></i> Stop
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Workflow History -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Workflow History</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Workflow</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Started</th>
+                            <th>Duration</th>
+                            <th>Agents</th>
+                            <th>Result</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for workflow in workflows %}
+                        <tr>
+                            <td>
+                                <strong>{{ workflow.name }}</strong>
+                                {% if workflow.description %}
+                                    <br><small class="text-muted">{{ workflow.description|truncatewords:10 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">{{ workflow.workflow_type }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if workflow.status == 'completed' %}success{% elif workflow.status == 'failed' %}danger{% elif workflow.status == 'running' %}warning{% else %}secondary{% endif %}">
+                                    {{ workflow.get_status_display|default:workflow.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <small>{{ workflow.started_at|date:"Y-m-d H:i" }}</small>
+                            </td>
+                            <td>
+                                {% if workflow.completed_at %}
+                                    {{ workflow.duration|floatformat:1 }}s
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for agent in workflow.agents.all %}
+                                    <span class="badge bg-info">{{ agent.name }}</span>
+                                {% empty %}
+                                    -
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if workflow.result %}
+                                    <small>{{ workflow.result|truncatewords:5 }}</small>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewDetails({{ workflow.id }})">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                {% if workflow.status == 'failed' %}
+                                    <button class="btn btn-sm btn-outline-warning" onclick="retryWorkflow({{ workflow.id }})">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
+                                <p class="text-muted mt-2">No workflows found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if is_paginated %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function refreshWorkflows() {
+    window.location.reload();
+}
+
+function viewDetails(workflowId) {
+    // In a real implementation, this would show a modal with details
+    window.location.href = `/logs/workflows/${workflowId}/`;
+}
+
+function stopWorkflow(workflowId) {
+    if (confirm('Stop this workflow?')) {
+        fetch(`/logs/api/workflows/${workflowId}/stop/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+}
+
+function retryWorkflow(workflowId) {
+    if (confirm('Retry this workflow?')) {
+        fetch(`/logs/api/workflows/${workflowId}/retry/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+}
+
+// Auto-refresh for active workflows
+{% if active_workflows %}
+setTimeout(function() {
+    window.location.reload();
+}, 10000);  // Refresh every 10 seconds if there are active workflows
+{% endif %}
+</script>
+{% endblock %}

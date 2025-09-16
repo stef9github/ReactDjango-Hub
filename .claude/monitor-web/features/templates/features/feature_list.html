@@ -1,0 +1,544 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feature Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feature-card {
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+        cursor: move;
+    }
+    .feature-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .feature-card.dragging {
+        opacity: 0.5;
+    }
+    .priority-LOW { border-left-color: #10B981; }
+    .priority-MEDIUM { border-left-color: #F59E0B; }
+    .priority-HIGH { border-left-color: #EF4444; }
+    .priority-CRITICAL { border-left-color: #7C3AED; }
+    
+    .feature-stats {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .inline-edit {
+        border: 1px dashed transparent;
+        padding: 2px 4px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    .inline-edit:hover {
+        border-color: #007bff;
+        background: #f0f8ff;
+        cursor: text;
+    }
+    
+    .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        background: #e9ecef;
+        border-radius: 12px;
+        font-size: 0.85em;
+        margin: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Feature Management</h1>
+        <div>
+            <a href="{% url 'features:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> New Feature
+            </a>
+            <div class="btn-group ms-2">
+                <a href="{% url 'features:list' %}" class="btn btn-outline-secondary active">
+                    <i class="bi bi-list"></i> List
+                </a>
+                <a href="{% url 'features:kanban' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-kanban"></i> Kanban
+                </a>
+                <a href="{% url 'features:roadmap' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-calendar3"></i> Roadmap
+                </a>
+                <a href="{% url 'features:statistics' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-graph-up"></i> Stats
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total</h5>
+                    <h2 class="text-primary">{{ stats.total }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Backlog</h5>
+                    <h2 class="text-secondary">{{ stats.backlog }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">In Progress</h5>
+                    <h2 class="text-warning">{{ stats.in_progress }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Done</h5>
+                    <h2 class="text-success">{{ stats.done }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Avg Effort</h5>
+                    <h2 class="text-info">{{ stats.avg_effort|floatformat:1 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Effort</h5>
+                    <h2 class="text-danger">{{ stats.total_effort }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="all">All Status</option>
+                    {% for code, name in status_choices %}
+                        <option value="{{ code }}" {% if request.GET.status == code %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="priority" class="form-select form-select-sm">
+                    <option value="all">All Priority</option>
+                    {% for code, name in priority_choices %}
+                        <option value="{{ code }}" {% if request.GET.priority == code %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="category" class="form-select form-select-sm">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" name="search" class="form-control" placeholder="Search..." 
+                           value="{{ request.GET.search }}">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Bulk Actions -->
+    <div class="mb-3">
+        <div class="btn-group">
+            <button class="btn btn-sm btn-outline-secondary" onclick="selectAll()">
+                <i class="bi bi-check-square"></i> Select All
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="deselectAll()">
+                <i class="bi bi-square"></i> Deselect All
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="bulkAction('archive')">
+                <i class="bi bi-archive"></i> Archive Selected
+            </button>
+            <button class="btn btn-sm btn-outline-warning" onclick="showBulkAssign()">
+                <i class="bi bi-person-plus"></i> Assign Selected
+            </button>
+        </div>
+    </div>
+    
+    <!-- Features List -->
+    <div id="features-container" class="row">
+        {% for feature in features %}
+        <div class="col-12 mb-3">
+            <div class="card feature-card priority-{{ feature.priority }}" 
+                 data-feature-id="{{ feature.id }}"
+                 data-priority-order="{{ feature.priority_order }}"
+                 draggable="true">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <input type="checkbox" class="form-check-input feature-checkbox" 
+                                   value="{{ feature.id }}">
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title mb-1">
+                                <span class="inline-edit" data-field="title" data-feature="{{ feature.id }}">
+                                    {{ feature.title }}
+                                </span>
+                                {% if feature.category %}
+                                    <span class="badge bg-secondary ms-2">{{ feature.category.name }}</span>
+                                {% endif %}
+                            </h5>
+                            <p class="card-text text-muted mb-2">
+                                <span class="inline-edit" data-field="description" data-feature="{{ feature.id }}">
+                                    {{ feature.description|truncatewords:30 }}
+                                </span>
+                            </p>
+                            <div class="mb-2">
+                                {% for tag in feature.tags %}
+                                    <span class="tag">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-auto text-center">
+                            <span class="badge bg-{{ feature.get_priority_color|slice:'1:' }} mb-2">
+                                {{ feature.get_priority_display }}
+                            </span>
+                            <br>
+                            <span class="badge bg-{{ feature.get_status_color|slice:'1:' }} mb-2">
+                                {{ feature.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="col-auto text-center">
+                            <div class="mb-2">
+                                <strong>Effort:</strong> 
+                                <span class="inline-edit" data-field="estimated_effort" data-feature="{{ feature.id }}">
+                                    {{ feature.estimated_effort }}
+                                </span>
+                            </div>
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ feature.progress_percentage }}%"
+                                     aria-valuenow="{{ feature.progress_percentage }}" 
+                                     aria-valuemin="0" aria-valuemax="100">
+                                    {{ feature.progress_percentage }}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="btn-group">
+                                <a href="{% url 'features:detail' feature.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'features:edit' feature.id %}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'features:plan' feature.id %}" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-clipboard-check"></i> Plan
+                                </a>
+                                {% if feature.status == 'PLANNED' %}
+                                <button onclick="implementFeature({{ feature.id }})" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-play-circle"></i> Implement
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Assigned Agents -->
+                    {% if feature.assigned_agents %}
+                    <div class="mt-2">
+                        <small class="text-muted">Assigned to:</small>
+                        {% for agent in feature.assigned_agents %}
+                            <span class="badge bg-info">{{ agent }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No features found. <a href="{% url 'features:create' %}">Create your first feature</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Bulk Assign Modal -->
+<div class="modal fade" id="bulkAssignModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Features to Agent</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <select id="bulkAssignAgent" class="form-select">
+                    <option value="backend">Backend Agent</option>
+                    <option value="frontend">Frontend Agent</option>
+                    <option value="infrastructure">Infrastructure Agent</option>
+                    <option value="security">Security Agent</option>
+                    <option value="testing">Testing Agent</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="bulkAssign()">Assign</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+// Initialize Sortable for drag-and-drop
+const container = document.getElementById('features-container');
+if (container) {
+    Sortable.create(container, {
+        animation: 150,
+        handle: '.feature-card',
+        onEnd: function(evt) {
+            const featureId = evt.item.querySelector('.feature-card').dataset.featureId;
+            const newOrder = evt.newIndex;
+            
+            fetch("{% url 'features:update_order' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    feature_id: featureId,
+                    new_order: newOrder
+                })
+            });
+        }
+    });
+}
+
+// Inline editing
+document.querySelectorAll('.inline-edit').forEach(element => {
+    element.addEventListener('click', function() {
+        const field = this.dataset.field;
+        const featureId = this.dataset.feature;
+        const currentValue = this.textContent.trim();
+        
+        const input = document.createElement('input');
+        input.type = field === 'estimated_effort' ? 'number' : 'text';
+        input.value = currentValue;
+        input.className = 'form-control form-control-sm';
+        
+        this.replaceWith(input);
+        input.focus();
+        input.select();
+        
+        input.addEventListener('blur', function() {
+            saveInlineEdit(this, field, featureId);
+        });
+        
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                saveInlineEdit(this, field, featureId);
+            }
+        });
+    });
+});
+
+function saveInlineEdit(input, field, featureId) {
+    const newValue = input.value;
+    
+    fetch("{% url 'features:inline_edit' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            feature_id: featureId,
+            field_name: field,
+            new_value: newValue
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const span = document.createElement('span');
+            span.className = 'inline-edit';
+            span.dataset.field = field;
+            span.dataset.feature = featureId;
+            span.textContent = newValue;
+            input.replaceWith(span);
+            
+            // Re-attach event listener
+            span.addEventListener('click', arguments.callee);
+        }
+    });
+}
+
+// Bulk actions
+function selectAll() {
+    document.querySelectorAll('.feature-checkbox').forEach(cb => cb.checked = true);
+}
+
+function deselectAll() {
+    document.querySelectorAll('.feature-checkbox').forEach(cb => cb.checked = false);
+}
+
+function getSelectedFeatures() {
+    const selected = [];
+    document.querySelectorAll('.feature-checkbox:checked').forEach(cb => {
+        selected.push(cb.value);
+    });
+    return selected;
+}
+
+function bulkAction(action) {
+    const featureIds = getSelectedFeatures();
+    if (featureIds.length === 0) {
+        alert('Please select at least one feature');
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to ${action} ${featureIds.length} features?`)) {
+        return;
+    }
+    
+    fetch("{% url 'features:bulk_action' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            feature_ids: featureIds,
+            action: action
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        }
+    });
+}
+
+function showBulkAssign() {
+    const featureIds = getSelectedFeatures();
+    if (featureIds.length === 0) {
+        alert('Please select at least one feature');
+        return;
+    }
+    
+    const modal = new bootstrap.Modal(document.getElementById('bulkAssignModal'));
+    modal.show();
+}
+
+function bulkAssign() {
+    const featureIds = getSelectedFeatures();
+    const agent = document.getElementById('bulkAssignAgent').value;
+    
+    fetch("{% url 'features:bulk_action' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            feature_ids: featureIds,
+            action: 'assign',
+            agent: agent
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        }
+    });
+}
+
+function implementFeature(featureId) {
+    if (!confirm('Start implementation of this feature?')) {
+        return;
+    }
+    
+    fetch(`/features/${featureId}/implement/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

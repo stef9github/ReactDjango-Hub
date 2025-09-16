@@ -899,5 +899,5 @@ npx openapi-typescript http://localhost:8000/openapi.json -o src/types/backend-a
 
 **Document maintained by**: Technical Lead Agent  
 **For**: Frontend Agent  
-**Last updated**: December 10, 2024  
-**Next review**: January 10, 2025
+**Last updated**: September 10, 2025  
+**Next review**: October 10, 2025

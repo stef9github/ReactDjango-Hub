@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaire - Optimisation de la Gestion Administrative en Chirurgie</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .time-indicator {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .intro-box {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .intro-box h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .intro-box p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        .highlight-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #fafafa;
+            border-radius: 12px;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            margin-bottom: 25px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e8eaf6;
+            padding-bottom: 10px;
+        }
+        
+        .question-group {
+            margin-bottom: 25px;
+        }
+        
+        .question-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .checkbox-group,
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkbox-item:hover,
+        .radio-item:hover {
+            background: #f5f5f5;
+            transform: translateX(5px);
+        }
+        
+        input[type="checkbox"],
+        input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        
+        .scale-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .scale-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 10px;
+            transition: all 0.3s;
+        }
+        
+        .scale-item:hover {
+            transform: scale(1.2);
+        }
+        
+        .scale-item input {
+            display: none;
+        }
+        
+        .scale-item label {
+            display: block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .scale-item input:checked + label {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .ranking-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .ranking-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            cursor: move;
+            display: flex;
+            align-items: center;
+        }
+        
+        .ranking-item::before {
+            content: "☰";
+            margin-right: 15px;
+            color: #999;
+        }
+        
+        .submit-section {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+            border-radius: 12px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .footer {
+            padding: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            background: #f8f9fa;
+        }
+        
+        .quote {
+            font-style: italic;
+            color: #667eea;
+            font-size: 1.1em;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .scale-group {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            
+            .submit-section {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Optimisation de la Gestion Administrative en Chirurgie</h1>
+            <div class="subtitle">Questionnaire de Recherche - Dr. Renaud Derkenne</div>
+            <div class="time-indicator">⏱️ 5-7 minutes</div>
+        </div>
+        
+        <div class="content">
+            <div class="intro-box">
+                <h2>Cher Confrère, Chère Consœur,</h2>
+                
+                <p>Je suis le Dr. Renaud Derkenne, chirurgien en exercice. Comme vous, je jongle quotidiennement entre le bloc opératoire et les tâches administratives chronophages qui grignotent notre temps médical précieux.</p>
+                
+                <p>Il y a deux ans, face à la croissance de notre cabinet (3 chirurgiens), nous étions sur le point de recruter une troisième secrétaire médicale. J'ai alors développé une solution numérique personnelle qui nous a permis d'éviter cette embauche, économisant ainsi <strong>45 000€ par an</strong> tout en améliorant notre efficacité.</p>
+                
+                <div class="highlight-box">
+                    <strong>Pourquoi ce questionnaire ?</strong><br>
+                    Avec mon associé Stéphane Richard (expert tech avec 15 ans d'expérience Silicon Valley), nous transformons cette solution en une plateforme professionnelle accessible à tous les chirurgiens. Votre retour d'expérience est crucial pour créer l'outil qui répond vraiment à NOS besoins.
+                </div>
+                
+                <p>Ce questionnaire prend <strong>5 à 7 minutes</strong>. Vos réponses restent confidentielles et serviront uniquement à façonner une solution par et pour les chirurgiens.</p>
+                
+                <p>Merci de votre temps et de votre contribution à l'amélioration de notre pratique quotidienne.</p>
+                
+                <p>Confraternellement,<br>
+                <strong>Dr. Renaud Derkenne</strong></p>
+            </div>
+            
+            <form id="surgeonSurvey">
+                <!-- Section 1: Votre Profil et Pratique -->
+                <div class="section">
+                    <h3>📋 Section 1 : Votre Profil et Pratique</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Quelle est votre spécialité chirurgicale ? <span class="required">*</span>
+                        </label>
+                        <select name="specialty" required>
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="ortho">Orthopédie et traumatologie</option>
+                            <option value="visceral">Chirurgie viscérale et digestive</option>
+                            <option value="cardiac">Chirurgie cardiaque</option>
+                            <option value="vascular">Chirurgie vasculaire</option>
+                            <option value="plastic">Chirurgie plastique et esthétique</option>
+                            <option value="neuro">Neurochirurgie</option>
+                            <option value="uro">Urologie</option>
+                            <option value="gyneco">Gynécologie chirurgicale</option>
+                            <option value="pediatric">Chirurgie pédiatrique</option>
+                            <option value="maxillo">Chirurgie maxillo-faciale</option>
+                            <option value="thoracic">Chirurgie thoracique</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Dans quel(s) type(s) d'établissement exercez-vous ? <span class="required">*</span>
+                        </label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="private" name="practice[]" value="private">
+                                <label for="private">Cabinet privé/libéral</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="clinic" name="practice[]" value="clinic">
+                                <label for="clinic">Clinique privée</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="hospital" name="practice[]" value="hospital">
+                                <label for="hospital">Hôpital public/CHU</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="mixed" name="practice[]" value="mixed">
+                                <label for="mixed">Exercice mixte</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Combien de chirurgiens exercent dans votre structure ? <span class="required">*</span>
+                        </label>
+                        <input type="number" name="num_surgeons" min="1" required>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Nombre d'interventions chirurgicales par mois (environ) : <span class="required">*</span>
+                        </label>
+                        <select name="interventions_month" required>
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="<20">Moins de 20</option>
+                            <option value="20-50">20 à 50</option>
+                            <option value="51-100">51 à 100</option>
+                            <option value="101-200">101 à 200</option>
+                            <option value=">200">Plus de 200</option>
+                        </select>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Depuis combien d'années exercez-vous ?
+                        </label>
+                        <input type="number" name="years_practice" min="0">
+                    </div>
+                </div>
+                
+                <!-- Section 2: Organisation Administrative Actuelle -->
+                <div class="section">
+                    <h3>👥 Section 2 : Organisation Administrative Actuelle</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Combien de secrétaires médicales/assistants travaillent dans votre structure ? <span class="required">*</span>
+                        </label>
+                        <input type="number" name="num_secretaries" min="0" required>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Avez-vous dû embaucher du personnel administratif supplémentaire ces 2 dernières années ?
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="hired_yes" name="hired_recent" value="yes">
+                                <label for="hired_yes">Oui</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="hired_no" name="hired_recent" value="no">
+                                <label for="hired_no">Non</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="hired_considering" name="hired_recent" value="considering">
+                                <label for="hired_considering">Non, mais nous l'envisageons</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Quel est le coût mensuel estimé de votre personnel administratif (salaires + charges) ?
+                        </label>
+                        <select name="admin_cost">
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="<2000">Moins de 2 000€</option>
+                            <option value="2000-4000">2 000€ à 4 000€</option>
+                            <option value="4001-6000">4 001€ à 6 000€</option>
+                            <option value="6001-10000">6 001€ à 10 000€</option>
+                            <option value=">10000">Plus de 10 000€</option>
+                        </select>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Quelle surface de bureau est dédiée au travail administratif (m²) ?
+                        </label>
+                        <input type="number" name="office_space" min="0">
+                    </div>
+                </div>
+                
+                <!-- Section 3: Outils et Systèmes Utilisés -->
+                <div class="section">
+                    <h3>🛠️ Section 3 : Outils et Systèmes Utilisés</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Comment gérez-vous votre planning opératoire ? <span class="required">*</span>
+                        </label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool_paper" name="planning_tools[]" value="paper">
+                                <label for="tool_paper">Agenda papier</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool_excel" name="planning_tools[]" value="excel">
+                                <label for="tool_excel">Excel/tableur</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool_google" name="planning_tools[]" value="google">
+                                <label for="tool_google">Google Calendar/Outlook</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool_software" name="planning_tools[]" value="software">
+                                <label for="tool_software">Logiciel médical (précisez ci-dessous)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tool_hospital" name="planning_tools[]" value="hospital">
+                                <label for="tool_hospital">Système de l'hôpital/clinique</label>
+                            </div>
+                        </div>
+                        <input type="text" name="software_name" placeholder="Si logiciel, précisez lequel..." style="margin-top: 10px;">
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Comment gérez-vous la cotation CCAM de vos actes ?
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_manual" name="ccam_method" value="manual">
+                                <label for="ccam_manual">Je code manuellement</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_secretary" name="ccam_method" value="secretary">
+                                <label for="ccam_secretary">Ma secrétaire s'en charge</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_software" name="ccam_method" value="software">
+                                <label for="ccam_software">Via un logiciel dédié</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_mixed" name="ccam_method" value="mixed">
+                                <label for="ccam_mixed">Méthode mixte</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Satisfaction avec vos outils actuels (1 = très insatisfait, 10 = très satisfait) :
+                        </label>
+                        <div class="scale-group">
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_1" name="satisfaction" value="1">
+                                <label for="satisfaction_1">1</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_2" name="satisfaction" value="2">
+                                <label for="satisfaction_2">2</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_3" name="satisfaction" value="3">
+                                <label for="satisfaction_3">3</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_4" name="satisfaction" value="4">
+                                <label for="satisfaction_4">4</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_5" name="satisfaction" value="5">
+                                <label for="satisfaction_5">5</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_6" name="satisfaction" value="6">
+                                <label for="satisfaction_6">6</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_7" name="satisfaction" value="7">
+                                <label for="satisfaction_7">7</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_8" name="satisfaction" value="8">
+                                <label for="satisfaction_8">8</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_9" name="satisfaction" value="9">
+                                <label for="satisfaction_9">9</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="satisfaction_10" name="satisfaction" value="10">
+                                <label for="satisfaction_10">10</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section 4: Difficultés et Besoins -->
+                <div class="section">
+                    <h3>⚠️ Section 4 : Difficultés et Besoins</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Combien d'heures par semaine consacrez-vous aux tâches administratives ? <span class="required">*</span>
+                        </label>
+                        <select name="admin_hours" required>
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="<2">Moins de 2h</option>
+                            <option value="2-5">2 à 5h</option>
+                            <option value="6-10">6 à 10h</option>
+                            <option value="11-15">11 à 15h</option>
+                            <option value=">15">Plus de 15h</option>
+                        </select>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Classez vos 3 principales difficultés administratives (1 = plus problématique) :
+                        </label>
+                        <ul class="ranking-list">
+                            <li class="ranking-item">Gestion du planning opératoire</li>
+                            <li class="ranking-item">Codification CCAM et facturation</li>
+                            <li class="ranking-item">Suivi des dossiers patients</li>
+                            <li class="ranking-item">Communication avec les patients</li>
+                            <li class="ranking-item">Gestion des comptes-rendus</li>
+                            <li class="ranking-item">Coordination avec l'équipe</li>
+                            <li class="ranking-item">Statistiques et reporting</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Estimez-vous faire des erreurs de cotation CCAM ?
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_never" name="ccam_errors" value="never">
+                                <label for="ccam_never">Jamais</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_rarely" name="ccam_errors" value="rarely">
+                                <label for="ccam_rarely">Rarement (< 5%)</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_sometimes" name="ccam_errors" value="sometimes">
+                                <label for="ccam_sometimes">Parfois (5-15%)</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_often" name="ccam_errors" value="often">
+                                <label for="ccam_often">Souvent (> 15%)</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="ccam_unknown" name="ccam_errors" value="unknown">
+                                <label for="ccam_unknown">Je ne sais pas</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Avez-vous envisagé d'embaucher du personnel supplémentaire ?
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="hire_yes" name="considering_hire" value="yes">
+                                <label for="hire_yes">Oui, c'est prévu</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="hire_maybe" name="considering_hire" value="maybe">
+                                <label for="hire_maybe">Oui, mais le coût nous freine</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="hire_space" name="considering_hire" value="space">
+                                <label for="hire_space">Oui, mais nous manquons d'espace</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="hire_no" name="considering_hire" value="no">
+                                <label for="hire_no">Non, pas nécessaire</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section 5: Impact Financier -->
+                <div class="section">
+                    <h3>💰 Section 5 : Impact Financier</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Estimez-vous perdre des revenus à cause d'erreurs de cotation CCAM ?
+                        </label>
+                        <select name="revenue_loss">
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="0">Non, aucune perte</option>
+                            <option value="<5">Moins de 5%</option>
+                            <option value="5-10">5 à 10%</option>
+                            <option value="11-20">11 à 20%</option>
+                            <option value=">20">Plus de 20%</option>
+                            <option value="unknown">Je ne sais pas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Éviter l'embauche d'une secrétaire (45 000€/an) serait pour vous :
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="value_critical" name="avoid_hire_value" value="critical">
+                                <label for="value_critical">Critique et prioritaire</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="value_important" name="avoid_hire_value" value="important">
+                                <label for="value_important">Très intéressant</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="value_nice" name="avoid_hire_value" value="nice">
+                                <label for="value_nice">Appréciable</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="value_neutral" name="avoid_hire_value" value="neutral">
+                                <label for="value_neutral">Sans importance</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Quel est votre budget mensuel actuel pour les logiciels médicaux ?
+                        </label>
+                        <select name="software_budget">
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="0">Aucun</option>
+                            <option value="<100">Moins de 100€</option>
+                            <option value="100-300">100€ à 300€</option>
+                            <option value="301-500">301€ à 500€</option>
+                            <option value="501-1000">501€ à 1000€</option>
+                            <option value=">1000">Plus de 1000€</option>
+                        </select>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Pour gagner 5-7h/semaine et optimiser vos revenus CCAM, combien seriez-vous prêt à investir par mois ?
+                        </label>
+                        <select name="willingness_to_pay">
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="<100">Moins de 100€</option>
+                            <option value="100-200">100€ à 200€</option>
+                            <option value="201-300">201€ à 300€</option>
+                            <option value="301-500">301€ à 500€</option>
+                            <option value=">500">Plus de 500€</option>
+                            <option value="depends">Dépend du ROI démontré</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Section 6: Adoption Technologique -->
+                <div class="section">
+                    <h3>📱 Section 6 : Adoption Technologique</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Votre aisance avec les outils numériques (1 = novice, 10 = expert) :
+                        </label>
+                        <div class="scale-group">
+                            <div class="scale-item">
+                                <input type="radio" id="tech_1" name="tech_comfort" value="1">
+                                <label for="tech_1">1</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_2" name="tech_comfort" value="2">
+                                <label for="tech_2">2</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_3" name="tech_comfort" value="3">
+                                <label for="tech_3">3</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_4" name="tech_comfort" value="4">
+                                <label for="tech_4">4</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_5" name="tech_comfort" value="5">
+                                <label for="tech_5">5</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_6" name="tech_comfort" value="6">
+                                <label for="tech_6">6</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_7" name="tech_comfort" value="7">
+                                <label for="tech_7">7</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_8" name="tech_comfort" value="8">
+                                <label for="tech_8">8</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_9" name="tech_comfort" value="9">
+                                <label for="tech_9">9</label>
+                            </div>
+                            <div class="scale-item">
+                                <input type="radio" id="tech_10" name="tech_comfort" value="10">
+                                <label for="tech_10">10</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Utilisez-vous smartphone/tablette pour des tâches professionnelles ?
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="mobile_daily" name="mobile_use" value="daily">
+                                <label for="mobile_daily">Quotidiennement</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="mobile_often" name="mobile_use" value="often">
+                                <label for="mobile_often">Souvent</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="mobile_sometimes" name="mobile_use" value="sometimes">
+                                <label for="mobile_sometimes">Parfois</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="mobile_rarely" name="mobile_use" value="rarely">
+                                <label for="mobile_rarely">Rarement</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="mobile_never" name="mobile_use" value="never">
+                                <label for="mobile_never">Jamais</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Vos principales préoccupations concernant l'adoption d'un nouveau logiciel (cochez toutes les réponses pertinentes) :
+                        </label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="concern_time" name="concerns[]" value="time">
+                                <label for="concern_time">Temps de formation nécessaire</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="concern_security" name="concerns[]" value="security">
+                                <label for="concern_security">Sécurité des données patients</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="concern_cost" name="concerns[]" value="cost">
+                                <label for="concern_cost">Coût de la solution</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="concern_integration" name="concerns[]" value="integration">
+                                <label for="concern_integration">Intégration avec systèmes existants</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="concern_team" name="concerns[]" value="team">
+                                <label for="concern_team">Résistance de l'équipe au changement</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="concern_support" name="concerns[]" value="support">
+                                <label for="concern_support">Qualité du support technique</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section 7: Intérêt pour la Solution -->
+                <div class="section">
+                    <h3>🚀 Section 7 : Intérêt pour Notre Solution</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Seriez-vous intéressé pour tester gratuitement notre solution en version beta (janvier 2026) ?
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="beta_yes" name="beta_interest" value="yes">
+                                <label for="beta_yes">Oui, définitivement</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="beta_maybe" name="beta_interest" value="maybe">
+                                <label for="beta_maybe">Peut-être, j'aimerais en savoir plus</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="beta_later" name="beta_interest" value="later">
+                                <label for="beta_later">Pas maintenant, mais plus tard</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="beta_no" name="beta_interest" value="no">
+                                <label for="beta_no">Non, pas intéressé</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Classez ces fonctionnalités par ordre d'importance pour vous (1 = plus important) :
+                        </label>
+                        <ul class="ranking-list">
+                            <li class="ranking-item">Planning opératoire intelligent avec optimisation automatique</li>
+                            <li class="ranking-item">Codification CCAM automatique avec maximisation des revenus</li>
+                            <li class="ranking-item">Tableaux de bord en temps réel de votre activité</li>
+                            <li class="ranking-item">Application mobile pour gérer depuis n'importe où</li>
+                            <li class="ranking-item">Communication automatisée avec les patients</li>
+                            <li class="ranking-item">Génération automatique des comptes-rendus</li>
+                            <li class="ranking-item">Intégration avec les systèmes hospitaliers existants</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Accepteriez-vous une démonstration personnalisée de 30 minutes ?
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="demo_yes" name="demo_interest" value="yes">
+                                <label for="demo_yes">Oui</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="demo_maybe" name="demo_interest" value="maybe">
+                                <label for="demo_maybe">Peut-être</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="demo_no" name="demo_interest" value="no">
+                                <label for="demo_no">Non</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Pouvez-vous recommander 2-3 confrères qui pourraient être intéressés ?
+                        </label>
+                        <textarea name="referrals" placeholder="Noms et spécialités (optionnel)..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Section 8: Questions Ouvertes -->
+                <div class="section">
+                    <h3>💭 Section 8 : Vos Suggestions</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Quelle serait LA fonctionnalité qui vous ferait adopter immédiatement une nouvelle solution ?
+                        </label>
+                        <textarea name="killer_feature" placeholder="Décrivez votre fonctionnalité idéale..."></textarea>
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Avez-vous des commentaires ou suggestions supplémentaires ?
+                        </label>
+                        <textarea name="comments" placeholder="Vos remarques, besoins spécifiques, questions..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="section">
+                    <h3>📧 Pour vous contacter (optionnel mais apprécié)</h3>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Nom et Prénom :
+                        </label>
+                        <input type="text" name="full_name">
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Email professionnel :
+                        </label>
+                        <input type="email" name="email">
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Téléphone :
+                        </label>
+                        <input type="tel" name="phone">
+                    </div>
+                    
+                    <div class="question-group">
+                        <label class="question-label">
+                            Ville/Région :
+                        </label>
+                        <input type="text" name="location">
+                    </div>
+                </div>
+                
+                <div class="submit-section">
+                    <div class="quote">
+                        "Le temps que nous économisons sur l'administratif, c'est du temps que nous rendons à nos patients."
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        Envoyer mes réponses
+                    </button>
+                    
+                    <p style="margin-top: 20px; color: #7f8c8d;">
+                        ✅ Vos données restent confidentielles<br>
+                        ✅ Vous recevrez les résultats agrégés de l'étude<br>
+                        ✅ Accès prioritaire à la version beta
+                    </p>
+                </div>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Merci de votre participation !</strong></p>
+            <p>Pour toute question : Dr. Renaud Derkenne<br>
+            renaud.derkenne@[clinique].fr | 06.XX.XX.XX.XX</p>
+            <p style="margin-top: 20px;">© 2025 - Plateforme SaaS Chirurgie | Confidential</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add form submission handler
+        document.getElementById('surgeonSurvey').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Merci pour votre participation ! Vos réponses ont été enregistrées. Nous vous contacterons prochainement.');
+            // Here you would normally send the data to your server
+        });
+        
+        // Make ranking lists sortable (basic implementation)
+        document.querySelectorAll('.ranking-list').forEach(list => {
+            let draggedItem = null;
+            
+            list.querySelectorAll('.ranking-item').forEach(item => {
+                item.draggable = true;
+                
+                item.addEventListener('dragstart', function(e) {
+                    draggedItem = this;
+                    this.style.opacity = '0.5';
+                });
+                
+                item.addEventListener('dragend', function(e) {
+                    this.style.opacity = '';
+                    draggedItem = null;
+                });
+                
+                item.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    if (this !== draggedItem) {
+                        this.style.borderTop = '3px solid #667eea';
+                    }
+                });
+                
+                item.addEventListener('dragleave', function(e) {
+                    this.style.borderTop = '';
+                });
+                
+                item.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.borderTop = '';
+                    if (this !== draggedItem) {
+                        list.insertBefore(draggedItem, this);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

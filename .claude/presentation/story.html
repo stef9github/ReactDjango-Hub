@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Story - AI-Agent Development</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-text">AI-Agent Development</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="story.html" class="nav-link active">Story</a>
+                <a href="paradigm-shift.html" class="nav-link">Paradigm</a>
+                <a href="methodology.html" class="nav-link">Methodology</a>
+                <a href="implementation.html" class="nav-link">Implementation</a>
+                <a href="platform-architecture.html" class="nav-link">Architecture</a>
+                <a href="portfolio-impact.html" class="nav-link">Impact</a>
+                <a href="call-to-action.html" class="nav-link">Next Steps</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 25%"></div>
+    </div>
+
+    <!-- Story Header -->
+    <section class="story-header">
+        <div class="container">
+            <h1 class="page-title">The Journey Begins</h1>
+            <p class="page-subtitle">
+                How two chance meetings revealed a universal truth about enterprise software
+            </p>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="timeline-section">
+        <div class="container">
+            <div class="timeline">
+                <!-- Meeting 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">First Meeting</div>
+                        <h3>Dr. Renaud - ORL Surgeon, Marseille</h3>
+                        <div class="story-detail">
+                            <p>
+                                It started after a wing foil session at Pointe Rouge in Marseille. Dr. Renaud, 
+                                an ORL surgeon practicing at two surgery centers including the private Clinic 
+                                Saint Joseph, shared his frustration. Two years ago, he'd commissioned an Airtable 
+                                application to manage his patient workflow. "It helped," he said, "but it's not 
+                                enough. We still have issues with patients not following pre-surgery instructions, 
+                                and I'm trying to avoid hiring a third secretary for our practice."
+                            </p>
+                            <blockquote class="story-quote">
+                                "The Airtable app saved us time and money, but I need something more robust. 
+                                A real platform that manages the entire patient journey - pre and post-surgery - 
+                                and reduces no-shows and complications from poor instruction compliance."
+                            </blockquote>
+                            <div class="requirements-box">
+                                <h4>His Current Challenges:</h4>
+                                <ul class="requirement-list">
+                                    <li>Pre/post-surgery patient workflow management</li>
+                                    <li>Ensuring patient instruction compliance</li>
+                                    <li>Coordination between two surgery centers</li>
+                                    <li>Shared practice with 2 other surgeons, 2 secretaries</li>
+                                    <li>Avoiding the cost of a third secretary through automation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Meeting 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <i data-lucide="briefcase"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Four Months Ago (May 2025)</div>
+                        <h3>Nicolas Mangin - Serial Entrepreneur</h3>
+                        <div class="story-detail">
+                            <p>
+                                I met Nicolas after a wing foil session in Fos-sur-Mer. A serial entrepreneur 
+                                who had already started and managed multiple small companies, Nicolas was at a 
+                                crossroads. He was preparing to sell his public procurement consulting company 
+                                that works with agglomerations and large cities. "I'm ready for something new," 
+                                he told me. "I want to build a tech platform that transforms how cities manage 
+                                public procurement."
+                            </p>
+                            <blockquote class="story-quote">
+                                "After years of consulting, I know exactly what's broken in public procurement. 
+                                I want to create a SaaS platform that democratizes access to public contracts and 
+                                uses AI to level the playing field for smaller companies competing for tenders."
+                            </blockquote>
+                            <div class="requirements-box">
+                                <h4>His Vision for the Platform:</h4>
+                                <ul class="requirement-list">
+                                    <li>Automated tender discovery across BOAMP, TED, and local platforms</li>
+                                    <li>AI-powered bid qualification and matching</li>
+                                    <li>Compliance automation for Code de la commande publique</li>
+                                    <li>Collaborative tools for bid preparation</li>
+                                    <li>Analytics to improve win rates over time</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Revelation -->
+                <div class="timeline-item highlight">
+                    <div class="timeline-marker special">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">The Revelation</div>
+                        <h3>One Platform, Multiple Applications</h3>
+                        <div class="story-detail revelation-detail">
+                            <p class="revelation-intro">
+                                That night, I couldn't sleep. I kept thinking about both conversations, 
+                                and then it hit me:
+                            </p>
+                            <div class="insight-grid">
+                                <div class="insight-card">
+                                    <h4>Common Core Needs</h4>
+                                    <ul>
+                                        <li>User authentication & authorization</li>
+                                        <li>Multi-tenant architecture</li>
+                                        <li>Document management</li>
+                                        <li>Workflow automation</li>
+                                        <li>Compliance tracking</li>
+                                        <li>Analytics & reporting</li>
+                                    </ul>
+                                </div>
+                                <div class="insight-card">
+                                    <h4>Different Business Logic</h4>
+                                    <div class="business-comparison">
+                                        <div class="business-medical">
+                                            <h5>Medical</h5>
+                                            <ul>
+                                                <li>Patient records</li>
+                                                <li>Appointment scheduling</li>
+                                                <li>Medical billing codes</li>
+                                            </ul>
+                                        </div>
+                                        <div class="business-procurement">
+                                            <h5>Procurement</h5>
+                                            <ul>
+                                                <li>Tender database</li>
+                                                <li>Bid preparation</li>
+                                                <li>Competitor analysis</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="revelation-conclusion">
+                                <strong>The answer was clear:</strong> Build one robust platform with 
+                                pluggable business modules. But the challenge remained - how could one 
+                                developer create all of this?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Challenge -->
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">The Challenge</div>
+                        <h3>The Impossible Timeline</h3>
+                        <div class="story-detail">
+                            <div class="challenge-box">
+                                <h4>Traditional Development Estimate:</h4>
+                                <div class="estimate-grid">
+                                    <div class="estimate-item">
+                                        <span class="estimate-task">Core Platform</span>
+                                        <span class="estimate-time">3-4 months</span>
+                                    </div>
+                                    <div class="estimate-item">
+                                        <span class="estimate-task">Medical Module</span>
+                                        <span class="estimate-time">4-5 months</span>
+                                    </div>
+                                    <div class="estimate-item">
+                                        <span class="estimate-task">Procurement Module</span>
+                                        <span class="estimate-time">4-5 months</span>
+                                    </div>
+                                    <div class="estimate-item total">
+                                        <span class="estimate-task">Total Time</span>
+                                        <span class="estimate-time">11-14 months</span>
+                                    </div>
+                                    <div class="estimate-item total">
+                                        <span class="estimate-task">Team Required</span>
+                                        <span class="estimate-time">5-7 developers</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="challenge-reality">
+                                <strong>The Reality:</strong> Both entrepreneurs needed MVPs within 
+                                6-8 weeks to secure funding and early customers.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Discovery -->
+                <div class="timeline-item">
+                    <div class="timeline-marker special">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">The Discovery</div>
+                        <h3>AI-Agent Orchestration</h3>
+                        <div class="story-detail">
+                            <p class="discovery-intro">
+                                That's when I discovered Claude Code and the concept of AI-agent orchestration. 
+                                Instead of one developer trying to do everything, what if we had specialized 
+                                AI agents, each an expert in their domain?
+                            </p>
+                            <div class="agent-discovery">
+                                <div class="agent-reveal">
+                                    <i data-lucide="cpu"></i>
+                                    <h4>Backend Agent</h4>
+                                    <p>Expert in Django, databases, APIs</p>
+                                </div>
+                                <div class="agent-reveal">
+                                    <i data-lucide="layout"></i>
+                                    <h4>Frontend Agent</h4>
+                                    <p>Master of React, UX, and interfaces</p>
+                                </div>
+                                <div class="agent-reveal">
+                                    <i data-lucide="shield"></i>
+                                    <h4>Security Agent</h4>
+                                    <p>Guardian of compliance and safety</p>
+                                </div>
+                                <div class="agent-reveal">
+                                    <i data-lucide="git-branch"></i>
+                                    <h4>Tech Lead Agent</h4>
+                                    <p>Architect and coordinator</p>
+                                </div>
+                            </div>
+                            <p class="discovery-result">
+                                <strong>The Result:</strong> What seemed impossible became achievable. 
+                                The first working prototype was ready in just 10 days.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Section Preview -->
+    <section class="next-preview">
+        <div class="container">
+            <div class="preview-content">
+                <h2>What Happened Next?</h2>
+                <p>
+                    Discover how AI-agent orchestration fundamentally changes 
+                    the economics and speed of software development
+                </p>
+                <a href="paradigm-shift.html" class="btn btn-primary">
+                    <span>The Paradigm Shift</span>
+                    <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p>Stéphane Richard - CTO/CPO</p>
+                    <p>AI-Agent Development Methodology</p>
+                </div>
+                <div class="footer-nav">
+                    <a href="index.html" class="footer-link">Previous: Home</a>
+                    <a href="paradigm-shift.html" class="footer-link">Next: Paradigm Shift</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/presentation.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

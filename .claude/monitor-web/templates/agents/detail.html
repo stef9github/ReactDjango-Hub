@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ agent.name }} - Agent Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'agents:list' %}">Agents</a></li>
+                    <li class="breadcrumb-item active">{{ agent.name }}</li>
+                </ol>
+            </nav>
+            <h1 class="h2">
+                {{ agent.name }}
+                <span class="badge bg-{{ agent.status|default:'secondary' }} ms-2">{{ agent.get_status_display }}</span>
+            </h1>
+            <p class="text-muted">{{ agent.description }}</p>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                {% if agent.status == 'stopped' %}
+                    <button class="btn btn-success" onclick="controlAgent('{{ agent.id }}', 'start')">
+                        <i class="bi bi-play-fill"></i> Start
+                    </button>
+                {% elif agent.status == 'running' %}
+                    <button class="btn btn-warning" onclick="controlAgent('{{ agent.id }}', 'stop')">
+                        <i class="bi bi-stop-fill"></i> Stop
+                    </button>
+                    <button class="btn btn-info" onclick="controlAgent('{{ agent.id }}', 'restart')">
+                        <i class="bi bi-arrow-clockwise"></i> Restart
+                    </button>
+                {% endif %}
+                <button class="btn btn-secondary" onclick="refreshPage()">
+                    <i class="bi bi-arrow-repeat"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Status</h6>
+                    <h4 class="card-title">
+                        <span class="badge bg-{{ agent.status|default:'secondary' }}">
+                            {{ agent.get_status_display|default:"Unknown" }}
+                        </span>
+                    </h4>
+                    <small class="text-muted">Last heartbeat: {{ agent.last_heartbeat|date:"H:i:s"|default:"Never" }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">CPU Usage</h6>
+                    <h4 class="card-title">{{ agent.cpu_usage|floatformat:1 }}%</h4>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: {{ agent.cpu_usage }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Memory Usage</h6>
+                    <h4 class="card-title">{{ agent.memory_usage|floatformat:1 }}%</h4>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" style="width: {{ agent.memory_usage }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Tasks</h6>
+                    <h4 class="card-title">
+                        <span class="text-success">{{ agent.tasks_completed }}</span> /
+                        <span class="text-danger">{{ agent.tasks_failed }}</span>
+                    </h4>
+                    <small class="text-muted">Completed / Failed</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#tasks">Active Tasks</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#communications">Communications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#conflicts">Conflicts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#history">Status History</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#config">Configuration</a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Tasks Tab -->
+        <div class="tab-pane fade show active" id="tasks">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Active Tasks</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Started</th>
+                                    <th>Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in agent.task_set.all|slice:":10" %}
+                                <tr>
+                                    <td>{{ task.title }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ task.status|default:'secondary' }}">
+                                            {{ task.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ task.priority }}</td>
+                                    <td>{{ task.started_at|date:"H:i"|default:"-" }}</td>
+                                    <td>
+                                        <div class="progress" style="width: 100px;">
+                                            <div class="progress-bar" style="width: {{ task.progress|default:0 }}%">
+                                                {{ task.progress|default:0 }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No active tasks</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Communications Tab -->
+        <div class="tab-pane fade" id="communications">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Communications</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Type</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for comm in communications %}
+                                <tr>
+                                    <td>{{ comm.timestamp|date:"H:i:s" }}</td>
+                                    <td>{{ comm.from_agent.name }}</td>
+                                    <td>{{ comm.to_agent.name }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ comm.message_type }}</span>
+                                    </td>
+                                    <td>{{ comm.message|truncatewords:10 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No communications</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conflicts Tab -->
+        <div class="tab-pane fade" id="conflicts">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Conflicts</h5>
+                </div>
+                <div class="card-body">
+                    {% if conflicts %}
+                        <div class="list-group">
+                            {% for conflict in conflicts %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ conflict.conflict_type }}</h6>
+                                    <small>{{ conflict.timestamp|date:"Y-m-d H:i" }}</small>
+                                </div>
+                                <p class="mb-1">{{ conflict.description }}</p>
+                                <small class="text-muted">
+                                    Status: 
+                                    <span class="badge bg-{{ conflict.resolved|yesno:'success,warning' }}">
+                                        {{ conflict.resolved|yesno:"Resolved,Pending" }}
+                                    </span>
+                                </small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">No conflicts recorded</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-pane fade" id="history">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Status History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Status</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for status in agent.status_updates.all|slice:":20" %}
+                                <tr>
+                                    <td>{{ status.timestamp|date:"Y-m-d H:i:s" }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ status.status|default:'secondary' }}">
+                                            {{ status.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ status.message|default:"-" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No status history</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Tab -->
+        <div class="tab-pane fade" id="config">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Agent Type</dt>
+                        <dd class="col-sm-9">{{ agent.type }}</dd>
+                        
+                        <dt class="col-sm-3">Process ID</dt>
+                        <dd class="col-sm-9">{{ agent.pid|default:"Not running" }}</dd>
+                        
+                        <dt class="col-sm-3">Created</dt>
+                        <dd class="col-sm-9">{{ agent.created_at|date:"Y-m-d H:i:s" }}</dd>
+                        
+                        <dt class="col-sm-3">Last Updated</dt>
+                        <dd class="col-sm-9">{{ agent.updated_at|date:"Y-m-d H:i:s" }}</dd>
+                    </dl>
+
+                    {% if agent.config %}
+                    <h6 class="mt-4">Configuration JSON</h6>
+                    <pre class="bg-light p-3"><code>{{ agent.config|pprint }}</code></pre>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function controlAgent(agentId, action) {
+    fetch(`/agents/api/${agentId}/${action}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    });
+}
+
+function refreshPage() {
+    window.location.reload();
+}
+
+// Auto-refresh every 30 seconds
+setTimeout(function() {
+    window.location.reload();
+}, 30000);
+</script>
+{% endblock %}

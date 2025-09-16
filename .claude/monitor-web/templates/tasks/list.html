@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Tasks - Agent Monitor{% endblock %}
+{% block page_title %}Task Queue Management{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'tasks:create' %}" class="btn btn-primary">
+    <i class="bi bi-plus-circle"></i> New Task
+</a>
+<a href="{% url 'tasks:templates' %}" class="btn btn-outline-secondary">
+    <i class="bi bi-file-earmark-text"></i> Templates
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All</option>
+                    <option value="pending" {% if current_filters.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="assigned" {% if current_filters.status == 'assigned' %}selected{% endif %}>Assigned</option>
+                    <option value="running" {% if current_filters.status == 'running' %}selected{% endif %}>Running</option>
+                    <option value="completed" {% if current_filters.status == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="failed" {% if current_filters.status == 'failed' %}selected{% endif %}>Failed</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Agent</label>
+                <select name="agent" class="form-select">
+                    <option value="">All</option>
+                    {% for agent in agents %}
+                        <option value="{{ agent.pk }}" {% if current_filters.agent == agent.pk|stringformat:"s" %}selected{% endif %}>
+                            {{ agent.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Priority</label>
+                <select name="priority" class="form-select">
+                    <option value="">All</option>
+                    <option value="1" {% if current_filters.priority == '1' %}selected{% endif %}>Low</option>
+                    <option value="2" {% if current_filters.priority == '2' %}selected{% endif %}>Normal</option>
+                    <option value="3" {% if current_filters.priority == '3' %}selected{% endif %}>High</option>
+                    <option value="4" {% if current_filters.priority == '4' %}selected{% endif %}>Critical</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+                <a href="{% url 'tasks:list' %}" class="btn btn-outline-secondary">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Task Statistics -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">{{ stats.pending }}</h3>
+                <small>Pending</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">{{ stats.running }}</h3>
+                <small>Running</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ stats.completed }}</h3>
+                <small>Completed</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-danger">{{ stats.failed }}</h3>
+                <small>Failed</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task List -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover datatable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Assigned To</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr>
+                        <td>#{{ task.id }}</td>
+                        <td>
+                            <a href="{% url 'tasks:detail' task.pk %}">
+                                {{ task.title }}
+                            </a>
+                        </td>
+                        <td>{{ task.task_type }}</td>
+                        <td>
+                            {% if task.priority == 4 %}
+                                <span class="badge bg-danger">Critical</span>
+                            {% elif task.priority == 3 %}
+                                <span class="badge bg-warning">High</span>
+                            {% elif task.priority == 2 %}
+                                <span class="badge bg-info">Normal</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Low</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ task.status }}">{{ task.get_status_display }}</span>
+                        </td>
+                        <td>
+                            {% if task.assigned_to %}
+                                <a href="{% url 'agents:detail' task.assigned_to.pk %}">
+                                    {{ task.assigned_to.name }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">Unassigned</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ task.created_at|naturaltime }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if task.status == 'pending' %}
+                                    <button class="btn btn-success" onclick="executeTask({{ task.pk }})">
+                                        <i class="bi bi-play"></i>
+                                    </button>
+                                {% endif %}
+                                {% if task.status in 'pending,assigned,running' %}
+                                    <button class="btn btn-danger" onclick="cancelTask({{ task.pk }})">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function executeTask(taskId) {
+    if (confirm('Execute this task?')) {
+        const form = $('<form>', {
+            method: 'POST',
+            action: `/tasks/${taskId}/execute/`
+        });
+        
+        form.append($('<input>', {
+            type: 'hidden',
+            name: 'csrfmiddlewaretoken',
+            value: getCookie('csrftoken')
+        }));
+        
+        $('body').append(form);
+        form.submit();
+    }
+}
+
+function cancelTask(taskId) {
+    if (confirm('Cancel this task?')) {
+        const form = $('<form>', {
+            method: 'POST',
+            action: `/tasks/${taskId}/cancel/`
+        });
+        
+        form.append($('<input>', {
+            type: 'hidden',
+            name: 'csrfmiddlewaretoken',
+            value: getCookie('csrftoken')
+        }));
+        
+        $('body').append(form);
+        form.submit();
+    }
+}
+
+// Update queue status every 5 seconds
+setInterval(function() {
+    ajaxRequest('/tasks/api/queue/')
+        .done(function(data) {
+            // Update statistics
+            $('#pending-count').text(data.pending.length);
+            $('#running-count').text(data.running.length);
+        });
+}, 5000);
+</script>
+{% endblock %}

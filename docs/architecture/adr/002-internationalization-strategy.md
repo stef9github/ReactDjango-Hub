@@ -1,7 +1,7 @@
 # ADR-002: Internationalization and Localization Strategy
 
 ## Status
-**Proposed** - December 2024
+**Proposed** - September 2025
 
 ## Context
 
@@ -169,6 +169,6 @@ For existing components without i18n:
 ---
 
 **Decision made by**: Technical Lead Agent  
-**Date**: December 10, 2024  
-**Review date**: January 10, 2025  
+**Date**: September 13, 2025  
+**Review date**: October 13, 2025  
 **Related ADRs**: ADR-001 (Frontend Architecture Strategy)

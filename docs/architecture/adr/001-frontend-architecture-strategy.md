@@ -1,7 +1,7 @@
 # ADR-001: Frontend Architecture Strategy for Microservices Platform
 
 ## Status
-**Accepted** - December 2024
+**Accepted** - September 2025
 
 ## Context
 
@@ -196,5 +196,5 @@ Practical localization patterns for global readiness:
 ---
 
 **Decision made by**: Technical Lead Agent  
-**Date**: December 10, 2024  
-**Review date**: January 10, 2025
+**Date**: September 13, 2025  
+**Review date**: October 13, 2025

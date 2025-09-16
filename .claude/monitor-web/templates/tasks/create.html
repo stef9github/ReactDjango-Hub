@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Task - Monitor{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'tasks:list' %}">Tasks</a></li>
+                    <li class="breadcrumb-item active">Create Task</li>
+                </ol>
+            </nav>
+            <h1 class="h2">Create New Task</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" id="taskForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label">Task Title *</label>
+                            <input type="text" class="form-control" id="id_title" name="title" required 
+                                   placeholder="Enter a descriptive title for the task">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label">Description</label>
+                            <textarea class="form-control" id="id_description" name="description" rows="4"
+                                      placeholder="Provide detailed description of what needs to be done"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_assigned_agent" class="form-label">Assign to Agent</label>
+                                <select class="form-select" id="id_assigned_agent" name="assigned_agent">
+                                    <option value="">-- Auto-assign --</option>
+                                    {% for agent in agents %}
+                                        <option value="{{ agent.id }}">{{ agent.name }} ({{ agent.get_status_display }})</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">Leave empty for automatic assignment</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="id_priority" class="form-label">Priority *</label>
+                                <select class="form-select" id="id_priority" name="priority" required>
+                                    <option value="5">Low</option>
+                                    <option value="3" selected>Medium</option>
+                                    <option value="1">High</option>
+                                    <option value="0">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_task_type" class="form-label">Task Type</label>
+                                <select class="form-select" id="id_task_type" name="task_type">
+                                    <option value="general">General</option>
+                                    <option value="feature">Feature Development</option>
+                                    <option value="bugfix">Bug Fix</option>
+                                    <option value="refactor">Refactoring</option>
+                                    <option value="test">Testing</option>
+                                    <option value="documentation">Documentation</option>
+                                    <option value="deployment">Deployment</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="id_estimated_duration" class="form-label">Estimated Duration</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="id_estimated_duration" 
+                                           name="estimated_duration" min="1" placeholder="30">
+                                    <span class="input-group-text">minutes</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_dependencies" class="form-label">Dependencies</label>
+                            <select class="form-select" id="id_dependencies" name="dependencies" multiple>
+                                {% for task in pending_tasks %}
+                                    <option value="{{ task.id }}">{{ task.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Select tasks that must complete before this one</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_metadata" class="form-label">Additional Metadata (JSON)</label>
+                            <textarea class="form-control font-monospace" id="id_metadata" name="metadata" rows="3"
+                                      placeholder='{"key": "value"}'>{}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="id_auto_start" name="auto_start">
+                                <label class="form-check-label" for="id_auto_start">
+                                    Start task immediately after creation
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'tasks:list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="button" class="btn btn-outline-primary" onclick="saveTemplate()">
+                                <i class="bi bi-save"></i> Save as Template
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Create Task
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Task Templates -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Templates</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for template in templates %}
+                        <a href="#" class="list-group-item list-group-item-action" 
+                           onclick="loadTemplate({{ template.id }}); return false;">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ template.name }}</h6>
+                                <small>{{ template.task_type }}</small>
+                            </div>
+                            <p class="mb-1 small">{{ template.description|truncatewords:10 }}</p>
+                        </a>
+                    {% empty %}
+                        <div class="list-group-item text-muted">
+                            No templates available
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Help -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Task Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Priority Levels:</h6>
+                    <ul class="small">
+                        <li><span class="badge bg-danger">Critical</span> - Immediate attention</li>
+                        <li><span class="badge bg-warning">High</span> - Within 2 hours</li>
+                        <li><span class="badge bg-info">Medium</span> - Within 24 hours</li>
+                        <li><span class="badge bg-secondary">Low</span> - As time permits</li>
+                    </ul>
+                    
+                    <h6 class="mt-3">Agent Assignment:</h6>
+                    <p class="small">
+                        If no agent is selected, the system will automatically assign the task to the most 
+                        appropriate available agent based on:
+                    </p>
+                    <ul class="small">
+                        <li>Agent type and capabilities</li>
+                        <li>Current workload</li>
+                        <li>Task type matching</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadTemplate(templateId) {
+    fetch(`/tasks/api/templates/${templateId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('id_title').value = data.title || '';
+            document.getElementById('id_description').value = data.description || '';
+            document.getElementById('id_task_type').value = data.task_type || 'general';
+            document.getElementById('id_priority').value = data.priority || '3';
+            document.getElementById('id_estimated_duration').value = data.estimated_duration || '';
+            document.getElementById('id_metadata').value = JSON.stringify(data.metadata || {}, null, 2);
+        });
+}
+
+function saveTemplate() {
+    const name = prompt('Enter a name for this template:');
+    if (!name) return;
+    
+    const formData = new FormData(document.getElementById('taskForm'));
+    const templateData = {
+        name: name,
+        title: formData.get('title'),
+        description: formData.get('description'),
+        task_type: formData.get('task_type'),
+        priority: formData.get('priority'),
+        estimated_duration: formData.get('estimated_duration'),
+        metadata: formData.get('metadata')
+    };
+    
+    fetch('/tasks/api/templates/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(templateData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Template saved successfully!');
+            window.location.reload();
+        } else {
+            alert('Error saving template: ' + data.error);
+        }
+    });
+}
+
+// Enable multi-select for dependencies
+document.addEventListener('DOMContentLoaded', function() {
+    // You could add a library like Select2 here for better multi-select
+});
+</script>
+{% endblock %}

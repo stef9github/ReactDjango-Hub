@@ -1,0 +1,199 @@
+/* Custom CSS for Monitor Web Interface */
+
+/* Status badges with animation */
+.status-badge {
+    position: relative;
+    display: inline-block;
+}
+
+.status-running::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -8px;
+    width: 6px;
+    height: 6px;
+    background-color: #28a745;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+/* Terminal-style log viewer */
+.log-viewer {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    min-height: 400px;
+}
+
+.log-viewer .log-line {
+    padding: 2px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.log-viewer .log-debug { color: #808080; }
+.log-viewer .log-info { color: #3794ff; }
+.log-viewer .log-warning { color: #ffcc00; }
+.log-viewer .log-error { color: #f48771; }
+.log-viewer .log-critical { 
+    background-color: #f48771; 
+    color: #1e1e1e;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+/* Metric cards with gradients */
+.metric-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.metric-card.success {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+}
+
+.metric-card.warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.metric-card.info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Agent cards */
+.agent-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.agent-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.agent-card.running {
+    border-left-color: #28a745;
+}
+
+.agent-card.idle {
+    border-left-color: #6c757d;
+}
+
+.agent-card.error {
+    border-left-color: #dc3545;
+}
+
+/* Task priority indicators */
+.priority-indicator {
+    width: 5px;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.priority-low { background-color: #6c757d; }
+.priority-normal { background-color: #17a2b8; }
+.priority-high { background-color: #ffc107; }
+.priority-critical { background-color: #dc3545; }
+
+/* Charts container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Conflict resolution panel */
+.conflict-panel {
+    border-left: 4px solid #ffc107;
+    background-color: #fff3cd;
+}
+
+.conflict-panel .conflict-files {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+/* Performance metrics */
+.performance-bar {
+    height: 20px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.performance-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+    background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+    background-size: 200% 100%;
+}
+
+/* Notification toast */
+.notification-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+}
+
+/* Loading spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0d6efd;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        position: static;
+        min-height: auto;
+    }
+    
+    .metric-card {
+        margin-bottom: 15px;
+    }
+    
+    .agent-card {
+        margin-bottom: 15px;
+    }
+}
